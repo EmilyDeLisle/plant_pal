@@ -1,22 +1,19 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement } from 'react'
+import Typography from '@material-ui/core/Typography'
 import { Plant } from '../../models'
-
+import { ListRow } from './components'
 
 export interface PlantListProps {
-    plants: Plant[]
+  plants: Plant[]
 }
 
 export const PlantList = ({ plants }: PlantListProps): ReactElement => {
   return (
     <div>
-      <p>Plant list!</p>
+      <Typography variant='h4'>Plants</Typography>
       {plants.map((plant: Plant) => (
-        <div>
-          <p>{plant.id}</p>
-          <p>{plant.name}</p>
-        </div>
-      )
-      )}
+        <ListRow key={plant.id} plant={plant} />
+      ))}
     </div>
   )
 }
