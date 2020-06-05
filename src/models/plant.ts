@@ -1,4 +1,3 @@
-import moment, { Moment } from 'moment'
 import { Map } from './Map'
 
 export interface Plant extends Map {
