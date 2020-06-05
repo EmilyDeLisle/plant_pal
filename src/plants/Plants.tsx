@@ -1,47 +1,39 @@
 import React, { ReactElement } from 'react'
+import { RouteComponentProps } from '@reach/router'
 import { PlantList } from './plant-list'
 import { Plant } from '../models'
-import { RouteComponentProps } from '@reach/router'
+import { plantStore } from '../injectables'
 
-const p = new Plant({
-  id: '123',
-  name: 'Plant Fren',
-  lastWatered: '2020-06-01T21:36:41Z',
-  lastFertilized: '2020-06-01T21:36:41Z',
-  wateringDates: ['2020-06-01T21:36:41Z'],
-  fertilizingDates: ['2020-06-01T21:36:41Z']
-})
-
-const test_plants = [
-  new Plant({
+const test_plants = {
+  '123': {
     id: '123',
     name: 'Plant Fren',
     lastWatered: '2020-06-01T21:36:41Z',
     lastFertilized: '2020-06-01T21:36:41Z',
     wateringDates: ['2020-06-01T21:36:41Z', '2020-05-25T21:36:41Z'],
-    fertilizingDates: ['2020-06-01T21:36:41Z']
-  }),
-  new Plant({
+    fertilizingDates: ['2020-06-01T21:36:41Z'],
+  },
+  '124': {
     id: '124',
     name: 'Planty Boi',
     lastWatered: '2020-06-01T21:36:41Z',
     lastFertilized: '2020-06-01T21:36:41Z',
     wateringDates: ['2020-06-01T21:36:41Z', '2020-05-25T21:36:41Z'],
-    fertilizingDates: ['2020-06-01T21:36:41Z']
-  }),
-  new Plant({
+    fertilizingDates: ['2020-06-01T21:36:41Z'],
+  },
+  '125': {
     id: '125',
     name: 'Peeb',
     wateringDates: [],
-    fertilizingDates: []
-  }),
-]
+    fertilizingDates: [],
+  },
+}
 
 export const Plants = (props: RouteComponentProps): ReactElement => {
-  test_plants.forEach(plant => console.log(plant.toString()))
+  plantStore.setPlants(test_plants)
   return (
     <div>
-      <PlantList plants={test_plants}/>
+      <PlantList />
     </div>
   )
 }
