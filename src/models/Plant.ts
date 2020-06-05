@@ -43,18 +43,21 @@ export class Plant {
     this.fertilizingDates = dates
   }
 
-  getAvgWateringInterval = (periodLength?: number): number | undefined => {
+  getAvgWateringInterval = (periodLength: number = 90): number | undefined => {
     // if dates undefined or less than 2, can't calculate an interval & return undefined
     if (!this.wateringDates || this.wateringDates.length < 2) {
       return undefined
     }
     
-    const numIntervals = this.wateringDates.length - 1
+    let numIntervals = 0
     let total = 0
 
     this.wateringDates.forEach((date, index) => {
       if (index > 0) {
-        total += moment(this.wateringDates![index - 1]).diff(moment(date), 'days')
+        if (moment().diff(date, 'days') < periodLength) {
+          total += moment(this.wateringDates![index - 1]).diff(moment(date), 'days')
+          numIntervals++
+        }
       }
     })
 

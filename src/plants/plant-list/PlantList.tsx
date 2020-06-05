@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react'
 import { inject, observer } from 'mobx-react'
 import Typography from '@material-ui/core/Typography'
 import { Plant, PlantMap, SortingMode, SortingDirection } from '../../models'
-import { PlantStoreProps, plantStore } from '../../injectables'
+import { plantStore } from '../../injectables'
 import { ListRow } from './components'
 
 export interface PlantListProps {
@@ -22,17 +22,6 @@ export const PlantList = inject('plantStore')(
         setSortingMode,
         setSortingDirection,
       } = plantStore
-      // const addTestPlant = () => {
-      //   const index = String(Math.floor(Math.random() * 1000))
-      //   let newPlantList: PlantMap = {}
-      //   newPlantList[index] = { id: index, name: 'Test Plant' }
-      //   const newPlants = {
-      //     ...newPlantList,
-      //     ...plants,
-      //   }
-      //   console.log(newPlants)
-      //   setPlants(newPlants)
-      // }
 
       const handleChangeSortingMode = (mode: SortingMode): void => {
         setSortingMode(mode)
