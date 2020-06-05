@@ -13,6 +13,15 @@ class PlantStore {
     return list.sort(getComparator(this.sortingDirection, this.sortingMode))
   }
 
+  get plantsToWaterList() {
+    return this.plantList.filter(plant => {
+      const avgWateringInterval = plant.getAvgWateringInterval()
+      if (!!plant.daysSinceLastWatered && !!avgWateringInterval) {
+        return plant.daysSinceLastWatered >= avgWateringInterval
+      }
+    })
+  }
+
   setPlants = (plants: PlantMap): void => {
     this.plants = plants
   }

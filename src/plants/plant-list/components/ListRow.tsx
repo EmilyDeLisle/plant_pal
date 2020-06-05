@@ -11,7 +11,7 @@ interface ListRowProps {
 }
 
 export const ListRow = ({ plant, handleModifyPlant }: ListRowProps): ReactElement => {
-  const { id, name, lastWateredDate, lastFertilizedDate, getAvgWateringInterval } = plant
+  const { id, name, daysSinceLastWatered, daysSinceLastFertilized, getAvgWateringInterval } = plant
 
   const formatDate = (dateString: string | undefined): string => {
     return !!dateString ? moment(dateString).format('MMM D, YYYY') : 'Never'
@@ -20,11 +20,7 @@ export const ListRow = ({ plant, handleModifyPlant }: ListRowProps): ReactElemen
   return (
     <Card>
       <div className="plant-list-row">
-        <Typography>{`ID: ${id} | Name: ${name} | Last watered: ${formatDate(
-          lastWateredDate
-        )} | Last fertilized: ${formatDate(
-          lastFertilizedDate
-        )} | Avg watering interval: ${getAvgWateringInterval()} days`}</Typography>
+        <Typography>{`ID: ${id} | Name: ${name} | Last watered: ${daysSinceLastWatered} days ago | Last fertilized: ${daysSinceLastFertilized} days ago | Avg watering interval: ${getAvgWateringInterval()} days`}</Typography>
         <div className="plant-list-row__buttons">
           <Button onClick={() => handleModifyPlant(id, PlantEventType.WATER)}>Water</Button>
           <Button onClick={() => handleModifyPlant(id, PlantEventType.FERTILIZE)}>Fertilize</Button>

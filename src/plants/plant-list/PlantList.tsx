@@ -14,6 +14,7 @@ export const PlantList = inject('plantStore')(
     (): ReactElement => {
       const {
         plantList,
+        plantsToWaterList,
         modifyPlant,
         setPlants,
         plants,
@@ -51,9 +52,16 @@ export const PlantList = inject('plantStore')(
             Sort by watering interval
           </button>
           <button onClick={() => handleToggleSortingDirection()}>Toggle direction</button>
-          {plantList.map((plant: Plant) => (
-            <ListRow key={plant.id} plant={plant} handleModifyPlant={modifyPlant} />
-          ))}
+          <div>
+            {plantsToWaterList.map((plant: Plant) => (
+              <ListRow key={plant.id} plant={plant} handleModifyPlant={modifyPlant} />
+            ))}
+          </div>
+          <div>
+            {plantList.map((plant: Plant) => (
+              <ListRow key={plant.id} plant={plant} handleModifyPlant={modifyPlant} />
+            ))}
+          </div>
         </div>
       )
     }
