@@ -22,17 +22,17 @@ export const PlantList = inject('plantStore')(
         setSortingMode,
         setSortingDirection,
       } = plantStore
-      const addTestPlant = () => {
-        const index = String(Math.floor(Math.random() * 1000))
-        let newPlantList: PlantMap = {}
-        newPlantList[index] = { id: index, name: 'Test Plant' }
-        const newPlants = {
-          ...newPlantList,
-          ...plants,
-        }
-        console.log(newPlants)
-        setPlants(newPlants)
-      }
+      // const addTestPlant = () => {
+      //   const index = String(Math.floor(Math.random() * 1000))
+      //   let newPlantList: PlantMap = {}
+      //   newPlantList[index] = { id: index, name: 'Test Plant' }
+      //   const newPlants = {
+      //     ...newPlantList,
+      //     ...plants,
+      //   }
+      //   console.log(newPlants)
+      //   setPlants(newPlants)
+      // }
 
       const handleChangeSortingMode = (mode: SortingMode): void => {
         setSortingMode(mode)
@@ -49,13 +49,17 @@ export const PlantList = inject('plantStore')(
           <Typography variant="h4">Plants</Typography>
           <Typography>{`Current sorting mode: ${sortingMode}`}</Typography>
           <Typography>{`Current sorting direction: ${sortingDirection}`}</Typography>
-          <button onClick={() => addTestPlant()}>Test Add Plant</button>
+          <Typography>ASC = A - Z, 0 - 9, Old to New, Early to Late</Typography>
+          {/* <button onClick={() => addTestPlant()}>Test Add Plant</button> */}
           <button onClick={() => handleChangeSortingMode(SortingMode.NAME)}>Sort by name</button>
           <button onClick={() => handleChangeSortingMode(SortingMode.WATER)}>
             Sort by last watered
           </button>
           <button onClick={() => handleChangeSortingMode(SortingMode.FERTILIZE)}>
             Sort by last fertilized
+          </button>
+          <button onClick={() => handleChangeSortingMode(SortingMode.INTERVAL)}>
+            Sort by watering interval
           </button>
           <button onClick={() => handleToggleSortingDirection()}>Toggle direction</button>
           {plantList.map((plant: Plant) => (

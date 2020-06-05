@@ -1,12 +1,21 @@
 import moment from 'moment'
 import { Plant, SortingMode, SortingDirection } from '../models'
 
-const compareName = (a: string, b: string): number => {
-  if (b < a) {
+const compare = (a: string | number | undefined, b: string | number | undefined): number => {
+  // if one value is undefined but the other is not, place the undefined value first
+  if (!b && !!a) {
     return -1
   }
-  if (b > a) {
+  if (!a && !!b) {
     return 1
+  }
+  if (!!a && !!b) {
+    if (b < a) {
+      return -1
+    }
+    if (b > a) {
+      return 1
+    }
   }
   return 0
 }
@@ -14,10 +23,7 @@ const compareName = (a: string, b: string): number => {
 const compareDateList = (a: string[] | undefined, b: string[] | undefined): number => {
   const mostRecentDateA = !!a && a.length > 0 ? moment(a[0]) : undefined
   const mostRecentDateB = !!b && b.length > 0 ? moment(b[0]) : undefined
-
-  if (!mostRecentDateA && !mostRecentDateB) {
-    return 0
-  }
+  // if one value is undefined but the other is not, place the undefined value first
   if (!mostRecentDateB && !!mostRecentDateA) {
     return 1
   }
@@ -33,21 +39,19 @@ const compareDateList = (a: string[] | undefined, b: string[] | undefined): numb
       return 1
     }
   }
-
   return 0
 }
 
 const descendingComparator = (a: Plant, b: Plant, orderBy: SortingMode): number => {
-  const sortingPropertyA = a[orderBy]
-  const sortingPropertyB = b[orderBy]
   switch (orderBy) {
     case SortingMode.WATER:
+      return compareDateList(a.wateringDates, b.wateringDates)
     case SortingMode.FERTILIZE:
-      return compareDateList(sortingPropertyA, sortingPropertyB)
+      return compareDateList(a.fertilizingDates, b.fertilizingDates)
     case SortingMode.INTERVAL:
-      return 0
+      return compare(a.getAvgWateringInterval(), b.getAvgWateringInterval())
     default:
-      return compareName(sortingPropertyA, sortingPropertyB)
+      return compare(a.name, b.name)
   }
 }
 

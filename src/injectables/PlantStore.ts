@@ -28,10 +28,14 @@ class PlantStore {
   modifyPlant = (plantID: string, eventType: PlantEventType, date?: string): void => {
     const plant: Plant = this.plants[plantID]
     const newDate = !!date ? date : moment().utc().format()
-    const listName = `${eventType}Dates`
-    const eventList = plant[listName]
-    let newPlant: Plant = {...plant}
-    newPlant[listName] = !!eventList ? [newDate, ...eventList] : [newDate]
+    let newPlant: Plant = new Plant(plant.id, plant.name)
+    if (eventType === PlantEventType.WATER) {
+      newPlant.setWateringDates(!!plant.wateringDates ? [newDate, ...plant.wateringDates] : [newDate])
+      !!plant.fertilizingDates && newPlant.setFertilizingDates(plant.fertilizingDates)
+    } else {
+      !!plant.wateringDates && newPlant.setWateringDates(plant.wateringDates)
+      newPlant.setFertilizingDates(!!plant.fertilizingDates ? [newDate, ...plant.fertilizingDates] : [newDate])
+    }
     this.plants[plantID] = newPlant
   }
 }
@@ -44,7 +48,7 @@ decorate(PlantStore, {
   setPlants: action,
   setSortingMode: action,
   setSortingDirection: action,
-  modifyPlant: action,
+  // modifyPlant: action,
 })
 
 export interface PlantStoreProps {
