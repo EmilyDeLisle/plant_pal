@@ -1,16 +1,20 @@
 import moment from 'moment'
 
+const HOURS_IN_DAY = 24
+
 export class Plant {
   id: string
   name: string
   wateringDates?: string[]
   fertilizingDates?: string[]
+  checkedDate?: string
 
-  constructor(id: string, name: string, wateringDates?: string[], fertilizingDates?: string[]) {
+  constructor(id: string, name: string, wateringDates?: string[], fertilizingDates?: string[], checkedDate?: string) {
     this.id = id
     this.name = name
     this.wateringDates = wateringDates
     this.fertilizingDates = fertilizingDates
+    this.checkedDate = checkedDate
   }
 
   get lastWateredDate(): string | undefined {
@@ -31,6 +35,10 @@ export class Plant {
     return !!this.lastFertilizedDate ? moment().diff(this.lastFertilizedDate, 'days') : undefined
   }
 
+  get checkedToday(): boolean {
+    return !!this.checkedDate ? moment().diff(this.checkedDate, 'hours') < HOURS_IN_DAY : false
+  }
+
   setName = (name: string): void => {
     this.name = name
   }
@@ -41,6 +49,10 @@ export class Plant {
 
   setFertilizingDates = (dates: string[]): void => {
     this.fertilizingDates = dates
+  }
+
+  setCheckedDate = (date: string): void => {
+    this.checkedDate = date
   }
 
   getAvgWateringInterval = (periodLength: number = 90): number | undefined => {

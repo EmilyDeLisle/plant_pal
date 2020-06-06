@@ -22,6 +22,7 @@ export const ListRow = ({ plant, handleModifyPlant }: ListRowProps): ReactElemen
       <div className="plant-list-row">
         <Typography>{`ID: ${id} | Name: ${name} | Last watered: ${daysSinceLastWatered} days ago | Last fertilized: ${daysSinceLastFertilized} days ago | Avg watering interval: ${getAvgWateringInterval()} days`}</Typography>
         <div className="plant-list-row__buttons">
+          <Button onClick={() => handleModifyPlant(id, PlantEventType.CHECK)}>Check</Button>
           <Button onClick={() => handleModifyPlant(id, PlantEventType.WATER)}>Water</Button>
           <Button onClick={() => handleModifyPlant(id, PlantEventType.FERTILIZE)}>Fertilize</Button>
         </div>

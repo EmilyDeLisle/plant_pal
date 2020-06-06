@@ -1,4 +1,5 @@
 export enum PlantEventType {
-  WATER = 'watering',
-  FERTILIZE = 'fertilizing'
+  CHECK = 'check',
+  FERTILIZE = 'fertilize',
+  WATER = 'water'
 }
