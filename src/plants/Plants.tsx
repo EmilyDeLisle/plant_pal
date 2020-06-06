@@ -24,7 +24,7 @@ const test_plants = {
 export const Plants = (props: RouteComponentProps): ReactElement => {
   plantStore.setPlants(test_plants)
   return (
-    <div>
+    <div className='plants__container'>
       <PlantList />
     </div>
   )

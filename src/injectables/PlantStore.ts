@@ -6,7 +6,7 @@ import { getComparator } from './sortingHelpers'
 class PlantStore {
   plants: PlantMap = {}
   sortingMode: SortingMode = SortingMode.WATER
-  sortingDirection: SortingDirection = SortingDirection.DESC
+  sortingDirection: SortingDirection = SortingDirection.ASC
 
   get plantList() {
     const list = Object.values(this.plants)
@@ -14,16 +14,11 @@ class PlantStore {
   }
 
   get plantsToWaterList() {
-    return this.plantList.filter(plant => {
-      const avgWateringInterval = plant.getAvgWateringInterval()
-      if (!!plant.daysSinceLastWatered && !!avgWateringInterval) {
-        return !plant.checkedToday && plant.daysSinceLastWatered >= avgWateringInterval
-      }
-    })
+    return this.plantList.filter((plant) => plant.toBeChecked)
   }
 
   get plantsRemainingList() {
-    return this.plantList.filter(plant => !this.plantsToWaterList.includes(plant))
+    return this.plantList.filter((plant) => !this.plantsToWaterList.includes(plant))
   }
 
   setPlants = (plants: PlantMap): void => {
@@ -48,12 +43,16 @@ class PlantStore {
         newPlant = new Plant(id, name, wateringDates, fertilizingDates, moment().utc().format())
         break
       case PlantEventType.FERTILIZE:
-        const newFertilizingDates = !!plant.wateringDates ? [newDate, ...plant.wateringDates] : [newDate]
+        const newFertilizingDates = !!plant.fertilizingDates
+          ? [newDate, ...plant.fertilizingDates]
+          : [newDate]
         newPlant = new Plant(id, name, wateringDates, newFertilizingDates, checkedDate)
         break
       default:
-        const newWateringDates = !!plant.wateringDates ? [newDate, ...plant.wateringDates] : [newDate]
-        newPlant = new Plant(id, name, wateringDates, newWateringDates, checkedDate)
+        const newWateringDates = !!plant.wateringDates
+          ? [newDate, ...plant.wateringDates]
+          : [newDate]
+        newPlant = new Plant(id, name, newWateringDates, fertilizingDates, checkedDate)
     }
     this.plants[plantID] = newPlant
   }

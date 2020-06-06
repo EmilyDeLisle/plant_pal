@@ -35,7 +35,7 @@ export const PlantList = inject('plantStore')(
       }
 
       return (
-        <div>
+        <>
           <Typography variant="h4">Plants</Typography>
           <Typography>{`Current sorting mode: ${sortingMode}`}</Typography>
           <Typography>{`Current sorting direction: ${sortingDirection}`}</Typography>
@@ -52,19 +52,17 @@ export const PlantList = inject('plantStore')(
             Sort by watering interval
           </button>
           <button onClick={() => handleToggleSortingDirection()}>Toggle direction</button>
-          <div>
-            <Typography>Plants to Water</Typography>
+          <div className='plant-list__row-container'>
             {plantsToWaterList.map((plant: Plant) => (
               <ListRow key={plant.id} plant={plant} handleModifyPlant={modifyPlant} />
             ))}
           </div>
-          <div>
-            <Typography>Other Plants</Typography>
+          <div className='plant-list__row-container'>
             {plantsRemainingList.map((plant: Plant) => (
               <ListRow key={plant.id} plant={plant} handleModifyPlant={modifyPlant} />
             ))}
           </div>
-        </div>
+        </>
       )
     }
   )
