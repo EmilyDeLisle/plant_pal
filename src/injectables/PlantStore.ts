@@ -13,6 +13,19 @@ class PlantStore {
     return list.sort(getComparator(this.sortingDirection, this.sortingMode))
   }
 
+  get plantsToWaterList() {
+    return this.plantList.filter(plant => {
+      const avgWateringInterval = plant.getAvgWateringInterval()
+      if (!!plant.daysSinceLastWatered && !!avgWateringInterval) {
+        return !plant.checkedToday && plant.daysSinceLastWatered >= avgWateringInterval
+      }
+    })
+  }
+
+  get plantsRemainingList() {
+    return this.plantList.filter(plant => !this.plantsToWaterList.includes(plant))
+  }
+
   setPlants = (plants: PlantMap): void => {
     this.plants = plants
   }
@@ -27,14 +40,20 @@ class PlantStore {
 
   modifyPlant = (plantID: string, eventType: PlantEventType, date?: string): void => {
     const plant: Plant = this.plants[plantID]
+    const { id, name, wateringDates, fertilizingDates, checkedDate } = plant
     const newDate = !!date ? date : moment().utc().format()
-    let newPlant: Plant = new Plant(plant.id, plant.name)
-    if (eventType === PlantEventType.WATER) {
-      newPlant.setWateringDates(!!plant.wateringDates ? [newDate, ...plant.wateringDates] : [newDate])
-      !!plant.fertilizingDates && newPlant.setFertilizingDates(plant.fertilizingDates)
-    } else {
-      !!plant.wateringDates && newPlant.setWateringDates(plant.wateringDates)
-      newPlant.setFertilizingDates(!!plant.fertilizingDates ? [newDate, ...plant.fertilizingDates] : [newDate])
+    let newPlant
+    switch (eventType) {
+      case PlantEventType.CHECK:
+        newPlant = new Plant(id, name, wateringDates, fertilizingDates, moment().utc().format())
+        break
+      case PlantEventType.FERTILIZE:
+        const newFertilizingDates = !!plant.wateringDates ? [newDate, ...plant.wateringDates] : [newDate]
+        newPlant = new Plant(id, name, wateringDates, newFertilizingDates, checkedDate)
+        break
+      default:
+        const newWateringDates = !!plant.wateringDates ? [newDate, ...plant.wateringDates] : [newDate]
+        newPlant = new Plant(id, name, wateringDates, newWateringDates, checkedDate)
     }
     this.plants[plantID] = newPlant
   }
@@ -48,7 +67,7 @@ decorate(PlantStore, {
   setPlants: action,
   setSortingMode: action,
   setSortingDirection: action,
-  // modifyPlant: action,
+  modifyPlant: action,
 })
 
 export interface PlantStoreProps {
