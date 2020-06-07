@@ -1,8 +1,12 @@
 import React, { ReactElement } from 'react'
 import Card from '@material-ui/core/Card'
 import Typography from '@material-ui/core/Typography'
-import moment, { Moment } from 'moment'
-import Button from '@material-ui/core/Button'
+import moment from 'moment'
+import IconButton from '@material-ui/core/IconButton'
+import Tooltip from '@material-ui/core/Tooltip'
+import DoneIcon from '@material-ui/icons/Done'
+import EcoIcon from '@material-ui/icons/Eco'
+import WateringCanIcon from './WateringCanIcon'
 import { Plant, PlantEventType } from '../../../models'
 
 interface ListRowProps {
@@ -16,7 +20,6 @@ export const ListRow = ({ plant, handleModifyPlant }: ListRowProps): ReactElemen
     name,
     lastWateredDate,
     lastFertilizedDate,
-    daysSinceLastFertilized,
     getAvgWateringInterval,
     toBeChecked,
   } = plant
@@ -55,12 +58,22 @@ export const ListRow = ({ plant, handleModifyPlant }: ListRowProps): ReactElemen
           </div>
           <div className="plant-list-row__buttons">
             {toBeChecked && (
-              <Button onClick={() => handleModifyPlant(id, PlantEventType.CHECK)}>Check</Button>
+              <Tooltip title="Water not needed today">
+                <IconButton onClick={() => handleModifyPlant(id, PlantEventType.CHECK)}>
+                  <DoneIcon />
+                </IconButton>
+              </Tooltip>
             )}
-            <Button onClick={() => handleModifyPlant(id, PlantEventType.WATER)}>Water</Button>
-            <Button onClick={() => handleModifyPlant(id, PlantEventType.FERTILIZE)}>
-              Fertilize
-            </Button>
+            <Tooltip title="Water plant today">
+              <IconButton onClick={() => handleModifyPlant(id, PlantEventType.WATER)}>
+                <WateringCanIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Fertilize plant today">
+              <IconButton onClick={() => handleModifyPlant(id, PlantEventType.FERTILIZE)}>
+                <EcoIcon />
+              </IconButton>
+            </Tooltip>
           </div>
         </div>
       </Card>
