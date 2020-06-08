@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react'
 import { RouteComponentProps } from '@reach/router'
-import { PlantList } from './plant-list'
+import { PlantList, TopNavNar } from './plant-list'
 import { Plant } from '../models'
 import { plantStore } from '../injectables'
 
@@ -24,8 +24,11 @@ const test_plants = {
 export const Plants = (props: RouteComponentProps): ReactElement => {
   plantStore.setPlants(test_plants)
   return (
-    <div>
-      <PlantList />
-    </div>
+    <>
+      <TopNavNar />
+      <div className="plants__container">
+        <PlantList />
+      </div>
+    </>
   )
 }

@@ -1,8 +1,12 @@
 import React, { ReactElement } from 'react'
 import Card from '@material-ui/core/Card'
 import Typography from '@material-ui/core/Typography'
-import moment, { Moment } from 'moment'
-import Button from '@material-ui/core/Button'
+import moment from 'moment'
+import IconButton from '@material-ui/core/IconButton'
+import Tooltip from '@material-ui/core/Tooltip'
+import DoneIcon from '@material-ui/icons/Done'
+import EcoIcon from '@material-ui/icons/Eco'
+import WateringCanIcon from './WateringCanIcon'
 import { Plant, PlantEventType } from '../../../models'
 
 interface ListRowProps {
@@ -11,22 +15,68 @@ interface ListRowProps {
 }
 
 export const ListRow = ({ plant, handleModifyPlant }: ListRowProps): ReactElement => {
-  const { id, name, daysSinceLastWatered, daysSinceLastFertilized, getAvgWateringInterval } = plant
+  const {
+    id,
+    name,
+    lastWateredDate,
+    lastFertilizedDate,
+    getAvgWateringInterval,
+    toBeChecked,
+  } = plant
 
-  const formatDate = (dateString: string | undefined): string => {
-    return !!dateString ? moment(dateString).format('MMM D, YYYY') : 'Never'
-  }
+  const avgWateringInterval = getAvgWateringInterval()
 
   return (
-    <Card>
-      <div className="plant-list-row">
-        <Typography>{`ID: ${id} | Name: ${name} | Last watered: ${daysSinceLastWatered} days ago | Last fertilized: ${daysSinceLastFertilized} days ago | Avg watering interval: ${getAvgWateringInterval()} days`}</Typography>
-        <div className="plant-list-row__buttons">
-          <Button onClick={() => handleModifyPlant(id, PlantEventType.CHECK)}>Check</Button>
-          <Button onClick={() => handleModifyPlant(id, PlantEventType.WATER)}>Water</Button>
-          <Button onClick={() => handleModifyPlant(id, PlantEventType.FERTILIZE)}>Fertilize</Button>
+    <div className="plant-list-row-container">
+      <Card>
+        <div className="plant-list-row">
+          <div>
+            <Typography display="inline">{name}</Typography>
+            {!!avgWateringInterval && (
+              <Typography variant="body2" color="textSecondary" display="inline">
+                {` - Watered every ${avgWateringInterval} day${avgWateringInterval !== 1 && 's'}`}
+              </Typography>
+            )}
+            <Typography variant="body2" color="textSecondary" display="inline">
+              {` - Last watered: ${
+                !!lastWateredDate
+                  ? `${moment(lastWateredDate).format('MMM D, YYYY')} (${moment(
+                      lastWateredDate
+                    ).fromNow()})`
+                  : 'Never'
+              }`}
+            </Typography>
+            <Typography variant="body2" color="textSecondary" display="inline">
+              {` - Last fertilized: ${
+                !!lastFertilizedDate
+                  ? `${moment(lastFertilizedDate).format('MMM D, YYYY')} (${moment(
+                      lastFertilizedDate
+                    ).fromNow()})`
+                  : 'Never'
+              }`}
+            </Typography>
+          </div>
+          <div className="plant-list-row__buttons">
+            {toBeChecked && (
+              <Tooltip title="Water not needed today">
+                <IconButton onClick={() => handleModifyPlant(id, PlantEventType.CHECK)}>
+                  <DoneIcon />
+                </IconButton>
+              </Tooltip>
+            )}
+            <Tooltip title="Water plant today">
+              <IconButton onClick={() => handleModifyPlant(id, PlantEventType.WATER)}>
+                <WateringCanIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Fertilize plant today">
+              <IconButton onClick={() => handleModifyPlant(id, PlantEventType.FERTILIZE)}>
+                <EcoIcon />
+              </IconButton>
+            </Tooltip>
+          </div>
         </div>
-      </div>
-    </Card>
+      </Card>
+    </div>
   )
 }

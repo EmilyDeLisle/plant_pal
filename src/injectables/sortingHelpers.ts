@@ -20,9 +20,9 @@ const compare = (a: string | number | undefined, b: string | number | undefined)
   return 0
 }
 
-const compareDateList = (a: string[] | undefined, b: string[] | undefined): number => {
-  const mostRecentDateA = !!a && a.length > 0 ? moment(a[0]) : undefined
-  const mostRecentDateB = !!b && b.length > 0 ? moment(b[0]) : undefined
+const compareDate = (a: string | undefined, b: string | undefined): number => {
+  const mostRecentDateA = !!a ? moment(a) : undefined
+  const mostRecentDateB = !!b ? moment(b) : undefined
   // if one value is undefined but the other is not, place the undefined value first
   if (!mostRecentDateB && !!mostRecentDateA) {
     return 1
@@ -45,9 +45,9 @@ const compareDateList = (a: string[] | undefined, b: string[] | undefined): numb
 const descendingComparator = (a: Plant, b: Plant, orderBy: SortingMode): number => {
   switch (orderBy) {
     case SortingMode.WATER:
-      return compareDateList(a.wateringDates, b.wateringDates)
+      return compareDate(a.lastWateredDate, b.lastWateredDate)
     case SortingMode.FERTILIZE:
-      return compareDateList(a.fertilizingDates, b.fertilizingDates)
+      return compareDate(a.lastFertilizedDate, b.lastFertilizedDate)
     case SortingMode.INTERVAL:
       return compare(a.getAvgWateringInterval(), b.getAvgWateringInterval())
     default:

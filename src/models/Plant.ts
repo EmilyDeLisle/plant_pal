@@ -9,7 +9,13 @@ export class Plant {
   fertilizingDates?: string[]
   checkedDate?: string
 
-  constructor(id: string, name: string, wateringDates?: string[], fertilizingDates?: string[], checkedDate?: string) {
+  constructor(
+    id: string,
+    name: string,
+    wateringDates?: string[],
+    fertilizingDates?: string[],
+    checkedDate?: string
+  ) {
     this.id = id
     this.name = name
     this.wateringDates = wateringDates
@@ -37,6 +43,16 @@ export class Plant {
 
   get checkedToday(): boolean {
     return !!this.checkedDate ? moment().diff(this.checkedDate, 'hours') < HOURS_IN_DAY : false
+  }
+
+  get toBeChecked(): boolean {
+    const avgWateringInterval = this.getAvgWateringInterval()
+    return (
+      !!this.daysSinceLastWatered &&
+      !!avgWateringInterval &&
+      !this.checkedToday &&
+      this.daysSinceLastWatered >= avgWateringInterval
+    )
   }
 
   setName = (name: string): void => {

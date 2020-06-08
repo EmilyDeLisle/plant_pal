@@ -35,36 +35,18 @@ export const PlantList = inject('plantStore')(
       }
 
       return (
-        <div>
-          <Typography variant="h4">Plants</Typography>
-          <Typography>{`Current sorting mode: ${sortingMode}`}</Typography>
-          <Typography>{`Current sorting direction: ${sortingDirection}`}</Typography>
-          <Typography>ASC = A - Z, 0 - 9, Old to New, Early to Late</Typography>
-          {/* <button onClick={() => addTestPlant()}>Test Add Plant</button> */}
-          <button onClick={() => handleChangeSortingMode(SortingMode.NAME)}>Sort by name</button>
-          <button onClick={() => handleChangeSortingMode(SortingMode.WATER)}>
-            Sort by last watered
-          </button>
-          <button onClick={() => handleChangeSortingMode(SortingMode.FERTILIZE)}>
-            Sort by last fertilized
-          </button>
-          <button onClick={() => handleChangeSortingMode(SortingMode.INTERVAL)}>
-            Sort by watering interval
-          </button>
-          <button onClick={() => handleToggleSortingDirection()}>Toggle direction</button>
-          <div>
-            <Typography>Plants to Water</Typography>
+        <>
+          <div className='plant-list__row-container'>
             {plantsToWaterList.map((plant: Plant) => (
               <ListRow key={plant.id} plant={plant} handleModifyPlant={modifyPlant} />
             ))}
           </div>
-          <div>
-            <Typography>Other Plants</Typography>
+          <div className='plant-list__row-container'>
             {plantsRemainingList.map((plant: Plant) => (
               <ListRow key={plant.id} plant={plant} handleModifyPlant={modifyPlant} />
             ))}
           </div>
-        </div>
+        </>
       )
     }
   )

@@ -1,0 +1,26 @@
+.top-nav-bar__contents {
+  display: flex;
+  flex-direction: column;
+}
+
+.top-nav-bar__section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1em 2em;
+}
+
+.top-nav-bar__top {
+  z-index: 1;
+  box-shadow: 1px 0px 3px 3px rgba(0, 0, 0, 0.3);
+}
+
+.top-nav-bar__bottom {
+  background-color: #fff;
+  display: flex;
+  justify-content: center;
+}
+
+.top-nav-bar__buttons {
+  display: flex;
+}
