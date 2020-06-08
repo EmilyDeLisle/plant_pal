@@ -1,67 +1,55 @@
 import React from 'react'
+import { inject, observer } from 'mobx-react'
 import AppBar from '@material-ui/core/AppBar'
-import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
-import IconButton from '@material-ui/core/IconButton'
-import MenuIcon from '@material-ui/icons/Menu'
-import AccountCircle from '@material-ui/icons/AccountCircle'
-import MenuItem from '@material-ui/core/MenuItem'
-import Menu from '@material-ui/core/Menu'
+import { SortingButton } from './SortingButton'
+import { plantStore } from '../../injectables'
+import { SortingMode } from '../../models'
 
-export const TopNavNar = () => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
-  const open = Boolean(anchorEl)
+export const TopNavNar = inject('plantStore')(
+  observer(() => {
+    const { sortingMode, sortingDirection, setSortingMode, setSortingDirection } = plantStore
 
-  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget)
-  }
-
-  const handleClose = () => {
-    setAnchorEl(null)
-  }
-
-  return (
-    <AppBar position="static">
-      {/* <Toolbar> */}
-      <div className="top-nav-bar__contents">
-        <div className="top-nav-bar__section top-nav-bar__top">
-          <Typography variant="h6">Plant Pal</Typography>
-          <div>
-            <IconButton
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleMenu}
-              color="inherit"
-              edge='end'
-            >
-              <AccountCircle />
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={open}
-              onClose={handleClose}
-            >
-              <MenuItem>Profile</MenuItem>
-              <MenuItem>Sign out</MenuItem>
-            </Menu>
+    return (
+      <AppBar position="static">
+        <div className="top-nav-bar__contents">
+          <div className="top-nav-bar__section top-nav-bar__top">
+            <Typography variant="h6">Plant Pal</Typography>
+          </div>
+          <div className="top-nav-bar__section top-nav-bar__bottom">
+            <div className="top-nav-bar__buttons">
+              <SortingButton
+                selected={sortingMode === SortingMode.NAME}
+                mode={SortingMode.NAME}
+                direction={sortingDirection}
+                handleChangeMode={setSortingMode}
+                handleChangeDirection={setSortingDirection}
+              />
+              <SortingButton
+                selected={sortingMode === SortingMode.WATER}
+                mode={SortingMode.WATER}
+                direction={sortingDirection}
+                handleChangeMode={setSortingMode}
+                handleChangeDirection={setSortingDirection}
+              />
+              <SortingButton
+                selected={sortingMode === SortingMode.FERTILIZE}
+                mode={SortingMode.FERTILIZE}
+                direction={sortingDirection}
+                handleChangeMode={setSortingMode}
+                handleChangeDirection={setSortingDirection}
+              />
+              <SortingButton
+                selected={sortingMode === SortingMode.INTERVAL}
+                mode={SortingMode.INTERVAL}
+                direction={sortingDirection}
+                handleChangeMode={setSortingMode}
+                handleChangeDirection={setSortingDirection}
+              />
+            </div>
           </div>
         </div>
-        <div className="top-nav-bar__section top-nav-bar__bottom">
-          <Typography color="textPrimary">Bottom stuff!</Typography>
-        </div>
-      </div>
-      {/* </Toolbar> */}
-    </AppBar>
-  )
-}
+      </AppBar>
+    )
+  })
+)

@@ -17,4 +17,10 @@
 
 .top-nav-bar__bottom {
   background-color: #fff;
+  display: flex;
+  justify-content: center;
+}
+
+.top-nav-bar__buttons {
+  display: flex;
 }
