@@ -10,6 +10,7 @@ import WateringCanIcon from './WateringCanIcon'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { Plant, PlantEventType } from '../../../models'
 import { plantStore } from '../../../injectables'
+import { formatDate } from './plantHelpers'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -39,18 +40,6 @@ export const ListRow = ({ plant, handleOpen }: ListRowProps): ReactElement => {
   const classes = useStyles()
   const avgWateringInterval = getAvgWateringInterval()
   const { modifyPlant, setSelectedPlant } = plantStore
-
-  const formatDate = (dateString: string | undefined): string => {
-    const today = moment()
-    if (!dateString) {
-      return 'Never'
-    } else {
-      const date = moment(dateString)
-      return `${date.format('MMM D, YYYY')} (${
-        today.diff(date, 'days') < 2 ? date.calendar() : date.fromNow()
-      })`
-    }
-  }
 
   return (
     <div

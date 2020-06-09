@@ -1,3 +1,4 @@
 export * from './ListRow'
 export * from './PlantDialog'
 export * from './WateringCanIcon'
+export * from './plantHelpers'
