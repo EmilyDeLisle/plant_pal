@@ -13,17 +13,3 @@
 .plant-dialog__title-card-close-button {
   margin-top: -1em;
 }
-
-.plant-dialog-event-section__card {
-  padding: 0.5em;
-}
-
-.plant-dialog-event-section__row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.plant-dialog-event-section__body {
-  margin-top: 0.5em;
-}

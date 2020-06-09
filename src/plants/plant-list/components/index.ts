@@ -1,3 +1,4 @@
+export * from './EventSection'
 export * from './ListRow'
 export * from './PlantDialog'
 export * from './WateringCanIcon'

@@ -53,22 +53,6 @@ export class Plant {
     )
   }
 
-  setName = (name: string): void => {
-    this.name = name
-  }
-
-  setWateringDates = (dates: string[]): void => {
-    this.wateringDates = dates
-  }
-
-  setFertilizingDates = (dates: string[]): void => {
-    this.fertilizingDates = dates
-  }
-
-  setCheckedDate = (date: string): void => {
-    this.checkedDate = date
-  }
-
   getAvgWateringInterval = (periodLength: number = 3): number | undefined => {
     // if dates undefined or less than 2, can't calculate an interval & return undefined
     if (!this.wateringDates || this.wateringDates.length < 2) {
@@ -86,5 +70,21 @@ export class Plant {
     })
 
     return Math.round(totalDays / numIntervals)
+  }
+
+  setName = (name: string): void => {
+    this.name = name
+  }
+
+  setWateringDates = (dates: string[]): void => {
+    this.wateringDates = dates
+  }
+
+  setFertilizingDates = (dates: string[]): void => {
+    this.fertilizingDates = dates
+  }
+
+  setCheckedDate = (date: string): void => {
+    this.checkedDate = date
   }
 }
