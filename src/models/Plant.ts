@@ -78,15 +78,15 @@ export class Plant {
     }
 
     let numIntervals = 0
-    let total = 0
+    let totalDays = 0
 
     this.wateringDates.forEach((date, index) => {
       if (index > 0 && moment().diff(date, 'days') < periodLength) {
-        total += moment(this.wateringDates![index - 1]).diff(moment(date), 'days')
+        totalDays += moment(this.wateringDates![index - 1]).diff(moment(date), 'days')
         numIntervals++
       }
     })
 
-    return Math.round(total / numIntervals)
+    return Math.round(totalDays / numIntervals)
   }
 }

@@ -7,14 +7,27 @@ import Tooltip from '@material-ui/core/Tooltip'
 import DoneIcon from '@material-ui/icons/Done'
 import EcoIcon from '@material-ui/icons/Eco'
 import WateringCanIcon from './WateringCanIcon'
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { Plant, PlantEventType } from '../../../models'
+import { plantStore } from '../../../injectables'
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      '&:hover': {
+        backgroundColor: theme.palette.grey[100],
+        cursor: 'pointer',
+      },
+    },
+  })
+)
 
 interface ListRowProps {
   plant: Plant
-  handleModifyPlant: (plantID: string, eventType: PlantEventType, date?: string) => void
+  handleOpen: () => void
 }
 
-export const ListRow = ({ plant, handleModifyPlant }: ListRowProps): ReactElement => {
+export const ListRow = ({ plant, handleOpen }: ListRowProps): ReactElement => {
   const {
     id,
     name,
@@ -23,13 +36,32 @@ export const ListRow = ({ plant, handleModifyPlant }: ListRowProps): ReactElemen
     getAvgWateringInterval,
     toBeChecked,
   } = plant
-
+  const classes = useStyles()
   const avgWateringInterval = getAvgWateringInterval()
+  const { modifyPlant, setSelectedPlant } = plantStore
+
+  const formatDate = (dateString: string | undefined): string => {
+    const today = moment()
+    if (!dateString) {
+      return 'Never'
+    } else {
+      const date = moment(dateString)
+      return `${date.format('MMM D, YYYY')} (${
+        today.diff(date, 'days') < 2 ? date.calendar() : date.fromNow()
+      })`
+    }
+  }
 
   return (
-    <div className="plant-list-row-container">
+    <div
+      className={`plant-list-row-container`}
+      onClick={() => {
+        setSelectedPlant(id)
+        handleOpen()
+      }}
+    >
       <Card>
-        <div className="plant-list-row">
+        <div className={`${classes.root} plant-list-row`}>
           <div>
             <Typography display="inline">{name}</Typography>
             {!!avgWateringInterval && (
@@ -38,39 +70,27 @@ export const ListRow = ({ plant, handleModifyPlant }: ListRowProps): ReactElemen
               </Typography>
             )}
             <Typography variant="body2" color="textSecondary" display="inline">
-              {` - Last watered: ${
-                !!lastWateredDate
-                  ? `${moment(lastWateredDate).format('MMM D, YYYY')} (${moment(
-                      lastWateredDate
-                    ).fromNow()})`
-                  : 'Never'
-              }`}
+              {` - Last watered: ${formatDate(lastWateredDate)}`}
             </Typography>
             <Typography variant="body2" color="textSecondary" display="inline">
-              {` - Last fertilized: ${
-                !!lastFertilizedDate
-                  ? `${moment(lastFertilizedDate).format('MMM D, YYYY')} (${moment(
-                      lastFertilizedDate
-                    ).fromNow()})`
-                  : 'Never'
-              }`}
+              {` - Last fertilized: ${formatDate(lastFertilizedDate)}`}
             </Typography>
           </div>
           <div className="plant-list-row__buttons">
             {toBeChecked && (
               <Tooltip title="Water not needed today">
-                <IconButton onClick={() => handleModifyPlant(id, PlantEventType.CHECK)}>
+                <IconButton onClick={() => modifyPlant(id, PlantEventType.CHECK)}>
                   <DoneIcon />
                 </IconButton>
               </Tooltip>
             )}
             <Tooltip title="Water plant today">
-              <IconButton onClick={() => handleModifyPlant(id, PlantEventType.WATER)}>
+              <IconButton onClick={() => modifyPlant(id, PlantEventType.WATER)}>
                 <WateringCanIcon />
               </IconButton>
             </Tooltip>
             <Tooltip title="Fertilize plant today">
-              <IconButton onClick={() => handleModifyPlant(id, PlantEventType.FERTILIZE)}>
+              <IconButton onClick={() => modifyPlant(id, PlantEventType.FERTILIZE)}>
                 <EcoIcon />
               </IconButton>
             </Tooltip>
