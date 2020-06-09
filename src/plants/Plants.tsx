@@ -8,7 +8,7 @@ export const Plants = inject('plantStore')(
   observer(
     (props: RouteComponentProps): ReactElement => {
       const [dialogOpen, setDialogOpen] = useState(false)
-      const { plantsToWaterList, plantsRemainingList, selectedPlant } = plantStore
+      const { plantsToWaterList, plantsRemainingList, selectedPlant, modifyPlant } = plantStore
       return (
         <>
           <TopNavNar />
@@ -25,6 +25,7 @@ export const Plants = inject('plantStore')(
               plant={selectedPlant}
               open={dialogOpen}
               handleClose={() => setDialogOpen(false)}
+              modifyPlant={modifyPlant}
             />
           )}
         </>
