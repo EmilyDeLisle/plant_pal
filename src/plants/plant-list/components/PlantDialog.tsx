@@ -54,21 +54,8 @@ export const PlantDialog = ({ open, handleClose, plant, modifyPlant }: PlantDial
         </div>
       </div>
       <DialogContent>
-        <EventSection
-          plantID={id}
-          eventType={PlantEventType.WATER}
-          lastEventDate={lastWateredDate}
-          eventDates={wateringDates}
-          getAvgWateringInterval={getAvgWateringInterval}
-          modifyPlant={modifyPlant}
-        />
-        <EventSection
-          plantID={id}
-          eventType={PlantEventType.FERTILIZE}
-          lastEventDate={lastFertilizedDate}
-          eventDates={fertilizingDates}
-          modifyPlant={modifyPlant}
-        />
+        <EventSection plant={plant} eventType={PlantEventType.WATER} />
+        <EventSection plant={plant} eventType={PlantEventType.FERTILIZE} />
       </DialogContent>
     </Dialog>
   )

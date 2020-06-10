@@ -1,5 +1,6 @@
 import moment from 'moment'
-
+import { action, computed, decorate, observable } from 'mobx'
+import { PlantEventType } from './PlantEventType'
 const HOURS_IN_DAY = 24
 
 export class Plant {
@@ -53,6 +54,33 @@ export class Plant {
     )
   }
 
+  getLastEventDate = (eventType: PlantEventType): string | undefined => {
+    return eventType === PlantEventType.FERTILIZE ? this.lastFertilizedDate : this.lastWateredDate
+  }
+
+  getEventDateList = (eventType: PlantEventType): string[] => {
+    return eventType === PlantEventType.FERTILIZE ? this.fertilizingDates : this.wateringDates
+  }
+
+  getAvgInterval = (
+    periodLength: number = 3,
+    eventType: PlantEventType
+  ): number | undefined => {
+    const eventDates = eventType ===PlantEventType.WATER ? this.wateringDates : this.fertilizingDates
+    if (eventDates.length < 2) {
+      return undefined
+    }
+    let numIntervals = 0
+    let totalDays = 0
+    eventDates.forEach((date, index) => {
+      if (index > 0 && moment().diff(date, 'months') < periodLength) {
+        totalDays += moment(eventDates![index - 1]).diff(moment(date), 'days')
+        numIntervals++
+      }
+    })
+    return Math.round(totalDays / numIntervals)
+  }
+
   getAvgWateringInterval = (periodLength: number = 3): number | undefined => {
     // if dates undefined or less than 2, can't calculate an interval & return undefined
     if (!this.wateringDates || this.wateringDates.length < 2) {
@@ -72,6 +100,25 @@ export class Plant {
     return Math.round(totalDays / numIntervals)
   }
 
+  getAvgFertilizingInterval = (periodLength: number = 3): number | undefined => {
+    // if dates undefined or less than 2, can't calculate an interval & return undefined
+    if (!this.fertilizingDates || this.fertilizingDates.length < 2) {
+      return undefined
+    }
+
+    let numIntervals = 0
+    let totalDays = 0
+
+    this.fertilizingDates.forEach((date, index) => {
+      if (index > 0 && moment().diff(date, 'months') < periodLength) {
+        totalDays += moment(this.fertilizingDates![index - 1]).diff(moment(date), 'days')
+        numIntervals++
+      }
+    })
+
+    return Math.round(totalDays / numIntervals)
+  }
+
   setName = (name: string): void => {
     this.name = name
   }
@@ -82,9 +129,42 @@ export class Plant {
 
   setFertilizingDates = (dates: string[]): void => {
     this.fertilizingDates = dates
+    console.log(this.fertilizingDates)
   }
 
   setCheckedDate = (date: string): void => {
     this.checkedDate = date
   }
+
+  modifyPlant = (eventType: PlantEventType, date?: string): void => {
+    const newDate = !!date ? date : moment().utc().format()
+    switch (eventType) {
+      case PlantEventType.CHECK:
+        this.setCheckedDate(moment().utc().format())
+        break
+      case PlantEventType.WATER:
+        console.log('water')
+        this.setWateringDates([newDate, ...this.wateringDates])
+        break
+      default:
+        console.log('fertilize')
+        this.setFertilizingDates([newDate, ...this.fertilizingDates])
+    }
+  }
 }
+
+decorate(Plant, {
+  name: observable,
+  wateringDates: observable,
+  fertilizingDates: observable,
+  checkedDate: observable,
+  lastWateredDate: computed,
+  lastFertilizedDate: computed,
+  daysSinceLastWatered: computed,
+  daysSinceLastFertilized: computed,
+  checkedToday: computed,
+  setName: action,
+  setWateringDates: action,
+  setFertilizingDates: action,
+  setCheckedDate: action,
+})
