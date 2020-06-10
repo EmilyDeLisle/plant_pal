@@ -1,0 +1,15 @@
+.plant-dialog__title-card {
+  width: calc(100% - 4em + 2px);
+  height: 10em;
+  background-color: lightGreen;
+  padding: 2em;
+  display: flex;
+}
+
+.plant-dialog__title-card-text {
+  flex-grow: 1;
+}
+
+.plant-dialog__title-card-close-button {
+  margin-top: -1em;
+}

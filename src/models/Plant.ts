@@ -5,15 +5,15 @@ const HOURS_IN_DAY = 24
 export class Plant {
   id: string
   name: string
-  wateringDates?: string[]
-  fertilizingDates?: string[]
+  wateringDates: string[] = []
+  fertilizingDates: string[] = []
   checkedDate?: string
 
   constructor(
     id: string,
     name: string,
-    wateringDates?: string[],
-    fertilizingDates?: string[],
+    wateringDates: string[] = [],
+    fertilizingDates: string[] = [],
     checkedDate?: string
   ) {
     this.id = id
@@ -24,13 +24,11 @@ export class Plant {
   }
 
   get lastWateredDate(): string | undefined {
-    return !!this.wateringDates && this.wateringDates.length > 0 ? this.wateringDates[0] : undefined
+    return this.wateringDates.length > 0 ? this.wateringDates[0] : undefined
   }
 
   get lastFertilizedDate(): string | undefined {
-    return !!this.fertilizingDates && this.fertilizingDates.length > 0
-      ? this.fertilizingDates[0]
-      : undefined
+    return this.fertilizingDates.length > 0 ? this.fertilizingDates[0] : undefined
   }
 
   get daysSinceLastWatered(): number | undefined {
@@ -55,6 +53,25 @@ export class Plant {
     )
   }
 
+  getAvgWateringInterval = (periodLength: number = 3): number | undefined => {
+    // if dates undefined or less than 2, can't calculate an interval & return undefined
+    if (!this.wateringDates || this.wateringDates.length < 2) {
+      return undefined
+    }
+
+    let numIntervals = 0
+    let totalDays = 0
+
+    this.wateringDates.forEach((date, index) => {
+      if (index > 0 && moment().diff(date, 'months') < periodLength) {
+        totalDays += moment(this.wateringDates![index - 1]).diff(moment(date), 'days')
+        numIntervals++
+      }
+    })
+
+    return Math.round(totalDays / numIntervals)
+  }
+
   setName = (name: string): void => {
     this.name = name
   }
@@ -69,24 +86,5 @@ export class Plant {
 
   setCheckedDate = (date: string): void => {
     this.checkedDate = date
-  }
-
-  getAvgWateringInterval = (periodLength: number = 90): number | undefined => {
-    // if dates undefined or less than 2, can't calculate an interval & return undefined
-    if (!this.wateringDates || this.wateringDates.length < 2) {
-      return undefined
-    }
-
-    let numIntervals = 0
-    let total = 0
-
-    this.wateringDates.forEach((date, index) => {
-      if (index > 0 && moment().diff(date, 'days') < periodLength) {
-        total += moment(this.wateringDates![index - 1]).diff(moment(date), 'days')
-        numIntervals++
-      }
-    })
-
-    return Math.round(total / numIntervals)
   }
 }
