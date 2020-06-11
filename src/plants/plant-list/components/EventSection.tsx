@@ -12,6 +12,7 @@ import MenuItem from '@material-ui/core/MenuItem'
 import Select from '@material-ui/core/Select'
 import Typography from '@material-ui/core/Typography'
 import { Plant, PlantEventType } from '../../../models'
+import { EventButton } from './EventButton'
 import { formatDate } from './plantHelpers'
 
 export interface EventSectionProps {
@@ -42,9 +43,10 @@ export const EventSection = observer(({ plant, eventType }: EventSectionProps) =
         <div className="event-section__contents">
           <div className="event-section__row">
             <Typography variant="h5">{isWater ? 'Water' : 'Fertilizer'}</Typography>
-            <Button color="primary" variant="contained" onClick={() => modifyPlant(eventType)}>{`${
+            <EventButton eventType={eventType} />
+            {/* <Button color="primary" variant="contained" onClick={() => modifyPlant(eventType)}>{`${
               isWater ? 'Water' : 'Fertilize'
-            } plant today`}</Button>
+            } plant today`}</Button> */}
           </div>
           <div className="event-section__dates">
             <Divider />
