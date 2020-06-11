@@ -5,32 +5,38 @@ import Radio from '@material-ui/core/Radio'
 import RadioGroup from '@material-ui/core/RadioGroup'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import FormControl from '@material-ui/core/FormControl'
-import FormLabel from '@material-ui/core/FormLabel'
-import Typography from '@material-ui/core/Typography'
 import { DatePicker } from '@material-ui/pickers'
 import { PlantEventType } from '../../../models'
+import { isToday } from '../../../utils'
 
 export interface EventButtonProps {
   eventType: PlantEventType
   modifyPlant: (eventType: PlantEventType, date?: string) => void
+  checkEventDateExists: (eventType: PlantEventType, date: Moment) => boolean
 }
 
-export const EventSectionPicker = ({ eventType, modifyPlant }: EventButtonProps) => {
+export const EventSectionPicker = ({
+  eventType,
+  modifyPlant,
+  checkEventDateExists,
+}: EventButtonProps) => {
   const action = eventType === PlantEventType.WATER ? 'Water' : 'Fertilize'
-  const [value, setValue] = React.useState('today')
-  const [selectedDate, handleDateChange] = useState<Moment | null>(moment())
+  const [dateMode, setDateMode] = React.useState('today')
+  const [selectedDate, setSelectedDate] = useState<Moment | null>(null)
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue((event.target as HTMLInputElement).value)
+    setDateMode((event.target as HTMLInputElement).value)
   }
 
   const handleModifyPlant = () => {
     const today = moment()
     const date =
-      value === 'today' || today.diff(selectedDate, 'days') < 1
+      dateMode === 'today' || today.diff(selectedDate, 'days') < 1
         ? today
         : selectedDate?.set({ h: 12, m: 0 })
     modifyPlant(eventType, date?.utc().format())
+    setDateMode('today')
+    setSelectedDate(null)
   }
 
   return (
@@ -42,20 +48,25 @@ export const EventSectionPicker = ({ eventType, modifyPlant }: EventButtonProps)
       >{`${action} plant`}</Button>
       <div className="event-section-picker__radio-group">
         <FormControl component="fieldset">
-          <RadioGroup name="gender1" value={value} onChange={handleChange} row>
+          <RadioGroup name="gender1" value={dateMode} onChange={handleChange} row>
             <FormControlLabel value="today" control={<Radio />} label="Today" />
             <FormControlLabel value="another" control={<Radio />} label="Another day" />
           </RadioGroup>
         </FormControl>
       </div>
-      {value === 'another' && (
+      {dateMode === 'another' && (
         <div className="event-section-picker__picker">
           <DatePicker
             disableFuture
+            variant='inline'
+            label="Pick a date"
             format="MMM D, YYYY"
             value={selectedDate}
-            onChange={handleDateChange}
+            onChange={setSelectedDate}
             animateYearScrolling
+            shouldDisableDate={(date: Moment | null) => {
+              return !!date && (checkEventDateExists(eventType, date) || isToday(date.format()))
+            }}
           />
         </div>
       )}

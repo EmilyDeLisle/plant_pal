@@ -9,5 +9,6 @@
 }
 
 .event-section-picker__picker {
-  max-width: 6em
+  max-width: 6em;
+  height: 100%;
 }
