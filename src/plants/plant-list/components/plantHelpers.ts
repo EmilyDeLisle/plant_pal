@@ -1,5 +1,16 @@
 import moment from 'moment'
 
+moment.locale('en', {
+  calendar : {
+      lastDay : '[Yesterday]',
+      sameDay : '[Today]',
+      nextDay : '[Tomorrow at] LT',
+      lastWeek : '[last] dddd [at] LT',
+      nextWeek : 'dddd [at] LT',
+      sameElse : 'L'
+  }
+});
+
 export const formatDate = (dateString: string | undefined): string => {
   const today = moment()
   if (!dateString) {

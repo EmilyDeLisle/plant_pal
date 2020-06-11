@@ -27,15 +27,7 @@ export interface PlantDialogProps {
 }
 
 export const PlantDialog = ({ open, handleClose, plant, modifyPlant }: PlantDialogProps) => {
-  const {
-    id,
-    name,
-    lastWateredDate,
-    lastFertilizedDate,
-    getAvgWateringInterval,
-    wateringDates,
-    fertilizingDates,
-  } = plant
+  const { name } = plant
   const classes = useStyles()
 
   return (

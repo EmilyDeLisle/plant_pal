@@ -12,7 +12,7 @@ import MenuItem from '@material-ui/core/MenuItem'
 import Select from '@material-ui/core/Select'
 import Typography from '@material-ui/core/Typography'
 import { Plant, PlantEventType } from '../../../models'
-import { EventButton } from './EventButton'
+import { EventSectionPicker } from './EventSectionPicker'
 import { formatDate } from './plantHelpers'
 
 export interface EventSectionProps {
@@ -34,7 +34,7 @@ export const EventSection = observer(({ plant, eventType }: EventSectionProps) =
   const { getLastEventDate, getEventDateList, getAvgInterval, modifyPlant } = plant
   const lastEventDate = getLastEventDate(eventType)
   const eventList = getEventDateList(eventType)
-  const avgInterval = getAvgInterval(period, eventType)
+  const avgInterval = getAvgInterval(eventType, period)
   const isWater = eventType === PlantEventType.WATER
 
   return (
@@ -43,15 +43,13 @@ export const EventSection = observer(({ plant, eventType }: EventSectionProps) =
         <div className="event-section__contents">
           <div className="event-section__row">
             <Typography variant="h5">{isWater ? 'Water' : 'Fertilizer'}</Typography>
-            <EventButton eventType={eventType} />
-            {/* <Button color="primary" variant="contained" onClick={() => modifyPlant(eventType)}>{`${
-              isWater ? 'Water' : 'Fertilize'
-            } plant today`}</Button> */}
+          </div>
+          <div className="event-section__row">
+            <EventSectionPicker eventType={eventType} modifyPlant={modifyPlant} />
           </div>
           <div className="event-section__dates">
             <Divider />
           </div>
-
           {!!avgInterval ? (
             <div className="event-section__row event-section__body">
               <Typography display="inline">

@@ -34,12 +34,12 @@ export const ListRow = observer(({ plant, handleOpen }: ListRowProps): ReactElem
     name,
     lastWateredDate,
     lastFertilizedDate,
-    getAvgWateringInterval,
+    getAvgInterval,
     toBeChecked,
     modifyPlant,
   } = plant
   const classes = useStyles()
-  const avgWateringInterval = getAvgWateringInterval()
+  const avgWateringInterval = getAvgInterval(PlantEventType.WATER)
   const { setSelectedPlant } = plantStore
 
   return (

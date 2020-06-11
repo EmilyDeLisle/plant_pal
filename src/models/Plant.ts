@@ -1,5 +1,6 @@
 import moment from 'moment'
 import { action, computed, decorate, observable } from 'mobx'
+import { compareDate } from '../utils'
 import { PlantEventType } from './PlantEventType'
 const HOURS_IN_DAY = 24
 
@@ -45,7 +46,7 @@ export class Plant {
   }
 
   get toBeChecked(): boolean {
-    const avgWateringInterval = this.getAvgWateringInterval()
+    const avgWateringInterval = this.getAvgInterval(PlantEventType.WATER)
     return (
       !!this.daysSinceLastWatered &&
       !!avgWateringInterval &&
@@ -62,11 +63,9 @@ export class Plant {
     return eventType === PlantEventType.FERTILIZE ? this.fertilizingDates : this.wateringDates
   }
 
-  getAvgInterval = (
-    periodLength: number = 3,
-    eventType: PlantEventType
-  ): number | undefined => {
-    const eventDates = eventType ===PlantEventType.WATER ? this.wateringDates : this.fertilizingDates
+  getAvgInterval = (eventType: PlantEventType, periodLength: number = 3): number | undefined => {
+    const eventDates =
+      eventType === PlantEventType.WATER ? this.wateringDates : this.fertilizingDates
     if (eventDates.length < 2) {
       return undefined
     }
@@ -78,44 +77,6 @@ export class Plant {
         numIntervals++
       }
     })
-    return Math.round(totalDays / numIntervals)
-  }
-
-  getAvgWateringInterval = (periodLength: number = 3): number | undefined => {
-    // if dates undefined or less than 2, can't calculate an interval & return undefined
-    if (!this.wateringDates || this.wateringDates.length < 2) {
-      return undefined
-    }
-
-    let numIntervals = 0
-    let totalDays = 0
-
-    this.wateringDates.forEach((date, index) => {
-      if (index > 0 && moment().diff(date, 'months') < periodLength) {
-        totalDays += moment(this.wateringDates![index - 1]).diff(moment(date), 'days')
-        numIntervals++
-      }
-    })
-
-    return Math.round(totalDays / numIntervals)
-  }
-
-  getAvgFertilizingInterval = (periodLength: number = 3): number | undefined => {
-    // if dates undefined or less than 2, can't calculate an interval & return undefined
-    if (!this.fertilizingDates || this.fertilizingDates.length < 2) {
-      return undefined
-    }
-
-    let numIntervals = 0
-    let totalDays = 0
-
-    this.fertilizingDates.forEach((date, index) => {
-      if (index > 0 && moment().diff(date, 'months') < periodLength) {
-        totalDays += moment(this.fertilizingDates![index - 1]).diff(moment(date), 'days')
-        numIntervals++
-      }
-    })
-
     return Math.round(totalDays / numIntervals)
   }
 
@@ -137,18 +98,17 @@ export class Plant {
   }
 
   modifyPlant = (eventType: PlantEventType, date?: string): void => {
-    const newDate = !!date ? date : moment().utc().format()
+    const today = moment().utc().format()
+    const newDate = !!date ? date : today
     switch (eventType) {
       case PlantEventType.CHECK:
-        this.setCheckedDate(moment().utc().format())
+        this.setCheckedDate(today)
         break
-      case PlantEventType.WATER:
-        console.log('water')
-        this.setWateringDates([newDate, ...this.wateringDates])
+      case PlantEventType.FERTILIZE:
+        this.setFertilizingDates([newDate, ...this.fertilizingDates])
         break
       default:
-        console.log('fertilize')
-        this.setFertilizingDates([newDate, ...this.fertilizingDates])
+        this.setWateringDates([newDate, ...this.wateringDates])
     }
   }
 }

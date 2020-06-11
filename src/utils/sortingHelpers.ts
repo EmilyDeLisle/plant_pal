@@ -1,7 +1,7 @@
 import moment from 'moment'
-import { Plant, SortingMode, SortingDirection } from '../models'
+import { Plant, PlantEventType, SortingMode, SortingDirection } from '../models'
 
-const compare = (a: string | number | undefined, b: string | number | undefined): number => {
+export const compare = (a: string | number | undefined, b: string | number | undefined): number => {
   // if one value is undefined but the other is not, place the undefined value first
   if (!b && !!a) {
     return -1
@@ -20,7 +20,7 @@ const compare = (a: string | number | undefined, b: string | number | undefined)
   return 0
 }
 
-const compareDate = (a: string | undefined, b: string | undefined): number => {
+export const compareDate = (a: string | undefined, b: string | undefined): number => {
   const mostRecentDateA = !!a ? moment(a) : undefined
   const mostRecentDateB = !!b ? moment(b) : undefined
   // if one value is undefined but the other is not, place the undefined value first
@@ -42,14 +42,14 @@ const compareDate = (a: string | undefined, b: string | undefined): number => {
   return 0
 }
 
-const descendingComparator = (a: Plant, b: Plant, orderBy: SortingMode): number => {
+export const descendingComparator = (a: Plant, b: Plant, orderBy: SortingMode): number => {
   switch (orderBy) {
     case SortingMode.WATER:
       return compareDate(a.lastWateredDate, b.lastWateredDate)
     case SortingMode.FERTILIZE:
       return compareDate(a.lastFertilizedDate, b.lastFertilizedDate)
     case SortingMode.INTERVAL:
-      return compare(a.getAvgWateringInterval(), b.getAvgWateringInterval())
+      return compare(a.getAvgInterval(PlantEventType.WATER), b.getAvgInterval(PlantEventType.WATER))
     default:
       return compare(a.name, b.name)
   }
