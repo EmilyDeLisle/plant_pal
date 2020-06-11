@@ -1,7 +1,7 @@
 import { observable, computed, action, decorate } from 'mobx'
 import moment from 'moment'
 import { Plant, PlantMap, PlantEventType, SortingMode, SortingDirection } from '../models'
-import { getComparator } from './sortingHelpers'
+import { getComparator } from '../utils'
 
 class PlantStore {
   plants: PlantMap = {}

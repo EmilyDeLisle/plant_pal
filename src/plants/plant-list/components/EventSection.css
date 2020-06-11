@@ -19,3 +19,8 @@
 .event-section__dates {
   margin: 0.5em 0;
 }
+
+.MuiExpansionPanelDetails-root {
+  max-height: 5em;
+  overflow: scroll;
+}

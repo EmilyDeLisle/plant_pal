@@ -1,8 +1,11 @@
 import React, { ReactElement, useState } from 'react'
 import { inject, observer } from 'mobx-react'
 import { RouteComponentProps } from '@reach/router'
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import MomentUtils from '@date-io/moment';
 import { PlantList, TopNavNar, PlantDialog } from './plant-list'
 import { plantStore } from '../injectables'
+
 
 export const Plants = inject('plantStore')(
   observer(
@@ -10,7 +13,7 @@ export const Plants = inject('plantStore')(
       const [dialogOpen, setDialogOpen] = useState(false)
       const { plantsToWaterList, plantsRemainingList, selectedPlant, modifyPlant } = plantStore
       return (
-        <>
+        <MuiPickersUtilsProvider utils={MomentUtils}>
           <TopNavNar />
           <div className="plants__container">
             {plantsToWaterList.length > 0 && (
@@ -28,7 +31,7 @@ export const Plants = inject('plantStore')(
               modifyPlant={modifyPlant}
             />
           )}
-        </>
+        </MuiPickersUtilsProvider>
       )
     }
   )
