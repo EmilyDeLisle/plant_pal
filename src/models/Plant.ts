@@ -1,6 +1,6 @@
-import moment from 'moment'
+import moment, { Moment } from 'moment'
 import { action, computed, decorate, observable } from 'mobx'
-import { compareDate } from '../utils'
+import { isToday, compareDate } from '../utils'
 import { PlantEventType } from './PlantEventType'
 const HOURS_IN_DAY = 24
 
@@ -64,8 +64,7 @@ export class Plant {
   }
 
   getAvgInterval = (eventType: PlantEventType, periodLength: number = 3): number | undefined => {
-    const eventDates =
-      eventType === PlantEventType.WATER ? this.wateringDates : this.fertilizingDates
+    const eventDates = this.getEventDateList(eventType)
     if (eventDates.length < 2) {
       return undefined
     }
@@ -78,6 +77,17 @@ export class Plant {
       }
     })
     return Math.round(totalDays / numIntervals)
+  }
+
+  checkEventDateExists = (eventType: PlantEventType, newDate: Moment): boolean => {
+    const eventDates = this.getEventDateList(eventType)
+    let disableDate = false
+    eventDates.forEach((date) => {
+      if (!!date && newDate.isSame(moment(date), 'days')) {
+        disableDate = true
+      }
+    })
+    return disableDate
   }
 
   setName = (name: string): void => {
@@ -98,17 +108,21 @@ export class Plant {
   }
 
   modifyPlant = (eventType: PlantEventType, date?: string): void => {
-    const today = moment().utc().format()
-    const newDate = !!date ? date : today
+    const today = moment()
+    const newDate = !!date ? date : today.utc().format()
     switch (eventType) {
       case PlantEventType.CHECK:
-        this.setCheckedDate(today)
+        this.setCheckedDate(today.utc().format())
         break
       case PlantEventType.FERTILIZE:
-        this.setFertilizingDates([newDate, ...this.fertilizingDates])
+        if (!(!!this.lastFertilizedDate && isToday(this.lastFertilizedDate) && isToday(newDate))) {
+          this.setFertilizingDates([newDate, ...this.fertilizingDates].sort(compareDate))
+        }
         break
       default:
-        this.setWateringDates([newDate, ...this.wateringDates])
+        if (!(!!this.lastWateredDate && isToday(this.lastWateredDate) && isToday(newDate))) {
+          this.setWateringDates([newDate, ...this.wateringDates].sort(compareDate))
+        }
     }
   }
 }

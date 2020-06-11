@@ -31,7 +31,13 @@ const periodOptions = [
 
 export const EventSection = observer(({ plant, eventType }: EventSectionProps) => {
   const [period, setPeriod] = useState(3)
-  const { getLastEventDate, getEventDateList, getAvgInterval, modifyPlant } = plant
+  const {
+    getLastEventDate,
+    getEventDateList,
+    checkEventDateExists,
+    getAvgInterval,
+    modifyPlant,
+  } = plant
   const lastEventDate = getLastEventDate(eventType)
   const eventList = getEventDateList(eventType)
   const avgInterval = getAvgInterval(eventType, period)
@@ -45,7 +51,11 @@ export const EventSection = observer(({ plant, eventType }: EventSectionProps) =
             <Typography variant="h5">{isWater ? 'Water' : 'Fertilizer'}</Typography>
           </div>
           <div className="event-section__row">
-            <EventSectionPicker eventType={eventType} modifyPlant={modifyPlant} />
+            <EventSectionPicker
+              eventType={eventType}
+              modifyPlant={modifyPlant}
+              checkEventDateExists={checkEventDateExists}
+            />
           </div>
           <div className="event-section__dates">
             <Divider />
