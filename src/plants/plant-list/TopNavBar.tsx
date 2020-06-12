@@ -14,9 +14,10 @@ export const TopNavNar = inject('plantStore')(
       <AppBar position="static">
         <div className="top-nav-bar__contents">
           <div className="top-nav-bar__section top-nav-bar__top">
-            <Typography variant="h6">Plant Pal</Typography>
+            <Typography variant="h6">PLAPP</Typography>
           </div>
           <div className="top-nav-bar__section top-nav-bar__bottom">
+            <Typography color="textPrimary">Sort by: </Typography>
             <div className="top-nav-bar__buttons">
               <SortingButton
                 selected={sortingMode === SortingMode.NAME}
