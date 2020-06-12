@@ -59,21 +59,24 @@ export class Plant {
     return eventType === PlantEventType.FERTILIZE ? this.lastFertilizedDate : this.lastWateredDate
   }
 
-  getEventDateList = (eventType: PlantEventType): string[] => {
-    return eventType === PlantEventType.FERTILIZE ? this.fertilizingDates : this.wateringDates
+  getEventDateList = (eventType: PlantEventType, periodLength?: number): string[] => {
+    const eventDates =
+      eventType === PlantEventType.FERTILIZE ? this.fertilizingDates : this.wateringDates
+    return !!periodLength
+      ? eventDates.filter((date) => moment().diff(date, 'months') < periodLength)
+      : eventDates
   }
 
   getAvgInterval = (eventType: PlantEventType, periodLength: number = 3): number | undefined => {
-    const eventDates = this.getEventDateList(eventType)
+    const eventDates = this.getEventDateList(eventType, periodLength)
     if (eventDates.length < 2) {
       return undefined
     }
-    let numIntervals = 0
+    let numIntervals = eventDates.length - 1
     let totalDays = 0
     eventDates.forEach((date, index) => {
-      if (index > 0 && moment().diff(date, 'months') < periodLength) {
+      if (index > 0) {
         totalDays += moment(eventDates![index - 1]).diff(moment(date), 'days')
-        numIntervals++
       }
     })
     return Math.round(totalDays / numIntervals)
@@ -100,7 +103,6 @@ export class Plant {
 
   setFertilizingDates = (dates: string[]): void => {
     this.fertilizingDates = dates
-    console.log(this.fertilizingDates)
   }
 
   setCheckedDate = (date: string): void => {

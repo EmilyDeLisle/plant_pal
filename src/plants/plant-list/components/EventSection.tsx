@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { observer } from 'mobx-react'
 import moment from 'moment'
-import Button from '@material-ui/core/Button'
 import Card from '@material-ui/core/Card'
 import Divider from '@material-ui/core/Divider'
 import ExpansionPanel from '@material-ui/core/ExpansionPanel'
@@ -39,7 +38,7 @@ export const EventSection = observer(({ plant, eventType }: EventSectionProps) =
     modifyPlant,
   } = plant
   const lastEventDate = getLastEventDate(eventType)
-  const eventList = getEventDateList(eventType)
+  const eventList = getEventDateList(eventType, period)
   const avgInterval = getAvgInterval(eventType, period)
   const isWater = eventType === PlantEventType.WATER
 
@@ -90,7 +89,9 @@ export const EventSection = observer(({ plant, eventType }: EventSectionProps) =
             <div className="event-section__dates">
               <ExpansionPanel>
                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography>{`${isWater ? 'Watering' : 'Fertilizing'} events`}</Typography>
+                  <Typography>{`${isWater ? 'Watering' : 'Fertilizing'} events (${
+                    eventList.length
+                  })`}</Typography>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                   <div>
