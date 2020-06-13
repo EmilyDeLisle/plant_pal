@@ -1,4 +1,5 @@
 export * from './Map'
 export * from './Plant'
+export * from './PlantDialogMode'
 export * from './PlantEventType'
 export * from './Sorting'

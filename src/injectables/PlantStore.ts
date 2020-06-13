@@ -1,6 +1,6 @@
 import { observable, computed, action, decorate } from 'mobx'
 import moment from 'moment'
-import { Plant, PlantMap, PlantEventType, SortingMode, SortingDirection } from '../models'
+import { Plant, PlantDialogMode, PlantMap, SortingMode, SortingDirection } from '../models'
 import { getComparator } from '../utils'
 
 class PlantStore {
@@ -8,6 +8,7 @@ class PlantStore {
   selectedPlant: Plant | undefined = undefined
   sortingMode: SortingMode = SortingMode.WATER
   sortingDirection: SortingDirection = SortingDirection.ASC
+  dialogMode: PlantDialogMode = PlantDialogMode.VIEW
 
   get plantList() {
     return Object.values(this.plants).sort(getComparator(this.sortingDirection, this.sortingMode))
@@ -37,6 +38,10 @@ class PlantStore {
 
   setSortingDirection = (sortingDirection: SortingDirection): void => {
     this.sortingDirection = sortingDirection
+  }
+
+  setDialogMode = (dialogMode: PlantDialogMode): void => {
+    this.dialogMode = dialogMode
   }
 }
 
