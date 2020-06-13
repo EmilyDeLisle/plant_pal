@@ -33,24 +33,24 @@ export const compare = (a: string | number | undefined, b: string | number | und
  * @return ordering value (-1, 0, or 1)
  */
 export const compareDate = (a: string | undefined, b: string | undefined): number => {
-  const mostRecentDateA = !!a ? moment(a) : undefined
-  const mostRecentDateB = !!b ? moment(b) : undefined
+  const dateA = !!a ? moment(a) : undefined
+  const dateB = !!b ? moment(b) : undefined
   // if one value is undefined but the other is not, place the undefined value first
-  if (!mostRecentDateB && !!mostRecentDateA) {
+  if (!dateB && !!dateA) {
     return -1
   }
-  if (!mostRecentDateA && !!mostRecentDateB) {
+  if (!dateA && !!dateB) {
     return 1
   }
 
-  if (!!mostRecentDateA && !!mostRecentDateB) {
-    if (mostRecentDateB.isBefore(mostRecentDateA, 'day')) {
+  if (!!dateA && !!dateB) {
+    if (dateB.isBefore(dateA, 'date')) {
       return -1
     }
-    if (mostRecentDateB.isAfter(mostRecentDateB, 'day')) {
+    if (dateB.isAfter(dateA, 'date')) {
       return 1
     }
-    if (mostRecentDateB.isSame(mostRecentDateB, 'day')) {
+    if (dateB === dateB) {
       return 0
     }
   }

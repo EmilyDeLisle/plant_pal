@@ -118,12 +118,12 @@ export class Plant {
         break
       case PlantEventType.FERTILIZE:
         if (!(!!this.lastFertilizedDate && isToday(this.lastFertilizedDate) && isToday(newDate))) {
-          this.setFertilizingDates([newDate, ...this.fertilizingDates].sort(compareDate))
+          this.setFertilizingDates([newDate, ...this.fertilizingDates].sort((a, b) => -compareDate(a, b)))
         }
         break
       default:
         if (!(!!this.lastWateredDate && isToday(this.lastWateredDate) && isToday(newDate))) {
-          this.setWateringDates([newDate, ...this.wateringDates].sort(compareDate))
+          this.setWateringDates([newDate, ...this.wateringDates].sort((a, b) => -compareDate(a, b)))
         }
     }
   }

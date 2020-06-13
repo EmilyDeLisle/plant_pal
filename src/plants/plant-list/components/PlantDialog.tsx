@@ -23,10 +23,9 @@ export interface PlantDialogProps {
   open: boolean
   handleClose: () => void
   plant: Plant
-  modifyPlant: (plantID: string, eventType: PlantEventType, date?: string) => void
 }
 
-export const PlantDialog = ({ open, handleClose, plant, modifyPlant }: PlantDialogProps) => {
+export const PlantDialog = ({ open, handleClose, plant }: PlantDialogProps) => {
   const { name } = plant
   const classes = useStyles()
 

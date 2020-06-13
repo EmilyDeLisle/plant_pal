@@ -10,16 +10,17 @@ class PlantStore {
   sortingDirection: SortingDirection = SortingDirection.ASC
 
   get plantList() {
-    const list = Object.values(this.plants)
-    return list.sort(getComparator(this.sortingDirection, this.sortingMode))
+    return Object.values(this.plants).sort(getComparator(this.sortingDirection, this.sortingMode))
   }
 
   get plantsToWaterList() {
-    return this.plantList.filter((plant) => plant.toBeChecked)
+    return this.plantList
+      .filter((plant) => plant.toBeChecked)
   }
 
   get plantsRemainingList() {
-    return this.plantList.filter((plant) => !this.plantsToWaterList.includes(plant))
+    return this.plantList
+      .filter((plant) => !plant.toBeChecked)
   }
 
   setPlants = (plants: PlantMap): void => {
@@ -37,30 +38,6 @@ class PlantStore {
   setSortingDirection = (sortingDirection: SortingDirection): void => {
     this.sortingDirection = sortingDirection
   }
-
-  modifyPlant = (plantID: string, eventType: PlantEventType, date?: string): void => {
-    const plant: Plant = this.plants[plantID]
-    const { id, name, wateringDates, fertilizingDates, checkedDate } = plant
-    const newDate = !!date ? date : moment().utc().format()
-    let newPlant
-    switch (eventType) {
-      case PlantEventType.CHECK:
-        newPlant = new Plant(id, name, wateringDates, fertilizingDates, moment().utc().format())
-        break
-      case PlantEventType.FERTILIZE:
-        const newFertilizingDates = !!plant.fertilizingDates
-          ? [newDate, ...plant.fertilizingDates]
-          : [newDate]
-        newPlant = new Plant(id, name, wateringDates, newFertilizingDates, checkedDate)
-        break
-      default:
-        const newWateringDates = !!plant.wateringDates
-          ? [newDate, ...plant.wateringDates]
-          : [newDate]
-        newPlant = new Plant(id, name, newWateringDates, fertilizingDates, checkedDate)
-    }
-    this.plants[plantID] = newPlant
-  }
 }
 
 decorate(PlantStore, {
@@ -73,7 +50,6 @@ decorate(PlantStore, {
   setSelectedPlant: action,
   setSortingMode: action,
   setSortingDirection: action,
-  modifyPlant: action,
 })
 
 export interface PlantStoreProps {
@@ -91,7 +67,6 @@ const test_plants = {
       '2020-06-07T21:36:41Z',
       '2020-05-29T21:36:41Z',
       '2020-05-22T21:36:41Z',
-      '2020-03-25T21:36:41Z',
     ],
     ['2020-06-01T21:36:41Z'],
     '2020-06-05T21:36:41Z'
@@ -102,7 +77,7 @@ const test_plants = {
     ['2020-06-01T21:36:41Z', '2020-05-29T21:36:41Z'],
     ['2020-06-01T21:36:41Z']
   ),
-  '125': new Plant('125', 'Peeb', [], []),
+  '125': new Plant('125', 'Peeb'),
 }
 
 plantStore.setPlants(test_plants)
