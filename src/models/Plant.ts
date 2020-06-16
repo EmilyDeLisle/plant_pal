@@ -7,6 +7,7 @@ const HOURS_IN_DAY = 24
 export class Plant {
   id: string
   name: string
+  altName?: string
   wateringDates: string[] = []
   fertilizingDates: string[] = []
   checkedDate?: string
@@ -14,12 +15,14 @@ export class Plant {
   constructor(
     id: string,
     name: string,
+    altName?: string,
     wateringDates: string[] = [],
     fertilizingDates: string[] = [],
     checkedDate?: string
   ) {
     this.id = id
     this.name = name
+    this.altName = altName
     this.wateringDates = wateringDates
     this.fertilizingDates = fertilizingDates
     this.checkedDate = checkedDate
@@ -95,6 +98,10 @@ export class Plant {
 
   setName = (name: string): void => {
     this.name = name
+  }
+
+  setAltName = (altName: string): void => {
+    this.altName = altName
   }
 
   setWateringDates = (dates: string[]): void => {

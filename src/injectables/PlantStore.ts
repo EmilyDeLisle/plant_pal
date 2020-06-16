@@ -43,6 +43,12 @@ class PlantStore {
   setDialogMode = (dialogMode: PlantDialogMode): void => {
     this.dialogMode = dialogMode
   }
+
+  addPlant = (plant: Plant): void => {
+    let newPlants = { ...this.plants}
+    newPlants[plant.id] = plant
+    this.setPlants(newPlants)
+  }
 }
 
 decorate(PlantStore, {
@@ -68,6 +74,7 @@ const test_plants = {
   '123': new Plant(
     '123',
     'Plant Fren',
+    'Plantius friendius',
     [
       '2020-06-07T21:36:41Z',
       '2020-05-29T21:36:41Z',
@@ -79,6 +86,7 @@ const test_plants = {
   '124': new Plant(
     '124',
     'Planty Boi',
+    'bedroom',
     ['2020-06-01T21:36:41Z', '2020-05-29T21:36:41Z'],
     ['2020-06-01T21:36:41Z']
   ),
