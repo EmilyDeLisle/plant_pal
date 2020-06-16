@@ -1,3 +1,5 @@
 .plants__container {
   margin: 4em 5% 0 5%;
+  display: relative;
+  height: 65vh;
 }

@@ -7,6 +7,7 @@ const HOURS_IN_DAY = 24
 export class Plant {
   id: string
   name: string
+  altName?: string
   wateringDates: string[] = []
   fertilizingDates: string[] = []
   checkedDate?: string
@@ -14,12 +15,14 @@ export class Plant {
   constructor(
     id: string,
     name: string,
+    altName?: string,
     wateringDates: string[] = [],
     fertilizingDates: string[] = [],
     checkedDate?: string
   ) {
     this.id = id
     this.name = name
+    this.altName = altName
     this.wateringDates = wateringDates
     this.fertilizingDates = fertilizingDates
     this.checkedDate = checkedDate
@@ -97,6 +100,10 @@ export class Plant {
     this.name = name
   }
 
+  setAltName = (altName: string): void => {
+    this.altName = altName
+  }
+
   setWateringDates = (dates: string[]): void => {
     this.wateringDates = dates
   }
@@ -118,12 +125,12 @@ export class Plant {
         break
       case PlantEventType.FERTILIZE:
         if (!(!!this.lastFertilizedDate && isToday(this.lastFertilizedDate) && isToday(newDate))) {
-          this.setFertilizingDates([newDate, ...this.fertilizingDates].sort(compareDate))
+          this.setFertilizingDates([newDate, ...this.fertilizingDates].sort((a, b) => compareDate(a, b)))
         }
         break
       default:
         if (!(!!this.lastWateredDate && isToday(this.lastWateredDate) && isToday(newDate))) {
-          this.setWateringDates([newDate, ...this.wateringDates].sort(compareDate))
+          this.setWateringDates([newDate, ...this.wateringDates].sort((a, b) => compareDate(a, b)))
         }
     }
   }

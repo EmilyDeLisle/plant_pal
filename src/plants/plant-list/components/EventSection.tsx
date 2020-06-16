@@ -96,7 +96,7 @@ export const EventSection = observer(({ plant, eventType }: EventSectionProps) =
                 <ExpansionPanelDetails>
                   <div>
                     {eventList.map((date) => (
-                      <Typography variant="body2" color="textSecondary">
+                      <Typography key={date} variant="body2" color="textSecondary">
                         {moment(date).format('MMM D, YYYY')}
                       </Typography>
                     ))}

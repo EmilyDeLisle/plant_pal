@@ -1,12 +1,8 @@
 import React from 'react'
-import CloseIcon from '@material-ui/icons/Close'
 import Dialog from '@material-ui/core/Dialog'
-import DialogContent from '@material-ui/core/DialogContent'
-import IconButton from '@material-ui/core/IconButton'
-import Typography from '@material-ui/core/Typography'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
-import { Plant, PlantEventType } from '../../../models'
-import { EventSection } from './EventSection'
+import { Plant, PlantDialogMode } from '../../../models'
+import { PlantDialogContentAdd, PlantDialogContentView } from './PlantDialogContent'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -22,33 +18,20 @@ const useStyles = makeStyles((theme: Theme) =>
 export interface PlantDialogProps {
   open: boolean
   handleClose: () => void
-  plant: Plant
-  modifyPlant: (plantID: string, eventType: PlantEventType, date?: string) => void
+  plant?: Plant
+  dialogMode: PlantDialogMode
 }
 
-export const PlantDialog = ({ open, handleClose, plant, modifyPlant }: PlantDialogProps) => {
-  const { name } = plant
+export const PlantDialog = ({ open, handleClose, plant, dialogMode }: PlantDialogProps) => {
   const classes = useStyles()
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <div className={`${classes.titleCard} plant-dialog__title-card`}>
-        <div className="plant-dialog__title-card-text">
-          <Typography className={classes.titleText} variant="h4">
-            {name}
-          </Typography>
-          <Typography className={classes.titleText}>Plant alternate name</Typography>
-        </div>
-        <div className="plant-dialog__title-card-close-button">
-          <IconButton color="inherit" edge="end" onClick={handleClose}>
-            <CloseIcon />
-          </IconButton>
-        </div>
-      </div>
-      <DialogContent>
-        <EventSection plant={plant} eventType={PlantEventType.WATER} />
-        <EventSection plant={plant} eventType={PlantEventType.FERTILIZE} />
-      </DialogContent>
+      {dialogMode === PlantDialogMode.VIEW && !!plant ? (
+        <PlantDialogContentView plant={plant} classes={classes} handleClose={handleClose} />
+      ) : (
+        <PlantDialogContentAdd classes={classes} handleClose={handleClose} />
+      )}
     </Dialog>
   )
 }
