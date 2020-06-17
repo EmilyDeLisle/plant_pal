@@ -1,13 +1,14 @@
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import { inject, observer } from 'mobx-react'
 import { RouteComponentProps } from '@reach/router'
 import Fab from '@material-ui/core/Fab'
 import AddIcon from '@material-ui/icons/Add'
 import Tooltip from '@material-ui/core/Tooltip'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
+import { getDatabase } from '../firebase'
 import { PlantList, TopNavNar, PlantDialog } from './plant-list'
 import { plantStore } from '../injectables'
-import { PlantDialogMode } from '../models'
+import { PlantDialogMode, PlantMap } from '../models'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
