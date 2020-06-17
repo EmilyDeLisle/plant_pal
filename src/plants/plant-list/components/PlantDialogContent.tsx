@@ -9,8 +9,9 @@ import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 import { Moment } from 'moment'
 import { DatePicker } from '@material-ui/pickers'
-import { Plant, PlantEventType } from '../../../models'
+import { Plant, PlantEventType, PlantModel } from '../../../models'
 import { plantStore } from '../../../injectables'
+import { getDatabase } from '../../../firebase'
 import { EventSection } from './EventSection'
 
 export interface PlantDialogContentProps {
@@ -54,11 +55,20 @@ export const PlantDialogContentAdd = ({ handleClose, classes }: PlantDialogConte
       setErrorState(true)
     } else {
       setErrorState(false)
-      const wateredDate = lastWateredDate ? [lastWateredDate.utc().format()] : undefined
-      const fertilizedDate = lastFertilizedDate ? [lastFertilizedDate.utc().format()] : undefined
-      addPlant(new Plant(randomID, name, altName, wateredDate, fertilizedDate))
-      handleClose()
-      setValues(initialValues)
+      const plant: PlantModel = {
+        name: name,
+        altName: altName,
+        wateringDates: lastWateredDate ? [lastWateredDate.utc().format()] : [],
+        fertilizingDates: lastFertilizedDate ? [lastFertilizedDate.utc().format()] : [],
+        lastCheckedDate: '',
+      }
+      // addPlant(new Plant(randomID, name, altName, wateredDate, fertilizedDate))
+      const db = getDatabase()
+      db.addPlant(plant, () => {
+        console.log('Plant added successfully')
+        handleClose()
+        setValues(initialValues)
+      })
     }
   }
 

@@ -53,4 +53,9 @@ export default class DatabaseManager {
       .then(onSuccess)
       .catch(onError)
   }
+
+  addPlant = (plant: any, onSuccess?: Function, onError?: Function): void => {
+    let docRef = this.db.collection('users/test-user/plants').doc()
+    docRef.set({...plant, id: docRef.id}).then(onSuccess).catch(onError)
+  }
 }

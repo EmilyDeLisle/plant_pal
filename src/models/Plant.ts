@@ -7,12 +7,12 @@ import { PlantEventType } from './PlantEventType'
 const HOURS_IN_DAY = 24
 
 export interface PlantModel {
-  id: string
+  id?: string
   name: string
   altName: string
   wateringDates: string[]
   fertilizingDates: string[]
-  lastCheckedDate: string
+  lastCheckedDate?: string
 }
 
 export class Plant {
