@@ -8,10 +8,9 @@ import IconButton from '@material-ui/core/IconButton'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 import { Moment } from 'moment'
-import firebase from 'firebase'
+import { firestore } from 'firebase'
 import { DatePicker } from '@material-ui/pickers'
-import { Plant, PlantEventType, PlantModel } from '../../../models'
-import { plantStore } from '../../../injectables'
+import { Plant, PlantEventType, PlantValues } from '../../../models'
 import { getDatabase } from '../../../firebase'
 import { EventSection } from './EventSection'
 
@@ -49,21 +48,22 @@ export const PlantDialogContentAdd = ({ handleClose, classes }: PlantDialogConte
   }
 
   const handleSubmit = (values: FormValues) => {
-    const { addPlant } = plantStore
-    const randomID = String(Math.round(Math.random() * 1000))
     const { name, altName, lastWateredDate, lastFertilizedDate } = values
     if (!name) {
       setErrorState(true)
     } else {
       setErrorState(false)
-      const plant: PlantModel = {
+      const plant: PlantValues = {
         name: name,
         altName: altName,
-        wateringDates: lastWateredDate ? [lastWateredDate.utc().format()] : [],
-        fertilizingDates: lastFertilizedDate ? [lastFertilizedDate.utc().format()] : [],
-        lastCheckedDate: '',
+        wateringDates: lastWateredDate
+          ? [firestore.Timestamp.fromDate(lastWateredDate.toDate())]
+          : [],
+        fertilizingDates: lastFertilizedDate
+          ? [firestore.Timestamp.fromDate(lastFertilizedDate.toDate())]
+          : [],
+        lastCheckedDate: null,
       }
-      // addPlant(new Plant(randomID, name, altName, wateredDate, fertilizedDate))
       const db = getDatabase()
       db.addPlant(plant, () => {
         console.log('Plant added successfully')
@@ -148,7 +148,16 @@ export const PlantDialogContentView = ({
   classes,
   handleClose,
 }: PlantDialogContentViewProps) => {
-  const { name, altName } = plant
+  const {
+    altName,
+    name,
+    fertilizingDates,
+    fertilizingIntervals,
+    lastFertilizedDate,
+    lastWateredDate,
+    wateringDates,
+    wateringIntervals,
+  } = plant
 
   return (
     <>
@@ -166,8 +175,18 @@ export const PlantDialogContentView = ({
         </div>
       </div>
       <DialogContent>
-        <EventSection plant={plant} eventType={PlantEventType.WATER} />
-        <EventSection plant={plant} eventType={PlantEventType.FERTILIZE} />
+        <EventSection
+          eventList={wateringDates}
+          eventType={PlantEventType.WATER}
+          intervals={wateringIntervals}
+          lastEventDate={lastWateredDate}
+        />
+        <EventSection
+          eventList={fertilizingDates}
+          eventType={PlantEventType.FERTILIZE}
+          intervals={fertilizingIntervals}
+          lastEventDate={lastFertilizedDate}
+        />
       </DialogContent>
     </>
   )

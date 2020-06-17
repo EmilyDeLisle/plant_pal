@@ -1,7 +1,7 @@
 import * as moment from 'moment'
 import { firestore } from 'firebase'
 
-interface IntervalMap {
+export interface IntervalMap {
   [key: number]: number | null
 }
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { observer } from 'mobx-react'
 import moment from 'moment'
+import { firestore } from 'firebase'
 import Card from '@material-ui/core/Card'
 import Divider from '@material-ui/core/Divider'
 import ExpansionPanel from '@material-ui/core/ExpansionPanel'
@@ -10,13 +11,15 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import MenuItem from '@material-ui/core/MenuItem'
 import Select from '@material-ui/core/Select'
 import Typography from '@material-ui/core/Typography'
-import { Plant, PlantEventType } from '../../../models'
+import { IntervalMap, PlantEventType } from '../../../models'
 import { EventSectionPicker } from './EventSectionPicker'
 import { formatDate } from './plantHelpers'
 
 export interface EventSectionProps {
-  plant: Plant
+  eventList: firestore.Timestamp[]
   eventType: PlantEventType.WATER | PlantEventType.FERTILIZE
+  intervals: IntervalMap
+  lastEventDate: firestore.Timestamp | null
 }
 
 const periodOptions = [
@@ -28,18 +31,9 @@ const periodOptions = [
   { value: Infinity, label: 'All time' },
 ]
 
-export const EventSection = observer(({ plant, eventType }: EventSectionProps) => {
+export const EventSection = observer(({ eventType, eventList, intervals, lastEventDate }: EventSectionProps) => {
   const [period, setPeriod] = useState(3)
-  const {
-    getLastEventDate,
-    getEventDateList,
-    checkEventDateExists,
-    getAvgInterval,
-    modifyPlant,
-  } = plant
-  const lastEventDate = getLastEventDate(eventType)
-  const eventList = getEventDateList(eventType, period)
-  const avgInterval = getAvgInterval(eventType, period)
+  const avgInterval = intervals[period]
   const isWater = eventType === PlantEventType.WATER
 
   return (
@@ -51,9 +45,8 @@ export const EventSection = observer(({ plant, eventType }: EventSectionProps) =
           </div>
           <div className="event-section__row">
             <EventSectionPicker
+              eventList={eventList}
               eventType={eventType}
-              modifyPlant={modifyPlant}
-              checkEventDateExists={checkEventDateExists}
             />
           </div>
           <div className="event-section__dates">
@@ -96,7 +89,7 @@ export const EventSection = observer(({ plant, eventType }: EventSectionProps) =
                 <ExpansionPanelDetails>
                   <div>
                     {eventList.map((date) => (
-                      <Typography key={date} variant="body2" color="textSecondary">
+                      <Typography key={date.nanoseconds} variant="body2" color="textSecondary">
                         {moment(date).format('MMM D, YYYY')}
                       </Typography>
                     ))}

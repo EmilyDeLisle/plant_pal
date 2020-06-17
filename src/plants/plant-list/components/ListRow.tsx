@@ -34,12 +34,10 @@ export const ListRow = observer(({ plant, handleOpen }: ListRowProps): ReactElem
     name,
     lastWateredDate,
     lastFertilizedDate,
-    getAvgInterval,
-    toBeChecked,
-    modifyPlant,
+    wateringIntervals
   } = plant
   const classes = useStyles()
-  const avgWateringInterval = getAvgInterval(PlantEventType.WATER)
+  const avgWateringInterval = wateringIntervals[3]
   const { setSelectedPlant } = plantStore
 
   return (
@@ -48,6 +46,7 @@ export const ListRow = observer(({ plant, handleOpen }: ListRowProps): ReactElem
       onClick={() => {
         setSelectedPlant(id)
         handleOpen()
+        console.log(id)
       }}
     >
       <Card>
@@ -67,12 +66,12 @@ export const ListRow = observer(({ plant, handleOpen }: ListRowProps): ReactElem
             </Typography>
           </div>
           <div className="plant-list-row__buttons">
-            {toBeChecked && (
+            {true && (
               <Tooltip title="Water not needed today">
                 <IconButton
                   onClick={(event) => {
                     event.stopPropagation()
-                    modifyPlant(PlantEventType.CHECK)
+                    // modifyPlant(PlantEventType.CHECK)
                   }}
                 >
                   <DoneIcon />
@@ -83,7 +82,7 @@ export const ListRow = observer(({ plant, handleOpen }: ListRowProps): ReactElem
               <IconButton
                 onClick={(event) => {
                   event.stopPropagation()
-                  modifyPlant(PlantEventType.WATER)
+                  // modifyPlant(PlantEventType.WATER)
                 }}
               >
                 <WateringCanIcon />
@@ -93,7 +92,7 @@ export const ListRow = observer(({ plant, handleOpen }: ListRowProps): ReactElem
               <IconButton
                 onClick={(event) => {
                   event.stopPropagation()
-                  modifyPlant(PlantEventType.FERTILIZE)
+                  // modifyPlant(PlantEventType.FERTILIZE)
                 }}
               >
                 <EcoIcon />

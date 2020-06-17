@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import moment, { Moment } from 'moment'
+import { firestore } from 'firebase'
 import Button from '@material-ui/core/Button'
 import Radio from '@material-ui/core/Radio'
 import RadioGroup from '@material-ui/core/RadioGroup'
@@ -9,20 +10,29 @@ import { DatePicker } from '@material-ui/pickers'
 import { PlantEventType } from '../../../models'
 import { isToday } from '../../../utils'
 
-export interface EventButtonProps {
+export interface EventSectionPickerProps {
   eventType: PlantEventType
-  modifyPlant: (eventType: PlantEventType, date?: string) => void
-  checkEventDateExists: (eventType: PlantEventType, date: Moment) => boolean
+  eventList: firestore.Timestamp[]
+  // modifyPlant: (eventType: PlantEventType, date?: string) => void
 }
 
 export const EventSectionPicker = ({
   eventType,
-  modifyPlant,
-  checkEventDateExists,
-}: EventButtonProps) => {
+  eventList,
+}: EventSectionPickerProps) => {
   const action = eventType === PlantEventType.WATER ? 'Water' : 'Fertilize'
   const [dateMode, setDateMode] = React.useState('today')
   const [selectedDate, setSelectedDate] = useState<Moment | null>(null)
+
+  const checkEventExists = (newDate: Moment): boolean => {
+    let disableDate = false
+    eventList.forEach((date) => {
+      if (!!date && newDate.isSame(moment(date.toDate()), 'date')) {
+        disableDate = true
+      }
+    })
+    return disableDate
+  }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDateMode((event.target as HTMLInputElement).value)
@@ -34,7 +44,7 @@ export const EventSectionPicker = ({
       dateMode === 'today' || today.diff(selectedDate, 'days') < 1
         ? today
         : selectedDate?.set({ h: 12, m: 0 })
-    modifyPlant(eventType, date?.utc().format())
+    // modifyPlant(eventType, date?.utc().format())
     setDateMode('today')
     setSelectedDate(null)
   }
@@ -58,14 +68,14 @@ export const EventSectionPicker = ({
         <div className="event-section-picker__picker">
           <DatePicker
             disableFuture
-            variant='inline'
+            variant="inline"
             label="Pick a date"
             format="MMM D, YYYY"
             value={selectedDate}
             onChange={setSelectedDate}
             animateYearScrolling
             shouldDisableDate={(date: Moment | null) => {
-              return !!date && (checkEventDateExists(eventType, date) || isToday(date.format()))
+              return !!date && (checkEventExists(date) || isToday(date.format()))
             }}
           />
         </div>

@@ -4,6 +4,7 @@ import { getComparator } from '../utils'
 import { getDatabase } from '../firebase'
 
 class PlantStore {
+  db = getDatabase()
   plants: PlantMap = {}
   selectedPlant: Plant | undefined = undefined
   sortingMode: SortingMode = SortingMode.WATER
@@ -11,8 +12,7 @@ class PlantStore {
   dialogMode: PlantDialogMode = PlantDialogMode.VIEW
 
   constructor() {
-    const db = getDatabase()
-    db.getPlants((plants: PlantMap) => plantStore.setPlants(plants))
+    this.db.getPlants((plants: PlantMap) => plantStore.setPlants(plants))
   }
 
   get plantList() {
@@ -20,13 +20,15 @@ class PlantStore {
   }
 
   get plantsToWaterList() {
+    // return this.plantList
+    //   .filter((plant) => plant.toBeChecked)
     return this.plantList
-      .filter((plant) => plant.toBeChecked)
   }
 
   get plantsRemainingList() {
+    // return this.plantList
+    //   .filter((plant) => !plant.toBeChecked)
     return this.plantList
-      .filter((plant) => !plant.toBeChecked)
   }
 
   setPlants = (plants: PlantMap): void => {

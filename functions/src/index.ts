@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions'
 import { getIntervals } from './intervalHelpers'
-import { compareDate } from './sortingHelpers'
+import { compareDate } from './functionHelpers'
 
 export const updateFertilizingStatus = functions.firestore
 .document('users/{userID}/plants/{plantID}')

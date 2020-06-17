@@ -1,6 +1,6 @@
 import firebase from 'firebase/app'
 import 'firebase/firestore'
-import { PlantModel, Plant, PlantMap } from '../models'
+import { PlantValues, Plant, PlantMap } from '../models'
 
 /**
  * This class is used to simplify the interaction between the UI and participant collections.
@@ -33,16 +33,7 @@ export default class DatabaseManager {
       this.db.collection('users/test-user/plants').onSnapshot((querySnapshot: any) => {
         let plants: PlantMap = {}
         querySnapshot.forEach((doc: any) => {
-          const data: PlantModel = doc.data()
-          const { name, altName, wateringDates, fertilizingDates, lastCheckedDate } = data
-          const plant = new Plant(
-            doc.id,
-            name,
-            altName,
-            wateringDates,
-            fertilizingDates,
-            lastCheckedDate
-          )
+          const plant: Plant = doc.data()
           plants[doc.id] = plant
         })
         handlePlants(plants)
@@ -50,7 +41,7 @@ export default class DatabaseManager {
   }
 
   addPlant = (
-    plant: any,
+    plant: PlantValues,
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
     onError?: ((reason: any) => PromiseLike<never>) | null | undefined
   ): void => {

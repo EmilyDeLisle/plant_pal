@@ -1,4 +1,5 @@
 import moment from 'moment'
+import { firestore } from 'firebase'
 import { Plant, PlantEventType, SortingMode, SortingDirection } from '../models'
 
 /**
@@ -7,7 +8,7 @@ import { Plant, PlantEventType, SortingMode, SortingDirection } from '../models'
  * @param b string, integer, or undefined (name or interval value)
  * @return ordering value (-1, 0, or 1)
  */
-export const compare = (a: string | number | undefined, b: string | number | undefined): number => {
+export const compare = (a: string | number | null, b: string | number | null): number => {
   // if one value is undefined but the other is not, place the undefined value first
   if (!b && !!a) {
     return -1
@@ -26,15 +27,12 @@ export const compare = (a: string | number | undefined, b: string | number | und
   return 0
 }
 
-/**
- * Comparator functions for comparing date values
- * @param a string or undefined (UTC date string)
- * @param b string or undefined (UTC date string)
- * @return ordering value (-1, 0, or 1)
- */
-export const compareDate = (a: string | undefined, b: string | undefined): number => {
-  const dateA = !!a ? moment(a) : undefined
-  const dateB = !!b ? moment(b) : undefined
+export const compareDate = (
+  a: firestore.Timestamp | null,
+  b: firestore.Timestamp | null
+): number => {
+  const dateA = !!a && moment(a.toDate())
+  const dateB = !!b && moment(b.toDate())
   // if one value is undefined but the other is not, place the undefined value first
   if (!dateB && !!dateA) {
     return -1
@@ -71,10 +69,7 @@ export const descendingComparator = (a: Plant, b: Plant, orderBy: SortingMode): 
       compareValue = compareDate(a.lastFertilizedDate, b.lastFertilizedDate)
       break
     case SortingMode.INTERVAL:
-      compareValue = compare(
-        a.getAvgInterval(PlantEventType.WATER),
-        b.getAvgInterval(PlantEventType.WATER)
-      )
+      compareValue = compare(a.wateringIntervals[3], b.wateringIntervals[3])
       break
     default:
       compareValue = compareDate(a.lastWateredDate, b.lastWateredDate)
