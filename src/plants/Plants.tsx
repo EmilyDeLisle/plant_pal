@@ -1,13 +1,15 @@
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import { inject, observer } from 'mobx-react'
 import { RouteComponentProps } from '@reach/router'
+import Button from '@material-ui/core/Button'
 import Fab from '@material-ui/core/Fab'
 import AddIcon from '@material-ui/icons/Add'
 import Tooltip from '@material-ui/core/Tooltip'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
+import { getDatabase } from '../firebase'
 import { PlantList, TopNavNar, PlantDialog } from './plant-list'
 import { plantStore } from '../injectables'
-import { PlantDialogMode } from '../models'
+import { PlantDialogMode, PlantMap } from '../models'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -42,10 +44,19 @@ export const Plants = inject('plantStore')(
         setDialogOpen(true)
       }
 
+      const loadPlants = () => {
+        const db = getDatabase()
+        db.getPlants(
+          (plants: PlantMap) => plantStore.setPlants(plants),
+          () => console.log('Plants loaded')
+        )
+      }
+
       return (
         <>
           <TopNavNar />
           <div className="plants__container">
+            <Button onClick={() => loadPlants()}>Load Plants</Button>
             {plantsToWaterList.length > 0 && (
               <PlantList plants={plantsToWaterList} handleOpen={() => handleOpenViewDialog()} />
             )}

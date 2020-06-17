@@ -2,7 +2,18 @@ import moment, { Moment } from 'moment'
 import { action, computed, decorate, observable } from 'mobx'
 import { isToday, compareDate } from '../utils'
 import { PlantEventType } from './PlantEventType'
+
+
 const HOURS_IN_DAY = 24
+
+export interface PlantModel {
+  id: string
+  name: string
+  altName: string
+  wateringDates: string[]
+  fertilizingDates: string[]
+  lastCheckedDate: string
+}
 
 export class Plant {
   id: string
@@ -10,7 +21,7 @@ export class Plant {
   altName?: string
   wateringDates: string[] = []
   fertilizingDates: string[] = []
-  checkedDate?: string
+  lastCheckedDate?: string
 
   constructor(
     id: string,
@@ -18,14 +29,14 @@ export class Plant {
     altName?: string,
     wateringDates: string[] = [],
     fertilizingDates: string[] = [],
-    checkedDate?: string
+    lastCheckedDate?: string
   ) {
     this.id = id
     this.name = name
     this.altName = altName
     this.wateringDates = wateringDates
     this.fertilizingDates = fertilizingDates
-    this.checkedDate = checkedDate
+    this.lastCheckedDate = lastCheckedDate
   }
 
   get lastWateredDate(): string | undefined {
@@ -45,7 +56,7 @@ export class Plant {
   }
 
   get checkedToday(): boolean {
-    return !!this.checkedDate ? moment().diff(this.checkedDate, 'hours') < HOURS_IN_DAY : false
+    return !!this.lastCheckedDate ? moment().diff(this.lastCheckedDate, 'hours') < HOURS_IN_DAY : false
   }
 
   get toBeChecked(): boolean {
@@ -113,7 +124,7 @@ export class Plant {
   }
 
   setCheckedDate = (date: string): void => {
-    this.checkedDate = date
+    this.lastCheckedDate = date
   }
 
   modifyPlant = (eventType: PlantEventType, date?: string): void => {
@@ -140,7 +151,7 @@ decorate(Plant, {
   name: observable,
   wateringDates: observable,
   fertilizingDates: observable,
-  checkedDate: observable,
+  lastCheckedDate: observable,
   lastWateredDate: computed,
   lastFertilizedDate: computed,
   daysSinceLastWatered: computed,
