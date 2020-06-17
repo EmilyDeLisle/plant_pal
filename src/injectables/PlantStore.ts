@@ -1,5 +1,4 @@
 import { observable, computed, action, decorate } from 'mobx'
-import moment from 'moment'
 import { Plant, PlantDialogMode, PlantMap, SortingMode, SortingDirection } from '../models'
 import { getComparator } from '../utils'
 import { getDatabase } from '../firebase'
@@ -10,6 +9,11 @@ class PlantStore {
   sortingMode: SortingMode = SortingMode.WATER
   sortingDirection: SortingDirection = SortingDirection.ASC
   dialogMode: PlantDialogMode = PlantDialogMode.VIEW
+
+  constructor() {
+    const db = getDatabase()
+    db.getPlants((plants: PlantMap) => plantStore.setPlants(plants))
+  }
 
   get plantList() {
     return Object.values(this.plants).sort(getComparator(this.sortingDirection, this.sortingMode))

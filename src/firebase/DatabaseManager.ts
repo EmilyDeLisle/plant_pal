@@ -1,14 +1,13 @@
 import firebase from 'firebase/app'
 import 'firebase/firestore'
 import { PlantModel, Plant, PlantMap } from '../models'
-import { plantStore } from '../injectables'
 
 /**
  * This class is used to simplify the interaction between the UI and participant collections.
  */
 export default class DatabaseManager {
   static instance: DatabaseManager | null = null
-  db: any = null
+  db: firebase.firestore.Firestore | null = null
 
   /**
    * Get an instance of DatabaseManager.
@@ -29,12 +28,10 @@ export default class DatabaseManager {
     this.db = firebase.firestore()
   }
 
-  getPlants = (handlePlants: Function, onSuccess?: Function, onError?: Function): void => {
-    let plants: PlantMap = {}
-    this.db
-      .collection('users/test-user/plants')
-      .get()
-      .then((querySnapshot: any) => {
+  getPlants = (handlePlants: (plants: PlantMap) => void): void => {
+    !!this.db &&
+      this.db.collection('users/test-user/plants').onSnapshot((querySnapshot: any) => {
+        let plants: PlantMap = {}
         querySnapshot.forEach((doc: any) => {
           const data: PlantModel = doc.data()
           const { name, altName, wateringDates, fertilizingDates, lastCheckedDate } = data
@@ -50,12 +47,18 @@ export default class DatabaseManager {
         })
         handlePlants(plants)
       })
-      .then(onSuccess)
-      .catch(onError)
   }
 
-  addPlant = (plant: any, onSuccess?: Function, onError?: Function): void => {
-    let docRef = this.db.collection('users/test-user/plants').doc()
-    docRef.set({...plant, id: docRef.id}).then(onSuccess).catch(onError)
+  addPlant = (
+    plant: any,
+    onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
+    onError?: ((reason: any) => PromiseLike<never>) | null | undefined
+  ): void => {
+    let docRef = this.db?.collection('users/test-user/plants').doc()
+    !!docRef &&
+      docRef
+        .set({ ...plant, id: docRef.id })
+        .then(onSuccess)
+        .catch(onError)
   }
 }
