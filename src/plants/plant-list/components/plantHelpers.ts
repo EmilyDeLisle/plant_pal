@@ -12,13 +12,15 @@ moment.locale('en', {
   }
 });
 
-export const formatDate = (date: Moment | null): string => {
+export const formatDate = (date: firestore.Timestamp | null): string => {
   const today = moment()
+  
   if (!date) {
     return 'Never'
   } else {
-    return `${date.format('MMM D, YYYY')} (${
-      today.diff(date, 'days') < 2 ? date.calendar() : date.fromNow()
+    const newDate = moment(date.toDate())
+    return `${newDate.format('MMM D, YYYY')} (${
+      today.diff(newDate, 'days') < 2 ? newDate.calendar() : newDate.fromNow()
     })`
   }
 }

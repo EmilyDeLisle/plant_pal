@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { observer } from 'mobx-react'
-import moment, { Moment } from 'moment'
-import { firestore } from 'firebase'
+import moment from 'moment'
 import Card from '@material-ui/core/Card'
 import Divider from '@material-ui/core/Divider'
 import ExpansionPanel from '@material-ui/core/ExpansionPanel'
@@ -31,7 +30,7 @@ const periodOptions = [
 
 export const EventSection = observer(
   ({ eventType, plant }: EventSectionProps) => {
-    const { id, lastWateredDate, lastFertilizedDate, getAvgInterval, getEventDateList, getLastEventDate } = plant
+    const { id, getAvgInterval, getEventDateList, getLastEventDate } = plant
     const [period, setPeriod] = useState(3)
     const avgInterval = getAvgInterval(eventType, period)
     const eventList = getEventDateList(eventType, period)

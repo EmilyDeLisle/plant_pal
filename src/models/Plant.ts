@@ -2,7 +2,6 @@ import moment, { Moment } from 'moment'
 import { action, computed, decorate, observable } from 'mobx'
 import { firestore } from 'firebase'
 import { IntervalMap } from '../models'
-import { isToday, compareDate } from '../utils'
 import { PlantEventType } from './PlantEventType'
 
 const HOURS_IN_DAY = 24
@@ -15,52 +14,74 @@ export interface PlantValues {
   wateringDates: firestore.Timestamp[]
 }
 
-// export interface Plant extends PlantValues {
-//   id: string
-//   fertilizingIntervals: IntervalMap
-//   lastFertilizedDate: firestore.Timestamp | null
-//   lastWateredDate: firestore.Timestamp | null
-//   wateringIntervals: IntervalMap
-// }
+const emptyIntervals: IntervalMap = {
+  1: null,
+  2: null,
+  3: null,
+  6: null,
+  12: null,
+  Infinity: null,
+}
+
+export interface PlantProps {
+  id?: string
+  name: string
+  altName?: string
+  fertilizingDates?: firestore.Timestamp[]
+  fertilizingIntervals?: IntervalMap
+  lastFertilizedDate?: firestore.Timestamp | null
+  wateringDates?: firestore.Timestamp[]
+  wateringIntervals?: IntervalMap
+  lastWateredDate?: firestore.Timestamp | null
+  lastCheckedDate?: firestore.Timestamp | null
+}
 
 export class Plant {
   id: string
   name: string
-  altName: string = ''
-  wateringDates: firestore.Timestamp[] = []
-  fertilizingDates: firestore.Timestamp[] = []
-  lastCheckedDate: firestore.Timestamp | null = null
+  altName: string
+  fertilizingDates: firestore.Timestamp[]
+  fertilizingIntervals: IntervalMap
+  lastFertilizedDate: firestore.Timestamp | null
+  wateringDates: firestore.Timestamp[]
+  wateringIntervals: IntervalMap
+  lastWateredDate: firestore.Timestamp | null
+  lastCheckedDate: firestore.Timestamp | null
 
-  constructor(
-    id: string,
-    name: string,
-    altName: string = '',
-    wateringDates: firestore.Timestamp[] = [],
-    fertilizingDates: firestore.Timestamp[] = [],
-    lastCheckedDate: firestore.Timestamp | null = null
-  ) {
+  constructor({
+    id = '',
+    name,
+    altName = '',
+    wateringDates = [],
+    fertilizingDates = [],
+    fertilizingIntervals = emptyIntervals,
+    lastFertilizedDate = null,
+    wateringIntervals = emptyIntervals,
+    lastWateredDate = null,
+    lastCheckedDate = null,
+  }: PlantProps) {
     this.id = id
     this.name = name
     this.altName = altName
-    this.wateringDates = wateringDates
     this.fertilizingDates = fertilizingDates
+    this.fertilizingIntervals = fertilizingIntervals
+    this.lastFertilizedDate = lastFertilizedDate
+    this.wateringDates = wateringDates
+    this.wateringIntervals = wateringIntervals
+    this.lastWateredDate = lastWateredDate
     this.lastCheckedDate = lastCheckedDate
   }
 
-  get lastWateredDate(): Moment | null {
-    return this.wateringDates.length > 0 ? moment(this.wateringDates[0].toDate()) : null
-  }
-
-  get lastFertilizedDate(): Moment | null {
-    return this.fertilizingDates.length > 0 ? moment(this.fertilizingDates[0].toDate()) : null
-  }
-
   get daysSinceLastWatered(): number | undefined {
-    return !!this.lastWateredDate ? moment().diff(this.lastWateredDate, 'days') : undefined
+    return !!this.lastWateredDate
+      ? moment().diff(moment(this.lastWateredDate.toDate()), 'days')
+      : undefined
   }
 
   get daysSinceLastFertilized(): number | undefined {
-    return !!this.lastFertilizedDate ? moment().diff(this.lastFertilizedDate, 'days') : undefined
+    return !!this.lastFertilizedDate
+      ? moment().diff(moment(this.lastFertilizedDate.toDate()), 'days')
+      : undefined
   }
 
   get checkedToday(): boolean {
@@ -79,7 +100,7 @@ export class Plant {
     )
   }
 
-  getLastEventDate = (eventType: PlantEventType): Moment | null => {
+  getLastEventDate = (eventType: PlantEventType): firestore.Timestamp | null => {
     return eventType === PlantEventType.FERTILIZE ? this.lastFertilizedDate : this.lastWateredDate
   }
 
@@ -91,26 +112,17 @@ export class Plant {
       : eventDates
   }
 
-  getAvgInterval = (eventType: PlantEventType, periodLength: number = 3): number | undefined => {
-    const eventDates = this.getEventDateList(eventType, periodLength)
-    if (eventDates.length < 2) {
-      return undefined
-    }
-    let numIntervals = eventDates.length - 1
-    let totalDays = 0
-    eventDates.forEach((date, index) => {
-      if (index > 0) {
-        totalDays += moment(eventDates![index - 1].toDate()).diff(moment(date.toDate()), 'days')
-      }
-    })
-    return Math.round(totalDays / numIntervals)
+  getAvgInterval = (eventType: PlantEventType, periodLength: number = 3): number | null => {
+    return eventType === PlantEventType.WATER
+      ? this.wateringIntervals[periodLength]
+      : this.fertilizingIntervals[periodLength]
   }
 
   checkEventDateExists = (eventType: PlantEventType, newDate: Moment): boolean => {
     const eventDates = this.getEventDateList(eventType)
     let disableDate = false
     eventDates.forEach((date) => {
-      if (!!date && newDate.isSame(moment(date), 'days')) {
+      if (!!date && newDate.isSame(moment(date.toDate()), 'days')) {
         disableDate = true
       }
     })
@@ -124,45 +136,17 @@ export class Plant {
   setAltName = (altName: string): void => {
     this.altName = altName
   }
-
-  setID = (id: string): void => {
-    this.id = id
-  }
-
-  // modifyPlant = (eventType: PlantEventType, date?: string): void => {
-  //   const today = moment()
-  //   const newDate = !!date ? date : today.utc().format()
-  //   switch (eventType) {
-  //     case PlantEventType.CHECK:
-  //       this.setCheckedDate(today.utc().format())
-  //       break
-  //     case PlantEventType.FERTILIZE:
-  //       if (!(!!this.lastFertilizedDate && isToday(this.lastFertilizedDate) && isToday(newDate))) {
-  //         this.setFertilizingDates(
-  //           [newDate, ...this.fertilizingDates].sort((a, b) => compareDate(a, b))
-  //         )
-  //       }
-  //       break
-  //     default:
-  //       if (!(!!this.lastWateredDate && isToday(this.lastWateredDate) && isToday(newDate))) {
-  //         this.setWateringDates([newDate, ...this.wateringDates].sort((a, b) => compareDate(a, b)))
-  //       }
-  //   }
-  // }
 }
 
 decorate(Plant, {
   name: observable,
+  altName: observable,
   wateringDates: observable,
   fertilizingDates: observable,
   lastCheckedDate: observable,
-  lastWateredDate: computed,
-  lastFertilizedDate: computed,
   daysSinceLastWatered: computed,
   daysSinceLastFertilized: computed,
   checkedToday: computed,
   setName: action,
-  // setWateringDates: action,
-  // setFertilizingDates: action,
-  // setCheckedDate: action,
+  setAltName: action,
 })

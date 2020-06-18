@@ -1,4 +1,5 @@
 import moment, { Moment } from 'moment'
+import { firestore } from 'firebase'
 import { Plant, PlantEventType, SortingMode, SortingDirection } from '../models'
 
 /**
@@ -7,7 +8,10 @@ import { Plant, PlantEventType, SortingMode, SortingDirection } from '../models'
  * @param b string, integer, or undefined (name or interval value)
  * @return ordering value (-1, 0, or 1)
  */
-export const compare = (a: string | number | undefined, b: string | number | undefined): number => {
+export const compare = (
+  a: string | number | undefined | null,
+  b: string | number | undefined | null
+): number => {
   // if one value is undefined but the other is not, place the undefined value first
   if (!b && !!a) {
     return -1
@@ -26,23 +30,28 @@ export const compare = (a: string | number | undefined, b: string | number | und
   return 0
 }
 
-export const compareDate = (a: Moment | null, b: Moment | null): number => {
+export const compareDate = (
+  a: firestore.Timestamp | null,
+  b: firestore.Timestamp | null
+): number => {
   // if one value is undefined but the other is not, place the undefined value first
-  if (!b && !!a) {
+  const dateA = moment(a?.toDate())
+  const dateB = moment(b?.toDate())
+  if (!dateB && !!dateA) {
     return -1
   }
-  if (!a && !!b) {
+  if (!dateA && !!dateB) {
     return 1
   }
 
-  if (!!a && !!b) {
-    if (b.isBefore(a, 'date')) {
+  if (!!dateA && !!dateB) {
+    if (dateB.isBefore(dateA, 'date')) {
       return -1
     }
-    if (b.isAfter(a, 'date')) {
+    if (dateB.isAfter(dateA, 'date')) {
       return 1
     }
-    if (a.isSame(b, 'date')) {
+    if (dateA.isSame(dateB, 'date')) {
       return 0
     }
   }

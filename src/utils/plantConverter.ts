@@ -1,4 +1,4 @@
-import { Plant } from '../models'
+import { Plant, PlantProps } from '../models'
 
 export const plantConverter = {
   toFirestore: (plant: Plant) => {
@@ -11,9 +11,11 @@ export const plantConverter = {
       lastCheckedDate: lastCheckedDate,
     }
   },
-  fromFirestore: (snapshot: any, options: any) => {
-    const data = snapshot.data(options)
-    const { id, name, altName, wateringDates, fertilizingDates, lastCheckedDate } = data
-    return new Plant(id, name, altName, wateringDates, fertilizingDates, lastCheckedDate)
-  },
+  fromFirestore(
+    snapshot: firebase.firestore.QueryDocumentSnapshot,
+    options: firebase.firestore.SnapshotOptions
+  ): any {
+    const data = snapshot.data(options);
+    return new Plant(data as PlantProps);
+  }
 }

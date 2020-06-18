@@ -1,7 +1,7 @@
 import firebase, { firestore } from 'firebase'
 import 'firebase/firestore'
 import { Moment } from 'moment'
-import { Plant, PlantEventType, PlantMap, PlantValues } from '../models'
+import { Plant, PlantEventType, PlantMap, PlantProps } from '../models'
 import { plantConverter } from '../utils'
 
 /**
@@ -31,15 +31,15 @@ export default class DatabaseManager {
   }
 
   getPlants = (handlePlants: (plants: PlantMap) => void): void => {
-    !!this.db &&
-      this.db
-        .collection('users/test-user/plants')
-        .withConverter(plantConverter)
-        .onSnapshot((querySnapshot: any) => {
+    const collectionRef = this.db?.collection('users/test-user/plants')
+    !!collectionRef &&
+      collectionRef
+      .withConverter(plantConverter)
+        .onSnapshot((querySnapshot: firestore.QuerySnapshot<Plant>) => {
           let plants: PlantMap = {}
-          querySnapshot.forEach((doc: any) => {
-            const plant: Plant = doc.data()
-            plants[doc.id] = plant
+          querySnapshot.forEach((plantSnapshot: firestore.QueryDocumentSnapshot<Plant>) => {
+            const plant = plantSnapshot.data()
+            plants[plant.id] = plant
           })
           handlePlants(plants)
         })

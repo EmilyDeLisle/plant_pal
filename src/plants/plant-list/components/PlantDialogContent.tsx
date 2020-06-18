@@ -59,7 +59,7 @@ export const PlantDialogContentAdd = ({ handleClose, classes }: PlantDialogConte
       const fertilizingDates = lastFertilizedDate
         ? [firestore.Timestamp.fromDate(lastFertilizedDate.toDate())]
         : []
-      const plant = new Plant('', name, altName, wateringDates, fertilizingDates, null)
+      const plant = new Plant({ name, altName, wateringDates, fertilizingDates })
       const db = getDatabase()
       db.addPlant(plant, () => {
         console.log('Plant added successfully')

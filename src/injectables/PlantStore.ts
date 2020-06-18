@@ -12,7 +12,8 @@ class PlantStore {
   dialogMode: PlantDialogMode = PlantDialogMode.VIEW
 
   constructor() {
-    this.db.getPlants((plants: PlantMap) => plantStore.setPlants(plants))
+    this.db.getPlants((plants: PlantMap) => this.setPlants(plants))
+
   }
 
   get plantList() {
