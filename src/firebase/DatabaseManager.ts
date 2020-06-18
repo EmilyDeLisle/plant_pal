@@ -2,7 +2,7 @@ import firebase, { firestore } from 'firebase'
 import 'firebase/firestore'
 import { Moment } from 'moment'
 import { Plant, PlantEventType, PlantMap, PlantProps } from '../models'
-import { plantConverter } from '../utils'
+import { plantConverter, isDateUnavailable } from '../utils'
 
 /**
  * This class is used to simplify the interaction between the UI and participant collections.
@@ -34,7 +34,7 @@ export default class DatabaseManager {
     const collectionRef = this.db?.collection('users/test-user/plants')
     !!collectionRef &&
       collectionRef
-      .withConverter(plantConverter)
+        .withConverter(plantConverter)
         .onSnapshot((querySnapshot: firestore.QuerySnapshot<Plant>) => {
           let plants: PlantMap = {}
           querySnapshot.forEach((plantSnapshot: firestore.QueryDocumentSnapshot<Plant>) => {
@@ -55,28 +55,35 @@ export default class DatabaseManager {
   }
 
   modifyPlant = (
-    id: string,
+    plant: Plant,
     eventType: PlantEventType,
     date?: Moment,
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
     onError?: ((reason: any) => PromiseLike<never>) | null | undefined
   ) => {
+    const { id, getEventDateList } = plant
     const docRef = this.db?.collection('users/test-user/plants').doc(id)
-    const newDate = !!date ? firestore.Timestamp.fromDate(date.toDate()) : firestore.Timestamp.now()
-    let updateValue
-    if (eventType === PlantEventType.WATER) {
-      updateValue = {
-        wateringDates: firestore.FieldValue.arrayUnion(newDate),
+    const today = firestore.Timestamp.now()
+    const newDate = !!date ? firestore.Timestamp.fromDate(date.toDate()) : today
+    const eventList = getEventDateList(eventType)
+
+    let updateValue = undefined
+    if (!!eventList) {
+      const dateUnavailable = isDateUnavailable(newDate, eventList)
+      if (eventType === PlantEventType.WATER && !dateUnavailable) {
+        updateValue = {
+          wateringDates: [newDate, ...eventList],
+        }
+      } else if (eventType === PlantEventType.FERTILIZE && !dateUnavailable) {
+        updateValue = {
+          fertilizingDates: [newDate, ...eventList],
+        }
+      } else if (eventType === PlantEventType.CHECK) {
+        updateValue = {
+          lastCheckedDate: newDate,
+        }
       }
-    } else if (eventType === PlantEventType.FERTILIZE) {
-      updateValue = {
-        fertilizingDates: firestore.FieldValue.arrayUnion(newDate),
-      }
-    } else {
-      updateValue = {
-        lastCheckedDate: newDate,
-      }
+      !!docRef && !!updateValue && docRef.update(updateValue).then(onSuccess).catch(onError)
     }
-    !!docRef && docRef.update(updateValue).then(onSuccess).catch(onError)
   }
 }

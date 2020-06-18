@@ -1,25 +1,25 @@
 import React, { useState } from 'react'
 import moment, { Moment } from 'moment'
-import { firestore } from 'firebase'
 import Button from '@material-ui/core/Button'
 import Radio from '@material-ui/core/Radio'
 import RadioGroup from '@material-ui/core/RadioGroup'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import FormControl from '@material-ui/core/FormControl'
 import { DatePicker } from '@material-ui/pickers'
-import { PlantEventType } from '../../../models'
+import { Plant, PlantEventType } from '../../../models'
 import { getDatabase } from '../../../firebase'
 import { isToday } from '../../../utils'
 
 export interface EventSectionPickerProps {
   eventType: PlantEventType
-  eventList: firestore.Timestamp[]
-  plantID: string
+  plant: Plant
 }
 
-export const EventSectionPicker = ({ eventType, eventList, plantID }: EventSectionPickerProps) => {
+export const EventSectionPicker = ({ eventType, plant }: EventSectionPickerProps) => {
   const db = getDatabase()
+  const { getEventDateList } = plant
   const action = eventType === PlantEventType.WATER ? 'Water' : 'Fertilize'
+  const eventList = getEventDateList(eventType)
   const [dateMode, setDateMode] = React.useState('today')
   const [selectedDate, setSelectedDate] = useState<Moment | null>(null)
 
@@ -38,12 +38,13 @@ export const EventSectionPicker = ({ eventType, eventList, plantID }: EventSecti
   }
 
   const handleModifyPlant = () => {
-    console.log('Updating plant...')
     const date =
       dateMode === 'today' || moment().diff(selectedDate, 'days') < 1
         ? undefined
         : selectedDate?.set({ h: 12, m: 0 })
-    db.modifyPlant(plantID, eventType, date, () => console.log('Plant updated'))
+    db.modifyPlant(plant, eventType, date, () => {
+      console.log('Plant successfully updated')
+    })
     setDateMode('today')
     setSelectedDate(null)
   }
@@ -74,7 +75,7 @@ export const EventSectionPicker = ({ eventType, eventList, plantID }: EventSecti
             onChange={setSelectedDate}
             animateYearScrolling
             shouldDisableDate={(date: Moment | null) => {
-              return !!date && (checkEventExists(date) || isToday(date.format()))
+              return !!date && (checkEventExists(date) || isToday(date))
             }}
           />
         </div>
