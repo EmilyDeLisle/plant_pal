@@ -34,7 +34,7 @@ export default class DatabaseManager {
     const collectionRef = this.db?.collection('users/test-user/plants')
     !!collectionRef &&
       collectionRef
-      .withConverter(plantConverter)
+        .withConverter(plantConverter)
         .onSnapshot((querySnapshot: firestore.QuerySnapshot<Plant>) => {
           let plants: PlantMap = {}
           querySnapshot.forEach((plantSnapshot: firestore.QueryDocumentSnapshot<Plant>) => {
@@ -55,28 +55,31 @@ export default class DatabaseManager {
   }
 
   modifyPlant = (
-    id: string,
+    plantID: string,
     eventType: PlantEventType,
     date?: Moment,
+    eventList?: firestore.Timestamp[],
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
     onError?: ((reason: any) => PromiseLike<never>) | null | undefined
   ) => {
-    const docRef = this.db?.collection('users/test-user/plants').doc(id)
+    const docRef = this.db?.collection('users/test-user/plants').doc(plantID)
     const newDate = !!date ? firestore.Timestamp.fromDate(date.toDate()) : firestore.Timestamp.now()
-    let updateValue
-    if (eventType === PlantEventType.WATER) {
-      updateValue = {
-        wateringDates: firestore.FieldValue.arrayUnion(newDate),
+    let updateValue = undefined
+    if (!!eventList) {
+      if (eventType === PlantEventType.WATER) {
+        updateValue = {
+          wateringDates: firestore.FieldValue.arrayUnion(newDate),
+        }
+      } else if (eventType === PlantEventType.FERTILIZE) {
+        updateValue = {
+          fertilizingDates: [newDate, ...eventList],
+        }
       }
-    } else if (eventType === PlantEventType.FERTILIZE) {
-      updateValue = {
-        fertilizingDates: firestore.FieldValue.arrayUnion(newDate),
-      }
-    } else {
+    } else if (eventType === PlantEventType.CHECK) {
       updateValue = {
         lastCheckedDate: newDate,
       }
     }
-    !!docRef && docRef.update(updateValue).then(onSuccess).catch(onError)
+    !!docRef && !!updateValue && docRef.update(updateValue).then(onSuccess).catch(onError)
   }
 }

@@ -45,7 +45,7 @@ export const EventSection = observer(
               <Typography variant="h5">{isWater ? 'Water' : 'Fertilizer'}</Typography>
             </div>
             <div className="event-section__row">
-              <EventSectionPicker eventList={eventList} eventType={eventType} plantID={id} />
+              <EventSectionPicker eventList={getEventDateList(eventType)} eventType={eventType} plantID={id} />
             </div>
             <div className="event-section__dates">
               <Divider />

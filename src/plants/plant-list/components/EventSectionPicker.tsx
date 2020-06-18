@@ -43,7 +43,7 @@ export const EventSectionPicker = ({ eventType, eventList, plantID }: EventSecti
       dateMode === 'today' || moment().diff(selectedDate, 'days') < 1
         ? undefined
         : selectedDate?.set({ h: 12, m: 0 })
-    db.modifyPlant(plantID, eventType, date, () => console.log('Plant updated'))
+    db.modifyPlant(plantID, eventType, date, eventList, () => console.log('Plant updated'))
     setDateMode('today')
     setSelectedDate(null)
   }
