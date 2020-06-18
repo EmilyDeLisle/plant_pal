@@ -7,3 +7,7 @@ export interface Map {
 export interface PlantMap {
   [key: string]: Plant
 }
+
+export interface IntervalMap {
+  [key: number]: number | null
+}

@@ -4,15 +4,16 @@ import { getComparator } from '../utils'
 import { getDatabase } from '../firebase'
 
 class PlantStore {
+  db = getDatabase()
   plants: PlantMap = {}
-  selectedPlant: Plant | undefined = undefined
+  selectedPlantID: string | undefined = undefined
   sortingMode: SortingMode = SortingMode.WATER
   sortingDirection: SortingDirection = SortingDirection.ASC
   dialogMode: PlantDialogMode = PlantDialogMode.VIEW
 
   constructor() {
-    const db = getDatabase()
-    db.getPlants((plants: PlantMap) => plantStore.setPlants(plants))
+    this.db.getPlants((plants: PlantMap) => this.setPlants(plants))
+
   }
 
   get plantList() {
@@ -20,21 +21,23 @@ class PlantStore {
   }
 
   get plantsToWaterList() {
-    return this.plantList
-      .filter((plant) => plant.toBeChecked)
+    return this.plantList.filter((plant) => plant.toBeChecked)
   }
 
   get plantsRemainingList() {
-    return this.plantList
-      .filter((plant) => !plant.toBeChecked)
+    return this.plantList.filter((plant) => !plant.toBeChecked)
+  }
+
+  get selectedPlant() {
+    return !!this.selectedPlantID ? this.plants[this.selectedPlantID] : undefined
   }
 
   setPlants = (plants: PlantMap): void => {
     this.plants = plants
   }
 
-  setSelectedPlant = (plantID: string): void => {
-    this.selectedPlant = this.plants[plantID]
+  setSelectedPlantID = (plantID: string): void => {
+    this.selectedPlantID = plantID
   }
 
   setSortingMode = (sortingMode: SortingMode): void => {
@@ -50,7 +53,7 @@ class PlantStore {
   }
 
   addPlant = (plant: Plant): void => {
-    let newPlants = { ...this.plants}
+    let newPlants = { ...this.plants }
     newPlants[plant.id] = plant
     this.setPlants(newPlants)
   }
@@ -58,14 +61,17 @@ class PlantStore {
 
 decorate(PlantStore, {
   plants: observable,
-  selectedPlant: observable,
+  selectedPlantID: observable,
   sortingMode: observable,
   sortingDirection: observable,
   plantList: computed,
+  plantsToWaterList: computed,
+  plantsRemainingList: computed,
+  selectedPlant: computed,
   setPlants: action,
-  setSelectedPlant: action,
   setSortingMode: action,
   setSortingDirection: action,
+  setSelectedPlantID: action,
 })
 
 export interface PlantStoreProps {
@@ -73,31 +79,5 @@ export interface PlantStoreProps {
 }
 
 let plantStore = new PlantStore()
-
-// for testing
-// const test_plants = {
-//   '123': new Plant(
-//     '123',
-//     'Plant Fren',
-//     'Plantius friendius',
-//     [
-//       '2020-06-07T21:36:41Z',
-//       '2020-05-29T21:36:41Z',
-//       '2020-05-22T21:36:41Z',
-//     ],
-//     ['2020-06-01T21:36:41Z'],
-//     '2020-06-05T21:36:41Z'
-//   ),
-//   '124': new Plant(
-//     '124',
-//     'Planty Boi',
-//     'bedroom',
-//     ['2020-06-01T21:36:41Z', '2020-05-29T21:36:41Z'],
-//     ['2020-06-01T21:36:41Z']
-//   ),
-//   '125': new Plant('125', 'Peeb'),
-// }
-
-// plantStore.setPlants(test_plants)
 
 export default plantStore

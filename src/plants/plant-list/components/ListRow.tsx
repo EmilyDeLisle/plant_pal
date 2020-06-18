@@ -34,19 +34,18 @@ export const ListRow = observer(({ plant, handleOpen }: ListRowProps): ReactElem
     name,
     lastWateredDate,
     lastFertilizedDate,
-    getAvgInterval,
     toBeChecked,
-    modifyPlant,
+    getAvgInterval
   } = plant
   const classes = useStyles()
   const avgWateringInterval = getAvgInterval(PlantEventType.WATER)
-  const { setSelectedPlant } = plantStore
+  const { setSelectedPlantID } = plantStore
 
   return (
     <div
       className={`plant-list-row-container`}
       onClick={() => {
-        setSelectedPlant(id)
+        setSelectedPlantID(id)
         handleOpen()
       }}
     >
@@ -72,7 +71,7 @@ export const ListRow = observer(({ plant, handleOpen }: ListRowProps): ReactElem
                 <IconButton
                   onClick={(event) => {
                     event.stopPropagation()
-                    modifyPlant(PlantEventType.CHECK)
+                    // modifyPlant(PlantEventType.CHECK)
                   }}
                 >
                   <DoneIcon />
@@ -83,7 +82,7 @@ export const ListRow = observer(({ plant, handleOpen }: ListRowProps): ReactElem
               <IconButton
                 onClick={(event) => {
                   event.stopPropagation()
-                  modifyPlant(PlantEventType.WATER)
+                  // modifyPlant(PlantEventType.WATER)
                 }}
               >
                 <WateringCanIcon />
@@ -93,7 +92,7 @@ export const ListRow = observer(({ plant, handleOpen }: ListRowProps): ReactElem
               <IconButton
                 onClick={(event) => {
                   event.stopPropagation()
-                  modifyPlant(PlantEventType.FERTILIZE)
+                  // modifyPlant(PlantEventType.FERTILIZE)
                 }}
               >
                 <EcoIcon />

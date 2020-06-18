@@ -11,9 +11,10 @@ export const PlantList = ({ plants, handleOpen }: PlantListProps): ReactElement 
   return (
     <>
       <div className="plant-list__row-container">
-        {plants.map((plant: Plant) => (
-          <ListRow key={plant.id} plant={plant} handleOpen={handleOpen}/>
-        ))}
+        {plants.map((plant: Plant) => {
+          const { id, name } = plant
+          return <ListRow key={id ? id : name} plant={plant} handleOpen={handleOpen} />
+        })}
       </div>
     </>
   )
