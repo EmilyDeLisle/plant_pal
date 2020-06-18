@@ -2,7 +2,7 @@ import firebase, { firestore } from 'firebase'
 import 'firebase/firestore'
 import { Moment } from 'moment'
 import { Plant, PlantEventType, PlantMap, PlantProps } from '../models'
-import { plantConverter } from '../utils'
+import { plantConverter, isDateUnavailable } from '../utils'
 
 /**
  * This class is used to simplify the interaction between the UI and participant collections.
@@ -55,31 +55,35 @@ export default class DatabaseManager {
   }
 
   modifyPlant = (
-    plantID: string,
+    plant: Plant,
     eventType: PlantEventType,
     date?: Moment,
-    eventList?: firestore.Timestamp[],
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
     onError?: ((reason: any) => PromiseLike<never>) | null | undefined
   ) => {
-    const docRef = this.db?.collection('users/test-user/plants').doc(plantID)
-    const newDate = !!date ? firestore.Timestamp.fromDate(date.toDate()) : firestore.Timestamp.now()
+    const { id, getEventDateList } = plant
+    const docRef = this.db?.collection('users/test-user/plants').doc(id)
+    const today = firestore.Timestamp.now()
+    const newDate = !!date ? firestore.Timestamp.fromDate(date.toDate()) : today
+    const eventList = getEventDateList(eventType)
+
     let updateValue = undefined
     if (!!eventList) {
-      if (eventType === PlantEventType.WATER) {
+      const dateUnavailable = isDateUnavailable(newDate, eventList)
+      if (eventType === PlantEventType.WATER && !dateUnavailable) {
         updateValue = {
-          wateringDates: firestore.FieldValue.arrayUnion(newDate),
+          wateringDates: [newDate, ...eventList],
         }
-      } else if (eventType === PlantEventType.FERTILIZE) {
+      } else if (eventType === PlantEventType.FERTILIZE && !dateUnavailable) {
         updateValue = {
           fertilizingDates: [newDate, ...eventList],
         }
+      } else if (eventType === PlantEventType.CHECK) {
+        updateValue = {
+          lastCheckedDate: newDate,
+        }
       }
-    } else if (eventType === PlantEventType.CHECK) {
-      updateValue = {
-        lastCheckedDate: newDate,
-      }
+      !!docRef && !!updateValue && docRef.update(updateValue).then(onSuccess).catch(onError)
     }
-    !!docRef && !!updateValue && docRef.update(updateValue).then(onSuccess).catch(onError)
   }
 }

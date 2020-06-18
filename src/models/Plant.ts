@@ -118,17 +118,6 @@ export class Plant {
       : this.fertilizingIntervals[periodLength]
   }
 
-  checkEventDateExists = (eventType: PlantEventType, newDate: Moment): boolean => {
-    const eventDates = this.getEventDateList(eventType)
-    let disableDate = false
-    eventDates.forEach((date) => {
-      if (!!date && newDate.isSame(moment(date.toDate()), 'days')) {
-        disableDate = true
-      }
-    })
-    return disableDate
-  }
-
   setName = (name: string): void => {
     this.name = name
   }

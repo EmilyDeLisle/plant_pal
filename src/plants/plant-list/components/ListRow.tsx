@@ -9,6 +9,7 @@ import EcoIcon from '@material-ui/icons/Eco'
 import WateringCanIcon from './WateringCanIcon'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { Plant, PlantEventType } from '../../../models'
+import { getDatabase } from '../../../firebase'
 import { plantStore } from '../../../injectables'
 import { formatDate } from './plantHelpers'
 
@@ -28,79 +29,83 @@ interface ListRowProps {
   handleOpen: () => void
 }
 
-export const ListRow = observer(({ plant, handleOpen }: ListRowProps): ReactElement => {
-  const {
-    id,
-    name,
-    lastWateredDate,
-    lastFertilizedDate,
-    toBeChecked,
-    getAvgInterval
-  } = plant
-  const classes = useStyles()
-  const avgWateringInterval = getAvgInterval(PlantEventType.WATER)
-  const { setSelectedPlantID } = plantStore
+export const ListRow = observer(
+  ({ plant, handleOpen }: ListRowProps): ReactElement => {
+    const { id, name, lastWateredDate, lastFertilizedDate, toBeChecked, getAvgInterval } = plant
+    const classes = useStyles()
+    const db = getDatabase()
+    const avgWateringInterval = getAvgInterval(PlantEventType.WATER)
+    const { setSelectedPlantID } = plantStore
 
-  return (
-    <div
-      className={`plant-list-row-container`}
-      onClick={() => {
-        setSelectedPlantID(id)
-        handleOpen()
-      }}
-    >
-      <Card>
-        <div className={`${classes.root} plant-list-row`}>
-          <div>
-            <Typography display="inline">{name}</Typography>
-            {!!avgWateringInterval && (
+    return (
+      <div
+        className={`plant-list-row-container`}
+        onClick={() => {
+          setSelectedPlantID(id)
+          handleOpen()
+        }}
+      >
+        <Card>
+          <div className={`${classes.root} plant-list-row`}>
+            <div>
+              <Typography display="inline">{name}</Typography>
+              {!!avgWateringInterval && (
+                <Typography variant="body2" color="textSecondary" display="inline">
+                  {` - Watered every ${avgWateringInterval !== 1 ? avgWateringInterval : ''} day${
+                    avgWateringInterval !== 1 ? 's' : ''
+                  }`}
+                </Typography>
+              )}
               <Typography variant="body2" color="textSecondary" display="inline">
-                {` - Watered every ${avgWateringInterval} day${avgWateringInterval !== 1 && 's'}`}
+                {` - Last watered: ${formatDate(lastWateredDate)}`}
               </Typography>
-            )}
-            <Typography variant="body2" color="textSecondary" display="inline">
-              {` - Last watered: ${formatDate(lastWateredDate)}`}
-            </Typography>
-            <Typography variant="body2" color="textSecondary" display="inline">
-              {` - Last fertilized: ${formatDate(lastFertilizedDate)}`}
-            </Typography>
-          </div>
-          <div className="plant-list-row__buttons">
-            {toBeChecked && (
-              <Tooltip title="Water not needed today">
+              <Typography variant="body2" color="textSecondary" display="inline">
+                {` - Last fertilized: ${formatDate(lastFertilizedDate)}`}
+              </Typography>
+            </div>
+            <div className="plant-list-row__buttons">
+              {toBeChecked && (
+                <Tooltip title="Water not needed today">
+                  <IconButton
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      db.modifyPlant(plant, PlantEventType.CHECK, undefined, () =>
+                        console.log('Plant successfully checked')
+                      )
+                    }}
+                  >
+                    <DoneIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
+              <Tooltip title="Water plant today">
                 <IconButton
                   onClick={(event) => {
                     event.stopPropagation()
-                    // modifyPlant(PlantEventType.CHECK)
+                    db.modifyPlant(plant, PlantEventType.WATER, undefined, () => {
+                      console.log('Plant successfully watered')
+                    })
                   }}
                 >
-                  <DoneIcon />
+                  <WateringCanIcon />
                 </IconButton>
               </Tooltip>
-            )}
-            <Tooltip title="Water plant today">
-              <IconButton
-                onClick={(event) => {
-                  event.stopPropagation()
-                  // modifyPlant(PlantEventType.WATER)
-                }}
-              >
-                <WateringCanIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Fertilize plant today">
-              <IconButton
-                onClick={(event) => {
-                  event.stopPropagation()
-                  // modifyPlant(PlantEventType.FERTILIZE)
-                }}
-              >
-                <EcoIcon />
-              </IconButton>
-            </Tooltip>
+              <Tooltip title="Fertilize plant today">
+                <IconButton
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    db.modifyPlant(plant, PlantEventType.FERTILIZE, undefined, () => {
+                      console.log('Plant successfully fertilized')
+                    })
+                  }}
+                >
+                  <EcoIcon />
+                </IconButton>
+              </Tooltip>
+            </div>
           </div>
-        </div>
-      </Card>
-    </div>
-  )
-})
+        </Card>
+      </div>
+    )
+  }
+)
