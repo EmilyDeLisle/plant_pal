@@ -34,30 +34,30 @@ export const ListRow = observer(({ plant, handleOpen }: ListRowProps): ReactElem
     name,
     lastWateredDate,
     lastFertilizedDate,
-    wateringIntervals
+    toBeChecked,
+    getAvgInterval
   } = plant
   const classes = useStyles()
-  const avgWateringInterval = 5
-  const { setSelectedPlant } = plantStore
+  const avgWateringInterval = getAvgInterval(PlantEventType.WATER)
+  const { setSelectedPlantID } = plantStore
 
   return (
     <div
       className={`plant-list-row-container`}
       onClick={() => {
-        setSelectedPlant(id)
+        setSelectedPlantID(id)
         handleOpen()
-        console.log(id)
       }}
     >
       <Card>
         <div className={`${classes.root} plant-list-row`}>
           <div>
             <Typography display="inline">{name}</Typography>
-            {/* {!!avgWateringInterval && (
-              // <Typography variant="body2" color="textSecondary" display="inline">
-              //   {` - Watered every ${avgWateringInterval} day${avgWateringInterval !== 1 && 's'}`}
-              // </Typography>
-            )} */}
+            {!!avgWateringInterval && (
+              <Typography variant="body2" color="textSecondary" display="inline">
+                {` - Watered every ${avgWateringInterval} day${avgWateringInterval !== 1 && 's'}`}
+              </Typography>
+            )}
             <Typography variant="body2" color="textSecondary" display="inline">
               {` - Last watered: ${formatDate(lastWateredDate)}`}
             </Typography>
@@ -66,7 +66,7 @@ export const ListRow = observer(({ plant, handleOpen }: ListRowProps): ReactElem
             </Typography>
           </div>
           <div className="plant-list-row__buttons">
-            {true && (
+            {toBeChecked && (
               <Tooltip title="Water not needed today">
                 <IconButton
                   onClick={(event) => {

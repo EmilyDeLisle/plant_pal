@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { observer } from 'mobx-react'
-import moment from 'moment'
+import moment, { Moment } from 'moment'
 import { firestore } from 'firebase'
 import Card from '@material-ui/core/Card'
 import Divider from '@material-ui/core/Divider'
@@ -11,16 +11,13 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import MenuItem from '@material-ui/core/MenuItem'
 import Select from '@material-ui/core/Select'
 import Typography from '@material-ui/core/Typography'
-import { IntervalMap, PlantEventType } from '../../../models'
+import { Plant, PlantEventType } from '../../../models'
 import { EventSectionPicker } from './EventSectionPicker'
 import { formatDate } from './plantHelpers'
 
 export interface EventSectionProps {
-  eventList: firestore.Timestamp[]
   eventType: PlantEventType.WATER | PlantEventType.FERTILIZE
-  plantID: string
-  intervals: IntervalMap
-  lastEventDate: firestore.Timestamp | null
+  plant: Plant
 }
 
 const periodOptions = [
@@ -33,9 +30,12 @@ const periodOptions = [
 ]
 
 export const EventSection = observer(
-  ({ eventType, eventList, plantID, intervals, lastEventDate }: EventSectionProps) => {
+  ({ eventType, plant }: EventSectionProps) => {
+    const { id, lastWateredDate, lastFertilizedDate, getAvgInterval, getEventDateList, getLastEventDate } = plant
     const [period, setPeriod] = useState(3)
-    const avgInterval = intervals[period]
+    const avgInterval = getAvgInterval(eventType, period)
+    const eventList = getEventDateList(eventType, period)
+    const lastEventDate = getLastEventDate(eventType)
     const isWater = eventType === PlantEventType.WATER
 
     return (
@@ -46,7 +46,7 @@ export const EventSection = observer(
               <Typography variant="h5">{isWater ? 'Water' : 'Fertilizer'}</Typography>
             </div>
             <div className="event-section__row">
-              <EventSectionPicker eventList={eventList} eventType={eventType} plantID={plantID} />
+              <EventSectionPicker eventList={eventList} eventType={eventType} plantID={id} />
             </div>
             <div className="event-section__dates">
               <Divider />
@@ -100,7 +100,7 @@ export const EventSection = observer(
                           variant="body2"
                           color="textSecondary"
                         >
-                          {moment(date).format('MMM D, YYYY')}
+                          {moment(date.toDate()).format('MMM D, YYYY')}
                         </Typography>
                       ))}
                     </div>

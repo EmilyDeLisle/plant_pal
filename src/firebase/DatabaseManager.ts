@@ -2,6 +2,7 @@ import firebase, { firestore } from 'firebase'
 import 'firebase/firestore'
 import { Moment } from 'moment'
 import { Plant, PlantEventType, PlantMap, PlantValues } from '../models'
+import { plantConverter } from '../utils'
 
 /**
  * This class is used to simplify the interaction between the UI and participant collections.
@@ -31,27 +32,26 @@ export default class DatabaseManager {
 
   getPlants = (handlePlants: (plants: PlantMap) => void): void => {
     !!this.db &&
-      this.db.collection('users/test-user/plants').onSnapshot((querySnapshot: any) => {
-        let plants: PlantMap = {}
-        querySnapshot.forEach((doc: any) => {
-          const plant: Plant = doc.data()
-          plants[doc.id] = plant
+      this.db
+        .collection('users/test-user/plants')
+        .withConverter(plantConverter)
+        .onSnapshot((querySnapshot: any) => {
+          let plants: PlantMap = {}
+          querySnapshot.forEach((doc: any) => {
+            const plant: Plant = doc.data()
+            plants[doc.id] = plant
+          })
+          handlePlants(plants)
         })
-        handlePlants(plants)
-      })
   }
 
   addPlant = (
-    plant: PlantValues,
+    plant: Plant,
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
     onError?: ((reason: any) => PromiseLike<never>) | null | undefined
   ): void => {
     const docRef = this.db?.collection('users/test-user/plants').doc()
-    !!docRef &&
-      docRef
-        .set({ ...plant, id: docRef.id })
-        .then(onSuccess)
-        .catch(onError)
+    !!docRef && docRef.withConverter(plantConverter).set(plant).then(onSuccess).catch(onError)
   }
 
   modifyPlant = (

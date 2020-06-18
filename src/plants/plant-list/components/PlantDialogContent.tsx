@@ -53,17 +53,13 @@ export const PlantDialogContentAdd = ({ handleClose, classes }: PlantDialogConte
       setErrorState(true)
     } else {
       setErrorState(false)
-      const plant: PlantValues = {
-        name: name,
-        altName: altName,
-        wateringDates: lastWateredDate
-          ? [firestore.Timestamp.fromDate(lastWateredDate.toDate())]
-          : [],
-        fertilizingDates: lastFertilizedDate
-          ? [firestore.Timestamp.fromDate(lastFertilizedDate.toDate())]
-          : [],
-        lastCheckedDate: null,
-      }
+      const wateringDates = lastWateredDate
+        ? [firestore.Timestamp.fromDate(lastWateredDate.toDate())]
+        : []
+      const fertilizingDates = lastFertilizedDate
+        ? [firestore.Timestamp.fromDate(lastFertilizedDate.toDate())]
+        : []
+      const plant = new Plant('', name, altName, wateringDates, fertilizingDates, null)
       const db = getDatabase()
       db.addPlant(plant, () => {
         console.log('Plant added successfully')
@@ -148,17 +144,7 @@ export const PlantDialogContentView = ({
   classes,
   handleClose,
 }: PlantDialogContentViewProps) => {
-  const {
-    altName,
-    name,
-    fertilizingDates,
-    fertilizingIntervals,
-    id,
-    lastFertilizedDate,
-    lastWateredDate,
-    wateringDates,
-    wateringIntervals,
-  } = plant
+  const { altName, name } = plant
 
   return (
     <>
@@ -176,20 +162,8 @@ export const PlantDialogContentView = ({
         </div>
       </div>
       <DialogContent>
-        <EventSection
-          eventList={wateringDates}
-          eventType={PlantEventType.WATER}
-          plantID={id}
-          intervals={wateringIntervals}
-          lastEventDate={lastWateredDate}
-        />
-        <EventSection
-          eventList={fertilizingDates}
-          eventType={PlantEventType.FERTILIZE}
-          plantID={id}
-          intervals={fertilizingIntervals}
-          lastEventDate={lastFertilizedDate}
-        />
+        <EventSection eventType={PlantEventType.WATER} plant={plant} />
+        <EventSection eventType={PlantEventType.FERTILIZE} plant={plant} />
       </DialogContent>
     </>
   )

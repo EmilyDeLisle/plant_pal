@@ -1,4 +1,4 @@
-import moment from 'moment'
+import moment, { Moment } from 'moment'
 import { firestore } from 'firebase'
 
 moment.locale('en', {
@@ -12,12 +12,11 @@ moment.locale('en', {
   }
 });
 
-export const formatDate = (dateString: firestore.Timestamp | null): string => {
+export const formatDate = (date: Moment | null): string => {
   const today = moment()
-  if (!dateString) {
+  if (!date) {
     return 'Never'
   } else {
-    const date = moment(dateString.toDate())
     return `${date.format('MMM D, YYYY')} (${
       today.diff(date, 'days') < 2 ? date.calendar() : date.fromNow()
     })`

@@ -1,5 +1,4 @@
-import moment from 'moment'
-import { firestore } from 'firebase'
+import moment, { Moment } from 'moment'
 import { Plant, PlantEventType, SortingMode, SortingDirection } from '../models'
 
 /**
@@ -8,7 +7,7 @@ import { Plant, PlantEventType, SortingMode, SortingDirection } from '../models'
  * @param b string, integer, or undefined (name or interval value)
  * @return ordering value (-1, 0, or 1)
  */
-export const compare = (a: string | number | null, b: string | number | null): number => {
+export const compare = (a: string | number | undefined, b: string | number | undefined): number => {
   // if one value is undefined but the other is not, place the undefined value first
   if (!b && !!a) {
     return -1
@@ -27,28 +26,23 @@ export const compare = (a: string | number | null, b: string | number | null): n
   return 0
 }
 
-export const compareDate = (
-  a: firestore.Timestamp | null,
-  b: firestore.Timestamp | null
-): number => {
-  const dateA = !!a && moment(a.toDate())
-  const dateB = !!b && moment(b.toDate())
+export const compareDate = (a: Moment | null, b: Moment | null): number => {
   // if one value is undefined but the other is not, place the undefined value first
-  if (!dateB && !!dateA) {
+  if (!b && !!a) {
     return -1
   }
-  if (!dateA && !!dateB) {
+  if (!a && !!b) {
     return 1
   }
 
-  if (!!dateA && !!dateB) {
-    if (dateB.isBefore(dateA, 'date')) {
+  if (!!a && !!b) {
+    if (b.isBefore(a, 'date')) {
       return -1
     }
-    if (dateB.isAfter(dateA, 'date')) {
+    if (b.isAfter(a, 'date')) {
       return 1
     }
-    if (dateA.isSame(dateB, 'date')) {
+    if (a.isSame(b, 'date')) {
       return 0
     }
   }
@@ -69,7 +63,10 @@ export const descendingComparator = (a: Plant, b: Plant, orderBy: SortingMode): 
       compareValue = compareDate(a.lastFertilizedDate, b.lastFertilizedDate)
       break
     case SortingMode.INTERVAL:
-      compareValue = compare(a.wateringIntervals[3], b.wateringIntervals[3])
+      compareValue = compare(
+        a.getAvgInterval(PlantEventType.WATER),
+        b.getAvgInterval(PlantEventType.WATER)
+      )
       break
     default:
       compareValue = compareDate(a.lastWateredDate, b.lastWateredDate)
