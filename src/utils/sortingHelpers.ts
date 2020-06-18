@@ -48,7 +48,7 @@ export const compareDate = (
     if (dateB.isAfter(dateA, 'date')) {
       return 1
     }
-    if (dateB === dateB) {
+    if (dateA.isSame(dateB, 'date')) {
       return 0
     }
   }

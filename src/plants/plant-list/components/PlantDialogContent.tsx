@@ -153,6 +153,7 @@ export const PlantDialogContentView = ({
     name,
     fertilizingDates,
     fertilizingIntervals,
+    id,
     lastFertilizedDate,
     lastWateredDate,
     wateringDates,
@@ -178,12 +179,14 @@ export const PlantDialogContentView = ({
         <EventSection
           eventList={wateringDates}
           eventType={PlantEventType.WATER}
+          plantID={id}
           intervals={wateringIntervals}
           lastEventDate={lastWateredDate}
         />
         <EventSection
           eventList={fertilizingDates}
           eventType={PlantEventType.FERTILIZE}
+          plantID={id}
           intervals={fertilizingIntervals}
           lastEventDate={lastFertilizedDate}
         />

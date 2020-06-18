@@ -18,6 +18,7 @@ import { formatDate } from './plantHelpers'
 export interface EventSectionProps {
   eventList: firestore.Timestamp[]
   eventType: PlantEventType.WATER | PlantEventType.FERTILIZE
+  plantID: string
   intervals: IntervalMap
   lastEventDate: firestore.Timestamp | null
 }
@@ -31,75 +32,85 @@ const periodOptions = [
   { value: Infinity, label: 'All time' },
 ]
 
-export const EventSection = observer(({ eventType, eventList, intervals, lastEventDate }: EventSectionProps) => {
-  const [period, setPeriod] = useState(3)
-  const avgInterval = intervals[period]
-  const isWater = eventType === PlantEventType.WATER
+export const EventSection = observer(
+  ({ eventType, eventList, plantID, intervals, lastEventDate }: EventSectionProps) => {
+    const [period, setPeriod] = useState(3)
+    const avgInterval = intervals[period]
+    const isWater = eventType === PlantEventType.WATER
 
-  return (
-    <div className="event-section__container">
-      <Card>
-        <div className="event-section__contents">
-          <div className="event-section__row">
-            <Typography variant="h5">{isWater ? 'Water' : 'Fertilizer'}</Typography>
-          </div>
-          <div className="event-section__row">
-            <EventSectionPicker
-              eventList={eventList}
-              eventType={eventType}
-            />
-          </div>
-          <div className="event-section__dates">
-            <Divider />
-          </div>
-          {!!avgInterval ? (
-            <div className="event-section__row event-section__body">
-              <Typography display="inline">
-                {`${isWater ? 'Watered' : 'Fertilized'} (on average) every ${avgInterval} day${
-                  avgInterval !== 1 && 's'
-                } `}
-              </Typography>
-              <Select
-                value={period}
-                onChange={({ target: { value } }) => setPeriod(value as number)}
-              >
-                {periodOptions.map((opt) => (
-                  <MenuItem value={opt.value}>{opt.label}</MenuItem>
-                ))}
-              </Select>
+    return (
+      <div className="event-section__container">
+        <Card>
+          <div className="event-section__contents">
+            <div className="event-section__row">
+              <Typography variant="h5">{isWater ? 'Water' : 'Fertilizer'}</Typography>
             </div>
-          ) : (
-            <Typography variant="body2" color="textSecondary">
-              <em>{`Need at least two ${
-                isWater ? 'watering' : 'fertilizing'
-              } event dates to calculate average interval`}</em>
-            </Typography>
-          )}
-          <Typography>{`Last ${isWater ? 'watered' : 'fertilized'}: ${formatDate(
-            lastEventDate
-          )}`}</Typography>
-          {!!eventList.length && (
+            <div className="event-section__row">
+              <EventSectionPicker eventList={eventList} eventType={eventType} plantID={plantID} />
+            </div>
             <div className="event-section__dates">
-              <ExpansionPanel>
-                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography>{`${isWater ? 'Watering' : 'Fertilizing'} events (${
-                    eventList.length
-                  })`}</Typography>
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails>
-                  <div>
-                    {eventList.map((date) => (
-                      <Typography key={date.nanoseconds} variant="body2" color="textSecondary">
-                        {moment(date).format('MMM D, YYYY')}
-                      </Typography>
-                    ))}
-                  </div>
-                </ExpansionPanelDetails>
-              </ExpansionPanel>
+              <Divider />
             </div>
-          )}
-        </div>
-      </Card>
-    </div>
-  )
-})
+            {!!avgInterval ? (
+              <div className="event-section__row event-section__body">
+                <Typography display="inline">
+                  {`${isWater ? 'Watered' : 'Fertilized'} (on average) every ${avgInterval} day${
+                    avgInterval !== 1 && 's'
+                  } `}
+                </Typography>
+                <Select
+                  value={period}
+                  onChange={({ target: { value } }) => setPeriod(value as number)}
+                >
+                  {periodOptions.map((opt) => (
+                    <MenuItem
+                      key={`${isWater ? 'watering' : 'fertilizing'}-interval-${opt}`}
+                      value={opt.value}
+                    >
+                      {opt.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </div>
+            ) : (
+              <Typography variant="body2" color="textSecondary">
+                <em>{`Need at least two ${
+                  isWater ? 'watering' : 'fertilizing'
+                } event dates to calculate average interval`}</em>
+              </Typography>
+            )}
+            <Typography>{`Last ${isWater ? 'watered' : 'fertilized'}: ${formatDate(
+              lastEventDate
+            )}`}</Typography>
+            {!!eventList.length && (
+              <div className="event-section__dates">
+                <ExpansionPanel>
+                  <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography>{`${isWater ? 'Watering' : 'Fertilizing'} events (${
+                      eventList.length
+                    })`}</Typography>
+                  </ExpansionPanelSummary>
+                  <ExpansionPanelDetails>
+                    <div>
+                      {eventList.map((date) => (
+                        <Typography
+                          key={`${
+                            isWater ? 'watering' : 'fertilizing'
+                          }-interval-${date.toMillis()}`}
+                          variant="body2"
+                          color="textSecondary"
+                        >
+                          {moment(date).format('MMM D, YYYY')}
+                        </Typography>
+                      ))}
+                    </div>
+                  </ExpansionPanelDetails>
+                </ExpansionPanel>
+              </div>
+            )}
+          </div>
+        </Card>
+      </div>
+    )
+  }
+)

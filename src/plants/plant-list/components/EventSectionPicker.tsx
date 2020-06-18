@@ -8,18 +8,17 @@ import FormControlLabel from '@material-ui/core/FormControlLabel'
 import FormControl from '@material-ui/core/FormControl'
 import { DatePicker } from '@material-ui/pickers'
 import { PlantEventType } from '../../../models'
+import { getDatabase } from '../../../firebase'
 import { isToday } from '../../../utils'
 
 export interface EventSectionPickerProps {
   eventType: PlantEventType
   eventList: firestore.Timestamp[]
-  // modifyPlant: (eventType: PlantEventType, date?: string) => void
+  plantID: string
 }
 
-export const EventSectionPicker = ({
-  eventType,
-  eventList,
-}: EventSectionPickerProps) => {
+export const EventSectionPicker = ({ eventType, eventList, plantID }: EventSectionPickerProps) => {
+  const db = getDatabase()
   const action = eventType === PlantEventType.WATER ? 'Water' : 'Fertilize'
   const [dateMode, setDateMode] = React.useState('today')
   const [selectedDate, setSelectedDate] = useState<Moment | null>(null)
@@ -39,12 +38,12 @@ export const EventSectionPicker = ({
   }
 
   const handleModifyPlant = () => {
-    const today = moment()
+    console.log('Updating plant...')
     const date =
-      dateMode === 'today' || today.diff(selectedDate, 'days') < 1
-        ? today
+      dateMode === 'today' || moment().diff(selectedDate, 'days') < 1
+        ? undefined
         : selectedDate?.set({ h: 12, m: 0 })
-    // modifyPlant(eventType, date?.utc().format())
+    db.modifyPlant(plantID, eventType, date, () => console.log('Plant updated'))
     setDateMode('today')
     setSelectedDate(null)
   }

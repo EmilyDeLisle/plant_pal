@@ -17,7 +17,7 @@ export const updateFertilizingStatus = functions.firestore
     return change.after.ref.update({
       fertilizingDates: newDates,
       fertilizingIntervals: intervals,
-      lastFertilizingDate: !!newDates && !!newDates.length ? newDates[0] : null,
+      lastFertilizedDate: !!newDates && !!newDates.length ? newDates[0] : null,
     })
   } else {
     return null
@@ -39,7 +39,7 @@ export const updateWateringStatus = functions.firestore
     return change.after.ref.update({
       wateringDates: newDates,
       wateringIntervals: intervals,
-      lastWateringDate: !!newDates && !!newDates.length ? newDates[0] : null,
+      lastWateredDate: !!newDates && !!newDates.length ? newDates[0] : null,
     })
   } else {
     return null
