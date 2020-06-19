@@ -24,26 +24,9 @@ export default class AuthenticationManager {
     this.auth = firebase.auth()
   }
 
-  // logIn(email: string, password: string, onSuccess, onError) {
-  //   this.auth
-  //     .signInWithEmailAndPassword(email, password)
-  //     .then((userCred) => {
-  //       if (onSuccess) {
-  //         let authObj = {
-  //           type: userCred.operationType,
-  //           additional: userCred.additionalUserInfo,
-  //           userName: userCred.user.displayName,
-  //           email: userCred.email,
-  //         };
-  //         onSuccess(authObj);
-  //       }
-  //     })
-  //     .catch(onError);
-  // }
-
   signUp(email: string, password: string, 
-    onSuccess: (value: auth.UserCredential) => void | PromiseLike<void>,
-    onError: (reason: any) => PromiseLike<never>
+    onSuccess?: (value: auth.UserCredential) => void | PromiseLike<void>,
+    onError?: (reason: any) => PromiseLike<never>
     ) {
     this.auth
       .createUserWithEmailAndPassword(email, password)
@@ -52,8 +35,8 @@ export default class AuthenticationManager {
   }
 
     signIn(email: string, password: string, 
-      onSuccess: (value: auth.UserCredential) => void | PromiseLike<void>,
-      onError: (reason: any) => PromiseLike<never>) {
+      onSuccess?: (value: auth.UserCredential) => void | PromiseLike<void>,
+      onError?: (reason: any) => PromiseLike<never>) {
     this.auth
       .signInWithEmailAndPassword(email, password)
       .then((userCred) => {
@@ -71,8 +54,8 @@ export default class AuthenticationManager {
   }
 
   signOut(
-    onSuccess: (value: void) => void | PromiseLike<void>,
-    onError: (reason: any) => PromiseLike<never>
+    onSuccess?: (value: void) => void | PromiseLike<void>,
+    onError?: (reason: any) => PromiseLike<never>
   ) {
     this.auth.signOut().then(onSuccess).catch(onError)
   }
