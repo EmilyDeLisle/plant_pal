@@ -24,19 +24,21 @@ export default class AuthenticationManager {
     this.auth = firebase.auth()
   }
 
-  signUp(email: string, password: string, 
+  signUp(
+    email: string,
+    password: string,
     onSuccess?: (value: auth.UserCredential) => void | PromiseLike<void>,
     onError?: (reason: any) => PromiseLike<never>
-    ) {
-    this.auth
-      .createUserWithEmailAndPassword(email, password)
-      .then(onSuccess)
-      .catch(onError);
+  ) {
+    this.auth.createUserWithEmailAndPassword(email, password).then(onSuccess).catch(onError)
   }
 
-    signIn(email: string, password: string, 
-      onSuccess?: (value: auth.UserCredential) => void | PromiseLike<void>,
-      onError?: (reason: any) => PromiseLike<never>) {
+  signIn(
+    email: string,
+    password: string,
+    onSuccess?: (value: auth.UserCredential) => void | PromiseLike<void>,
+    onError?: (reason: any) => PromiseLike<never>
+  ) {
     this.auth
       .signInWithEmailAndPassword(email, password)
       .then((userCred) => {
@@ -50,7 +52,7 @@ export default class AuthenticationManager {
         //   onSuccess(authObj);
         // }
       })
-      .catch(onError);
+      .catch(onError)
   }
 
   signOut(
@@ -58,6 +60,13 @@ export default class AuthenticationManager {
     onError?: (reason: any) => PromiseLike<never>
   ) {
     this.auth.signOut().then(onSuccess).catch(onError)
+  }
+
+  setAuthPersistence(
+    onSuccess?: (value: void) => void | PromiseLike<void>,
+    onError?: (reason: any) => PromiseLike<never>
+  ) {
+    this.auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).then(onSuccess).catch(onError)
   }
 
   getCurrentUser(): User | null {

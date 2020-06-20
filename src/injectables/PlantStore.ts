@@ -1,7 +1,7 @@
 import { observable, computed, action, decorate } from 'mobx'
 import { Plant, PlantDialogMode, PlantMap, SortingMode, SortingDirection } from '../models'
 import { getComparator } from '../utils'
-import { getDatabase } from '../firebase'
+import { DatabaseManager, getDatabase } from '../firebase'
 
 class PlantStore {
   db = getDatabase()
@@ -12,8 +12,11 @@ class PlantStore {
   dialogMode: PlantDialogMode = PlantDialogMode.VIEW
 
   constructor() {
-    this.db.getPlants((plants: PlantMap) => this.setPlants(plants))
+    // this.db?.getPlants((plants: PlantMap) => this.setPlants(plants))
+  }
 
+  getPlants() {
+    this.db?.getPlants((plants: PlantMap) => this.setPlants(plants))
   }
 
   get plantList() {

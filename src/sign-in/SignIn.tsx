@@ -1,5 +1,5 @@
-import React, { ReactElement, useState } from 'react'
-import { RouteComponentProps } from '@reach/router'
+import React, { ReactElement, useEffect, useState } from 'react'
+import { RouteComponentProps, navigate } from '@reach/router'
 import Button from '@material-ui/core/Button'
 import Card from '@material-ui/core/Card'
 import Link from '@material-ui/core/Link'
@@ -14,16 +14,32 @@ export const SignIn = (props: RouteComponentProps): ReactElement => {
   const action = isSignInMode ? 'Sign in' : 'Sign up'
   const auth = getAuth()
 
+  useEffect(() => {
+    const user = auth.getCurrentUser()
+    if (!!user) {
+      navigate('/plants')
+    }
+  }, [])
+
   const toggleSignInMode = () => {
     setSignInMode(!isSignInMode)
   }
 
   const handleSubmit = () => {
     if (!!email && !!password) {
-      isSignInMode
-        ? auth.signIn(email, password, () => console.log('Successfully signed in'))
-        : auth.signUp(email, password, () => console.log('Successfully signed up'))
+      if (!!auth.getCurrentUser()) {
+        navigate('/plants')
+      } else {
+        isSignInMode
+          ? auth.signIn(email, password, () => onSignIn())
+          : auth.signUp(email, password, () => onSignIn())
+      }
     }
+  }
+
+  const onSignIn = (): void => {
+    console.log('Successfully signed in')
+    navigate('/plants')
   }
 
   return (
