@@ -1,8 +1,9 @@
-import firebase, { firestore } from 'firebase'
+import firebase, { auth, firestore } from 'firebase'
 import 'firebase/firestore'
 import { Moment } from 'moment'
-import { Plant, PlantEventType, PlantMap, PlantProps } from '../models'
+import { Plant, PlantEventType, PlantMap } from '../models'
 import { plantConverter, isDateUnavailable } from '../utils'
+import { getAuth } from './init'
 
 /**
  * This class is used to simplify the interaction between the UI and participant collections.
@@ -10,6 +11,8 @@ import { plantConverter, isDateUnavailable } from '../utils'
 export default class DatabaseManager {
   static instance: DatabaseManager | null = null
   db: firestore.Firestore | null = null
+  collectionRef: firestore.CollectionReference<firestore.DocumentData> | undefined
+  unsubscribe: any
 
   /**
    * Get an instance of DatabaseManager.
@@ -31,18 +34,20 @@ export default class DatabaseManager {
   }
 
   getPlants = (handlePlants: (plants: PlantMap) => void): void => {
-    const collectionRef = this.db?.collection('users/test-user/plants')
-    !!collectionRef &&
-      collectionRef
-        .withConverter(plantConverter)
-        .onSnapshot((querySnapshot: firestore.QuerySnapshot<Plant>) => {
-          let plants: PlantMap = {}
-          querySnapshot.forEach((plantSnapshot: firestore.QueryDocumentSnapshot<Plant>) => {
-            const plant = plantSnapshot.data()
-            plants[plant.id] = plant
-          })
-          handlePlants(plants)
+    const uuid = getAuth().getCurrentUser()?.uid
+    if (!this.collectionRef && !!uuid) {
+      this.collectionRef = this.db?.collection(`users/${uuid}/plants`)
+    }
+    this.unsubscribe = this.collectionRef
+      ?.withConverter(plantConverter)
+      .onSnapshot((querySnapshot: firestore.QuerySnapshot<Plant>) => {
+        let plants: PlantMap = {}
+        querySnapshot.forEach((plantSnapshot: firestore.QueryDocumentSnapshot<Plant>) => {
+          const plant = plantSnapshot.data()
+          plants[plant.id] = plant
         })
+        handlePlants(plants)
+      })
   }
 
   addPlant = (
@@ -50,7 +55,7 @@ export default class DatabaseManager {
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
     onError?: ((reason: any) => PromiseLike<never>) | null | undefined
   ): void => {
-    const docRef = this.db?.collection('users/test-user/plants').doc()
+    const docRef = this.collectionRef?.doc()
     !!docRef && docRef.withConverter(plantConverter).set(plant).then(onSuccess).catch(onError)
   }
 
@@ -62,7 +67,7 @@ export default class DatabaseManager {
     onError?: ((reason: any) => PromiseLike<never>) | null | undefined
   ) => {
     const { id, getEventDateList } = plant
-    const docRef = this.db?.collection('users/test-user/plants').doc(id)
+    const docRef = this.collectionRef?.doc(id)
     const today = firestore.Timestamp.now()
     const newDate = !!date ? firestore.Timestamp.fromDate(date.toDate()) : today
     const eventList = getEventDateList(eventType)

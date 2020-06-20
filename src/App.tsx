@@ -4,6 +4,7 @@ import { Provider } from 'mobx-react'
 import { MuiPickersUtilsProvider } from '@material-ui/pickers'
 import { MuiThemeProvider } from '@material-ui/core/styles'
 import MomentUtils from '@date-io/moment'
+import { AuthProvider } from './firebase'
 import { plantStore } from './injectables'
 import { Plants } from './plants'
 import { SignIn } from './sign-in'
@@ -16,8 +17,11 @@ function App() {
         <MuiPickersUtilsProvider utils={MomentUtils}>
           <Provider plantStore={plantStore}>
             <Router>
-              <Plants path="/plants" />
+              <AuthProvider path="/">
+                <Plants path="/plants" />
               <SignIn path="/" />
+              </AuthProvider>
+              
             </Router>
           </Provider>
         </MuiPickersUtilsProvider>
