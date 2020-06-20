@@ -1,5 +1,5 @@
-import React, { ReactElement, useEffect, useState } from 'react'
-import { RouteComponentProps, navigate } from '@reach/router'
+import React, { ReactElement, useState } from 'react'
+import { RouteComponentProps } from '@reach/router'
 import Button from '@material-ui/core/Button'
 import Card from '@material-ui/core/Card'
 import Link from '@material-ui/core/Link'
@@ -8,38 +8,26 @@ import Typography from '@material-ui/core/Typography'
 import { getAuth } from '../firebase'
 
 export const SignIn = (props: RouteComponentProps): ReactElement => {
-  const [isSignInMode, setSignInMode] = useState(true)
+  const [mode, setMode] = useState<'Sign in' | 'Sign up'>('Sign in')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const action = isSignInMode ? 'Sign in' : 'Sign up'
   const auth = getAuth()
-
-  useEffect(() => {
-    const user = auth.getCurrentUser()
-    if (!!user) {
-      navigate('/plants')
-    }
-  }, [])
+  const isSignIn = mode === 'Sign in'
 
   const toggleSignInMode = () => {
-    setSignInMode(!isSignInMode)
+    setMode(isSignIn ? 'Sign up' : 'Sign in')
   }
 
   const handleSubmit = () => {
     if (!!email && !!password) {
-      if (!!auth.getCurrentUser()) {
-        navigate('/plants')
-      } else {
-        isSignInMode
-          ? auth.setAuthPersistence(() => auth.signIn(email, password, () => onSignIn()))
-          : auth.setAuthPersistence(() => auth.signUp(email, password, () => onSignIn()))
-      }
+      isSignIn
+        ? auth.setAuthPersistence(() =>
+            auth.signIn(email, password, () => console.log('Successfully signed in'))
+          )
+        : auth.setAuthPersistence(() =>
+            auth.signUp(email, password, () => console.log('Successfully signed up'))
+          )
     }
-  }
-
-  const onSignIn = (): void => {
-    console.log('Successfully signed in')
-    navigate('/plants')
   }
 
   return (
@@ -47,7 +35,7 @@ export const SignIn = (props: RouteComponentProps): ReactElement => {
       <Card>
         <div className="sign-in__fields">
           <Typography variant="h3">Plant Pal</Typography>
-          <Typography>{action}</Typography>
+          <Typography>{mode}</Typography>
           <TextField
             label="Email address"
             type="email"
@@ -64,10 +52,10 @@ export const SignIn = (props: RouteComponentProps): ReactElement => {
             value={password}
             onChange={({ target: { value } }) => setPassword(value)}
           />
-          <Button onClick={handleSubmit}>{action}</Button>
+          <Button onClick={handleSubmit}>{mode}</Button>
           <Typography variant="body2" color="textSecondary">
-            {isSignInMode ? "Don't have an account? " : 'Have an account? '}
-            <Link onClick={() => toggleSignInMode()}>{action}</Link>.
+            {isSignIn ? "Don't have an account? " : 'Have an account? '}
+            <Link onClick={() => toggleSignInMode()}>{isSignIn ? 'Sign up' : 'Sign in'}</Link>.
           </Typography>
         </div>
       </Card>

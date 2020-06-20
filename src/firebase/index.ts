@@ -1,3 +1,6 @@
 export * from './init'
 export * from './DatabaseManager'
 export { default as DatabaseManager } from './DatabaseManager'
+export * from './AuthenticationManager'
+export { default as AuthenticationManager } from './AuthenticationManager'
+export * from './AuthContext'
