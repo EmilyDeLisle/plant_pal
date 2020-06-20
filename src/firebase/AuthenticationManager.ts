@@ -24,6 +24,18 @@ export default class AuthenticationManager {
     this.auth = firebase.auth()
   }
 
+  setAuthListener(onSignedIn?: Function, onSignedOut?: Function) {
+    this.auth.onAuthStateChanged((user) => {
+      if (!!user) {
+        console.log(`Signed in as ${user.email}`)
+        !!onSignedIn && onSignedIn()
+      } else {
+        console.log('Signed out')
+        !!onSignedOut && onSignedOut()
+      }
+    })
+  }
+
   signUp(
     email: string,
     password: string,
@@ -39,20 +51,7 @@ export default class AuthenticationManager {
     onSuccess?: (value: auth.UserCredential) => void | PromiseLike<void>,
     onError?: (reason: any) => PromiseLike<never>
   ) {
-    this.auth
-      .signInWithEmailAndPassword(email, password)
-      .then((userCred) => {
-        // if (onSuccess) {
-        //   let authObj = {
-        //     type: userCred.operationType,
-        //     additional: userCred.additionalUserInfo,
-        //     userName: userCred.user.displayName,
-        //     email: userCred.email,
-        //   };
-        //   onSuccess(authObj);
-        // }
-      })
-      .catch(onError)
+    this.auth.signInWithEmailAndPassword(email, password).then(onSuccess).catch(onError)
   }
 
   signOut(

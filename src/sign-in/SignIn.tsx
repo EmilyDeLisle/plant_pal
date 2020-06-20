@@ -31,8 +31,8 @@ export const SignIn = (props: RouteComponentProps): ReactElement => {
         navigate('/plants')
       } else {
         isSignInMode
-          ? auth.signIn(email, password, () => onSignIn())
-          : auth.signUp(email, password, () => onSignIn())
+          ? auth.setAuthPersistence(() => auth.signIn(email, password, () => onSignIn()))
+          : auth.setAuthPersistence(() => auth.signUp(email, password, () => onSignIn()))
       }
     }
   }

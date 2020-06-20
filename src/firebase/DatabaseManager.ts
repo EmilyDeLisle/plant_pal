@@ -12,6 +12,7 @@ export default class DatabaseManager {
   static instance: DatabaseManager | null = null
   db: firestore.Firestore | null = null
   collectionRef: firestore.CollectionReference<firestore.DocumentData> | undefined
+  unsubscribe: any
 
   /**
    * Get an instance of DatabaseManager.
@@ -37,17 +38,16 @@ export default class DatabaseManager {
     if (!this.collectionRef && !!uuid) {
       this.collectionRef = this.db?.collection(`users/${uuid}/plants`)
     }
-    !!this.collectionRef &&
-      this.collectionRef
-        .withConverter(plantConverter)
-        .onSnapshot((querySnapshot: firestore.QuerySnapshot<Plant>) => {
-          let plants: PlantMap = {}
-          querySnapshot.forEach((plantSnapshot: firestore.QueryDocumentSnapshot<Plant>) => {
-            const plant = plantSnapshot.data()
-            plants[plant.id] = plant
-          })
-          handlePlants(plants)
+    this.unsubscribe = this.collectionRef
+      ?.withConverter(plantConverter)
+      .onSnapshot((querySnapshot: firestore.QuerySnapshot<Plant>) => {
+        let plants: PlantMap = {}
+        querySnapshot.forEach((plantSnapshot: firestore.QueryDocumentSnapshot<Plant>) => {
+          const plant = plantSnapshot.data()
+          plants[plant.id] = plant
         })
+        handlePlants(plants)
+      })
   }
 
   addPlant = (

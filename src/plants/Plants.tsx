@@ -34,22 +34,24 @@ export const Plants = inject('plantStore')(
         setDialogMode,
       } = plantStore
 
-      // useEffect(() => {
-      //   // const auth = getAuth()
-      //   const user = auth.getCurrentUser()
-      //   if (!user) {
-      //     navigate('/')
-      //   }
-      // })
-
       useEffect(() => {
-        const user = auth.getCurrentUser()
-        if (!!user) {
-          plantStore.getPlants()
-          console.log(`signed in - user ID: ${user.email}, UUID: ${user.uid}`)
-        } else {
-          console.log('not signed in')
-        }
+        auth.auth.onAuthStateChanged((user) => {
+          if (!!user) {
+            plantStore.getPlants()
+            console.log(`signed in - user ID: ${user.email}, UUID: ${user.uid}`)
+          } else {
+            console.log('not signed in, navigating back to sign in page')
+            navigate('/')
+          }
+        })
+        // const user = auth.getCurrentUser()
+        // if (!!user) {
+        //   plantStore.getPlants()
+        //   console.log(`signed in - user ID: ${user.email}, UUID: ${user.uid}`)
+        // } else {
+        //   console.log('not signed in, navigating back to sign in page')
+        //   navigate('/')
+        // }
       }, [])
 
       const handleOpenAddDialog = () => {

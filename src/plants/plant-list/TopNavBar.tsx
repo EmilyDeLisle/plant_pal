@@ -7,11 +7,12 @@ import Typography from '@material-ui/core/Typography'
 import { SortingButton } from './SortingButton'
 import { plantStore } from '../../injectables'
 import { SortingMode } from '../../models'
-import { getAuth } from '../../firebase'
+import { getDatabase, getAuth } from '../../firebase'
 
 export const TopNavNar = inject('plantStore')(
   observer(() => {
     const { sortingMode, sortingDirection, setSortingMode, setSortingDirection } = plantStore
+    const db = getDatabase()
     const auth = getAuth()
     return (
       <AppBar position="static">
@@ -22,6 +23,7 @@ export const TopNavNar = inject('plantStore')(
               onClick={() => {
                 const user = auth.getCurrentUser()
                 !!user ? auth.signOut(() => { 
+                  db.unsubscribe()
                   navigate('/')
                   console.log('signing out')
                 }) : navigate('/')
