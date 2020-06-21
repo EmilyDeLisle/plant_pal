@@ -29,8 +29,8 @@ export interface PlantDialogContentViewProps extends PlantDialogContentProps {
 interface FormValues {
   name: string
   altName: string
-  lastWateredDate: Moment | null
-  lastFertilizedDate: Moment | null
+  lastWateredDate?: Moment | null
+  lastFertilizedDate?: Moment | null
 }
 
 export const PlantDialogContentAdd = ({ handleClose, classes }: PlantDialogContentProps) => {
@@ -148,7 +148,14 @@ export const PlantDialogContentView = ({
   handleClose,
 }: PlantDialogContentViewProps) => {
   const { altName, name } = plant
+  const initialValues: FormValues = {
+    name: name,
+    altName: altName,
+  }
+  const [editMode, setEditMode] = useState(false)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [values, setValues] = useState(initialValues)
+  const [errorState, setErrorState] = useState(false)
 
   const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
@@ -158,20 +165,78 @@ export const PlantDialogContentView = ({
     setAnchorEl(null)
   }
 
+  const handleClickEdit = () => {
+    setEditMode(true)
+    handleCloseMenu()
+  }
+
+  const handleCancelEdit = () => {
+    setValues(initialValues)
+    setEditMode(false)
+  }
+
+  const handleChange = (name: string, value: string | Moment) => {
+    setValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }))
+  }
+
+  const handleSubmit = (values: FormValues) => {
+    const { name } = values
+    if (!name) {
+      setErrorState(true)
+    } else {
+      setErrorState(false)
+      console.log(values)
+      console.log('Plant updated successfully')
+      handleCancelEdit()
+    }
+  }
+
   return (
     <>
       <div className={`${classes.titleCard} plant-dialog__title-card`}>
         <div className="plant-dialog-content__title-card-text">
-          <Typography className={classes.titleText} variant="h4">
-            {name}
-          </Typography>
-          <Typography className={classes.titleText}>{altName}</Typography>
+          {editMode ? (
+            <>
+              <TextField
+                name="name"
+                label="Display name"
+                helperText={errorState ? 'Name is required' : 'Name to search and sort by'}
+                error={errorState}
+                value={values.name}
+                onChange={({ target: { name, value } }) => handleChange(name, value)}
+                required
+                fullWidth
+              />
+              <TextField
+                name="altName"
+                label="Alternate name (optional)"
+                helperText="Scientific name, nickname, unique identifier, etc"
+                value={values.altName}
+                onChange={({ target: { name, value } }) => handleChange(name, value)}
+                fullWidth
+              />
+              <Button onClick={handleCancelEdit}>Cancel</Button>
+              <Button onClick={() => handleSubmit(values)}>Confirm Changes</Button>
+            </>
+          ) : (
+            <>
+              <Typography className={classes.titleText} variant="h4">
+                {name}
+              </Typography>
+              <Typography className={classes.titleText}>{altName}</Typography>
+            </>
+          )}
         </div>
         <div>
           <div className="plant-dialog-content__controls">
-            <IconButton color="inherit" edge="end" onClick={handleClickMenu}>
-              <MoreVertIcon />
-            </IconButton>
+            {!editMode && (
+              <IconButton color="inherit" edge="end" onClick={handleClickMenu}>
+                <MoreVertIcon />
+              </IconButton>
+            )}
             <IconButton color="inherit" edge="end" onClick={handleClose}>
               <CloseIcon />
             </IconButton>
@@ -182,7 +247,7 @@ export const PlantDialogContentView = ({
               open={Boolean(anchorEl)}
               onClose={handleClose}
             >
-              <MenuItem onClick={handleCloseMenu}>Edit plant</MenuItem>
+              <MenuItem onClick={handleClickEdit}>Edit plant</MenuItem>
               <MenuItem onClick={handleCloseMenu}>Delete plant</MenuItem>
             </Menu>
           </div>
