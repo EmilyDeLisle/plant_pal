@@ -1,0 +1,8 @@
+.plant-dialog-content__title-card-text {
+  flex-grow: 1;
+}
+
+.plant-dialog-content__controls {
+  margin-top: -1em;
+  display: flex;
+}

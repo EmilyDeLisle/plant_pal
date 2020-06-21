@@ -20,6 +20,17 @@
   margin: 0.5em 0;
 }
 
+.event-section__date-list {
+  width: 100%;
+}
+
+.event-section__date {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .MuiExpansionPanelDetails-root {
   max-height: 5em;
   overflow: scroll;
