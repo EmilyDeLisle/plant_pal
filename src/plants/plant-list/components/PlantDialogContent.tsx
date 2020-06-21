@@ -5,8 +5,11 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import IconButton from '@material-ui/core/IconButton'
+import Menu from '@material-ui/core/Menu'
+import MenuItem from '@material-ui/core/MenuItem'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
+import MoreVertIcon from '@material-ui/icons/MoreVert'
 import { Moment } from 'moment'
 import { firestore } from 'firebase'
 import { DatePicker } from '@material-ui/pickers'
@@ -72,12 +75,12 @@ export const PlantDialogContentAdd = ({ handleClose, classes }: PlantDialogConte
   return (
     <>
       <div className={`${classes.titleCard} plant-dialog__title-card`}>
-        <div className="plant-dialog__title-card-text">
+        <div className="plant-dialog-content__title-card-text">
           <Typography className={classes.titleText} variant="h4">
             Add new plant
           </Typography>
         </div>
-        <div className="plant-dialog__title-card-close-button">
+        <div className="plant-dialog-content__controls">
           <IconButton color="inherit" edge="end" onClick={handleClose}>
             <CloseIcon />
           </IconButton>
@@ -145,20 +148,44 @@ export const PlantDialogContentView = ({
   handleClose,
 }: PlantDialogContentViewProps) => {
   const { altName, name } = plant
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+
+  const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null)
+  }
 
   return (
     <>
       <div className={`${classes.titleCard} plant-dialog__title-card`}>
-        <div className="plant-dialog__title-card-text">
+        <div className="plant-dialog-content__title-card-text">
           <Typography className={classes.titleText} variant="h4">
             {name}
           </Typography>
           <Typography className={classes.titleText}>{altName}</Typography>
         </div>
-        <div className="plant-dialog__title-card-close-button">
-          <IconButton color="inherit" edge="end" onClick={handleClose}>
-            <CloseIcon />
-          </IconButton>
+        <div>
+          <div className="plant-dialog-content__controls">
+            <IconButton color="inherit" edge="end" onClick={handleClickMenu}>
+              <MoreVertIcon />
+            </IconButton>
+            <IconButton color="inherit" edge="end" onClick={handleClose}>
+              <CloseIcon />
+            </IconButton>
+            <Menu
+              id="simple-menu"
+              anchorEl={anchorEl}
+              keepMounted
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+            >
+              <MenuItem onClick={handleCloseMenu}>Edit plant</MenuItem>
+              <MenuItem onClick={handleCloseMenu}>Delete plant</MenuItem>
+            </Menu>
+          </div>
         </div>
       </div>
       <DialogContent>

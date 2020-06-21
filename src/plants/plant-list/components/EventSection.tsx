@@ -62,7 +62,7 @@ export const EventSection = observer(({ eventType, plant }: EventSectionProps) =
               >
                 {periodOptions.map((opt) => (
                   <MenuItem
-                    key={`${isWater ? 'watering' : 'fertilizing'}-interval-${opt}`}
+                    key={`${isWater ? 'watering' : 'fertilizing'}-interval-${opt.value}`}
                     value={opt.value}
                   >
                     {opt.label}
