@@ -64,6 +64,24 @@ export default class DatabaseManager {
     this.collectionRef?.doc(id)?.update(values).then(onSuccess).catch(onError)
   }
 
+  deleteEvent = (
+    id: string,
+    eventType: PlantEventType,
+    event: firestore.Timestamp,
+    onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
+    onError?: ((reason: any) => PromiseLike<never>) | null | undefined
+  ): void => {
+    this.collectionRef
+      ?.doc(id)
+      ?.update({
+        [eventType === PlantEventType.WATER
+          ? 'wateringDates'
+          : 'fertilizingDates']: firestore.FieldValue.arrayRemove(event),
+      })
+      .then(onSuccess)
+      .catch(onError)
+  }
+
   modifyPlant = (
     plant: Plant,
     eventType: PlantEventType,

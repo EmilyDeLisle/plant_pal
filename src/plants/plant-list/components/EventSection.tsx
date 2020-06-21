@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { observer } from 'mobx-react'
+import { firestore } from 'firebase/app'
 import moment from 'moment'
 import Card from '@material-ui/core/Card'
 import Divider from '@material-ui/core/Divider'
@@ -14,6 +15,7 @@ import Typography from '@material-ui/core/Typography'
 import CloseIcon from '@material-ui/icons/Close'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import { Plant, PlantEventType } from '../../../models'
+import { getDatabase } from '../../../firebase'
 import { EventSectionPicker } from './EventSectionPicker'
 import { formatDate } from './plantHelpers'
 
@@ -32,12 +34,23 @@ const periodOptions = [
 ]
 
 export const EventSection = observer(({ eventType, plant }: EventSectionProps) => {
-  const { getAvgInterval, getEventDateList, getLastEventDate } = plant
+  const { id, getAvgInterval, getEventDateList, getLastEventDate } = plant
   const [period, setPeriod] = useState(3)
   const avgInterval = getAvgInterval(eventType, period)
   const eventList = getEventDateList(eventType, period)
   const lastEventDate = getLastEventDate(eventType)
   const isWater = eventType === PlantEventType.WATER
+
+  const handleDeleteEvent = (
+    id: string,
+    eventType: PlantEventType,
+    date: firestore.Timestamp
+  ): void => {
+    const db = getDatabase()
+    db.deleteEvent(id, eventType, date, () => {
+      console.log('Date successfully deleted')
+    })
+  }
 
   return (
     <div className="event-section__container">
@@ -103,7 +116,13 @@ export const EventSection = observer(({ eventType, plant }: EventSectionProps) =
                           title={`Delete this ${isWater ? 'watering' : 'fertilizing'} event`}
                           placement="left"
                         >
-                          <IconButton size="small" color="default">
+                          <IconButton
+                            size="small"
+                            color="default"
+                            onClick={() => {
+                              handleDeleteEvent(id, eventType, date)
+                            }}
+                          >
                             <CloseIcon />
                           </IconButton>
                         </Tooltip>
