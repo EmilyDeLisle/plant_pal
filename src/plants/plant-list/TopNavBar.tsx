@@ -23,9 +23,9 @@ export const TopNavNar = inject('plantStore')(
               onClick={() => {
                 const user = auth.getCurrentUser()
                 !!user ? auth.signOut(() => { 
-                  db.unsubscribe()
+                  db.unsubscribe && db.unsubscribe()
                   navigate('/')
-                  console.log('signing out')
+                  console.log('Signing out')
                 }) : navigate('/')
               }}
             >

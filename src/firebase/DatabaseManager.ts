@@ -1,24 +1,16 @@
-import firebase, { auth, firestore } from 'firebase'
+import firebase, { firestore } from 'firebase'
 import 'firebase/firestore'
 import { Moment } from 'moment'
-import { Plant, PlantEventType, PlantMap } from '../models'
+import { FormValues, Plant, PlantEventType, PlantMap } from '../models'
 import { plantConverter, isDateUnavailable } from '../utils'
 import { getAuth } from './init'
 
-/**
- * This class is used to simplify the interaction between the UI and participant collections.
- */
 export default class DatabaseManager {
   static instance: DatabaseManager | null = null
   db: firestore.Firestore | null = null
   collectionRef: firestore.CollectionReference<firestore.DocumentData> | undefined
-  unsubscribe: any
+  unsubscribe: (() => void) | undefined
 
-  /**
-   * Get an instance of DatabaseManager.
-   * @returns {DatabaseManager}
-   *  Instance of DatabaseManager
-   */
   static getInstance() {
     if (!DatabaseManager.instance) {
       DatabaseManager.instance = new DatabaseManager()
@@ -55,8 +47,21 @@ export default class DatabaseManager {
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
     onError?: ((reason: any) => PromiseLike<never>) | null | undefined
   ): void => {
-    const docRef = this.collectionRef?.doc()
-    !!docRef && docRef.withConverter(plantConverter).set(plant).then(onSuccess).catch(onError)
+    this.collectionRef
+      ?.doc()
+      ?.withConverter(plantConverter)
+      .set(plant)
+      .then(onSuccess)
+      .catch(onError)
+  }
+
+  updatePlantNames = (
+    id: string,
+    values: FormValues,
+    onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
+    onError?: ((reason: any) => PromiseLike<never>) | null | undefined
+  ): void => {
+    this.collectionRef?.doc(id)?.update(values).then(onSuccess).catch(onError)
   }
 
   modifyPlant = (
@@ -67,7 +72,6 @@ export default class DatabaseManager {
     onError?: ((reason: any) => PromiseLike<never>) | null | undefined
   ) => {
     const { id, getEventDateList } = plant
-    const docRef = this.collectionRef?.doc(id)
     const today = firestore.Timestamp.now()
     const newDate = !!date ? firestore.Timestamp.fromDate(date.toDate()) : today
     const eventList = getEventDateList(eventType)
@@ -83,12 +87,14 @@ export default class DatabaseManager {
         updateValue = {
           fertilizingDates: [newDate, ...eventList],
         }
-      } else if (eventType === PlantEventType.CHECK) {
-        updateValue = {
-          lastCheckedDate: newDate,
-        }
       }
-      !!docRef && !!updateValue && docRef.update(updateValue).then(onSuccess).catch(onError)
+    } else if (eventType === PlantEventType.CHECK) {
+      updateValue = {
+        lastCheckedDate: newDate,
+      }
+    }
+    if (!!updateValue) {
+      this.collectionRef?.doc(id)?.update(updateValue).then(onSuccess).catch(onError)
     }
   }
 }

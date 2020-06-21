@@ -1,7 +1,7 @@
-import moment, { Moment } from 'moment'
+import moment from 'moment'
 import { action, computed, decorate, observable } from 'mobx'
 import { firestore } from 'firebase'
-import { IntervalMap } from '../models'
+import { IntervalMap } from './Map'
 import { PlantEventType } from './PlantEventType'
 
 const HOURS_IN_DAY = 24

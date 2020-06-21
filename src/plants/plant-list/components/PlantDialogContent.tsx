@@ -13,7 +13,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert'
 import { Moment } from 'moment'
 import { firestore } from 'firebase'
 import { DatePicker } from '@material-ui/pickers'
-import { Plant, PlantEventType, PlantValues } from '../../../models'
+import { Plant, PlantEventType, FormValues } from '../../../models'
 import { getDatabase } from '../../../firebase'
 import { EventSection } from './EventSection'
 
@@ -24,13 +24,6 @@ export interface PlantDialogContentProps {
 
 export interface PlantDialogContentViewProps extends PlantDialogContentProps {
   plant: Plant
-}
-
-interface FormValues {
-  name: string
-  altName: string
-  lastWateredDate?: Moment | null
-  lastFertilizedDate?: Moment | null
 }
 
 export const PlantDialogContentAdd = ({ handleClose, classes }: PlantDialogContentProps) => {
@@ -147,7 +140,7 @@ export const PlantDialogContentView = ({
   classes,
   handleClose,
 }: PlantDialogContentViewProps) => {
-  const { altName, name } = plant
+  const { altName, name, id } = plant
   const initialValues: FormValues = {
     name: name,
     altName: altName,
@@ -170,7 +163,7 @@ export const PlantDialogContentView = ({
     handleCloseMenu()
   }
 
-  const handleCancelEdit = () => {
+  const handleEndEdit = () => {
     setValues(initialValues)
     setEditMode(false)
   }
@@ -188,9 +181,11 @@ export const PlantDialogContentView = ({
       setErrorState(true)
     } else {
       setErrorState(false)
-      console.log(values)
-      console.log('Plant updated successfully')
-      handleCancelEdit()
+      const db = getDatabase()
+      db.updatePlantNames(id, values, () => {
+        console.log('Plant updated successfully')
+        handleEndEdit()
+      })
     }
   }
 
@@ -218,7 +213,7 @@ export const PlantDialogContentView = ({
                 onChange={({ target: { name, value } }) => handleChange(name, value)}
                 fullWidth
               />
-              <Button onClick={handleCancelEdit}>Cancel</Button>
+              <Button onClick={handleEndEdit}>Cancel</Button>
               <Button onClick={() => handleSubmit(values)}>Confirm Changes</Button>
             </>
           ) : (
