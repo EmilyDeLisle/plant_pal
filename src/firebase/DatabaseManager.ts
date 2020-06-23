@@ -82,6 +82,14 @@ export default class DatabaseManager {
       .catch(onError)
   }
 
+  deletePlant = (
+    id: string,
+    onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
+    onError?: ((reason: any) => PromiseLike<never>) | null | undefined
+  ): void => {
+    this.collectionRef?.doc(id)?.delete().then(onSuccess).catch(onError)
+  }
+
   modifyPlant = (
     plant: Plant,
     eventType: PlantEventType,
@@ -92,10 +100,15 @@ export default class DatabaseManager {
     const { id, getEventDateList } = plant
     const today = firestore.Timestamp.now()
     const newDate = !!date ? firestore.Timestamp.fromDate(date.toDate()) : today
-    const eventList = getEventDateList(eventType)
 
     let updateValue = undefined
-    if (!!eventList) {
+
+    if (eventType === PlantEventType.CHECK) {
+      updateValue = {
+        lastCheckedDate: newDate,
+      }
+    } else {
+      const eventList = getEventDateList(eventType)
       const dateUnavailable = isDateUnavailable(newDate, eventList)
       if (eventType === PlantEventType.WATER && !dateUnavailable) {
         updateValue = {
@@ -105,10 +118,6 @@ export default class DatabaseManager {
         updateValue = {
           fertilizingDates: [newDate, ...eventList],
         }
-      }
-    } else if (eventType === PlantEventType.CHECK) {
-      updateValue = {
-        lastCheckedDate: newDate,
       }
     }
     if (!!updateValue) {

@@ -69,8 +69,11 @@ export const ListRow = observer(
                   <IconButton
                     onClick={(event) => {
                       event.stopPropagation()
-                      db.modifyPlant(plant, PlantEventType.CHECK, undefined, () =>
-                        console.log('Plant successfully checked')
+                      db.modifyPlant(
+                        plant,
+                        PlantEventType.CHECK,
+                        undefined,
+                        () => console.log('Plant successfully checked')
                       )
                     }}
                   >
