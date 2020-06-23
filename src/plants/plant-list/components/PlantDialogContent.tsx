@@ -13,7 +13,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert'
 import { Moment } from 'moment'
 import { firestore } from 'firebase'
 import { DatePicker } from '@material-ui/pickers'
-import { Plant, PlantEventType, FormValues } from '../../../models'
+import { FormValues, Plant, PlantEventType } from '../../../models'
 import { getDatabase } from '../../../firebase'
 import { EventSection } from './EventSection'
 
@@ -73,10 +73,12 @@ export const PlantDialogContentAdd = ({ handleClose, classes }: PlantDialogConte
             Add new plant
           </Typography>
         </div>
-        <div className="plant-dialog-content__controls">
-          <IconButton color="inherit" edge="end" onClick={handleClose}>
-            <CloseIcon />
-          </IconButton>
+        <div>
+          <div className="plant-dialog-content__controls">
+            <IconButton color="inherit" edge="end" onClick={handleClose}>
+              <CloseIcon />
+            </IconButton>
+          </div>
         </div>
       </div>
       <>
@@ -150,32 +152,32 @@ export const PlantDialogContentView = ({
   const [values, setValues] = useState(initialValues)
   const [errorState, setErrorState] = useState(false)
 
-  const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
   }
 
-  const handleCloseMenu = () => {
+  const handleCloseMenu = (): void => {
     setAnchorEl(null)
   }
 
-  const handleClickEdit = () => {
+  const handleClickEdit = (): void => {
     setEditMode(true)
     handleCloseMenu()
   }
 
-  const handleEndEdit = () => {
+  const handleEndEdit = (): void => {
     setValues(initialValues)
     setEditMode(false)
   }
 
-  const handleChange = (name: string, value: string | Moment) => {
+  const handleEditValues = (name: string, value: string | Moment): void => {
     setValues((prevValues) => ({
       ...prevValues,
       [name]: value,
     }))
   }
 
-  const handleSubmit = (values: FormValues) => {
+  const handleSubmitEdit = (values: FormValues): void => {
     const { name } = values
     if (!name) {
       setErrorState(true)
@@ -183,10 +185,19 @@ export const PlantDialogContentView = ({
       setErrorState(false)
       const db = getDatabase()
       db.updatePlantNames(id, values, () => {
-        console.log('Plant updated successfully')
+        console.log('Plant successfully updated')
         handleEndEdit()
       })
     }
+  }
+
+  const handleDelete = (id: string): void => {
+    if (window.confirm('Delete plant? This cannot be undone.')) {
+      const db = getDatabase()
+      db.deletePlant(id, () => console.log('Plant successfully deleted'))
+    }
+    handleCloseMenu()
+    handleClose()
   }
 
   return (
@@ -201,7 +212,7 @@ export const PlantDialogContentView = ({
                 helperText={errorState ? 'Name is required' : 'Name to search and sort by'}
                 error={errorState}
                 value={values.name}
-                onChange={({ target: { name, value } }) => handleChange(name, value)}
+                onChange={({ target: { name, value } }) => handleEditValues(name, value)}
                 required
                 fullWidth
               />
@@ -210,11 +221,11 @@ export const PlantDialogContentView = ({
                 label="Alternate name (optional)"
                 helperText="Scientific name, nickname, unique identifier, etc"
                 value={values.altName}
-                onChange={({ target: { name, value } }) => handleChange(name, value)}
+                onChange={({ target: { name, value } }) => handleEditValues(name, value)}
                 fullWidth
               />
               <Button onClick={handleEndEdit}>Cancel</Button>
-              <Button onClick={() => handleSubmit(values)}>Confirm Changes</Button>
+              <Button onClick={() => handleSubmitEdit(values)}>Confirm Changes</Button>
             </>
           ) : (
             <>
@@ -243,7 +254,7 @@ export const PlantDialogContentView = ({
               onClose={handleClose}
             >
               <MenuItem onClick={handleClickEdit}>Edit plant</MenuItem>
-              <MenuItem onClick={handleCloseMenu}>Delete plant</MenuItem>
+              <MenuItem onClick={() => handleDelete(id)}>Delete plant</MenuItem>
             </Menu>
           </div>
         </div>
