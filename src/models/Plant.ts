@@ -34,6 +34,7 @@ export interface PlantProps {
   wateringIntervals?: IntervalMap
   lastWateredDate?: firestore.Timestamp | null
   lastCheckedDate?: firestore.Timestamp | null
+  imagePath?: string
 }
 
 export class Plant {
@@ -47,6 +48,7 @@ export class Plant {
   wateringIntervals: IntervalMap
   lastWateredDate: firestore.Timestamp | null
   lastCheckedDate: firestore.Timestamp | null
+  imagePath: string
 
   constructor({
     id = '',
@@ -59,6 +61,7 @@ export class Plant {
     wateringIntervals = emptyIntervals,
     lastWateredDate = null,
     lastCheckedDate = null,
+    imagePath = ''
   }: PlantProps) {
     this.id = id
     this.name = name
@@ -70,6 +73,7 @@ export class Plant {
     this.wateringIntervals = wateringIntervals
     this.lastWateredDate = lastWateredDate
     this.lastCheckedDate = lastCheckedDate
+    this.imagePath = imagePath
   }
 
   get daysSinceLastWatered(): number | undefined {

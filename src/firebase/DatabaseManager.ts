@@ -1,7 +1,7 @@
 import firebase, { firestore } from 'firebase'
 import 'firebase/firestore'
 import { Moment } from 'moment'
-import { FormValues, Plant, PlantEventType, PlantMap } from '../models'
+import { FormValues, Plant, PlantEventType, PlantMap, PlantProps } from '../models'
 import { plantConverter, isDateUnavailable } from '../utils'
 import { getAuth } from './init'
 
@@ -25,11 +25,15 @@ export default class DatabaseManager {
     this.db = firebase.firestore()
   }
 
-  getPlants = (handlePlants: (plants: PlantMap) => void): void => {
+  setReference = () => {
     const uuid = getAuth().getCurrentUser()?.uid
     if (!this.collectionRef && !!uuid) {
       this.collectionRef = this.db?.collection(`users/${uuid}/plants`)
     }
+  }
+
+  getPlants = (handlePlants: (plants: PlantMap) => void): void => {
+    this.setReference()
     this.unsubscribe = this.collectionRef
       ?.withConverter(plantConverter)
       .onSnapshot((querySnapshot: firestore.QuerySnapshot<Plant>) => {
@@ -43,16 +47,16 @@ export default class DatabaseManager {
   }
 
   addPlant = (
-    plant: Plant,
+    plantValues: PlantProps,
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
     onError?: ((reason: any) => PromiseLike<never>) | null | undefined
   ): void => {
-    this.collectionRef
-      ?.doc()
-      ?.withConverter(plantConverter)
-      .set(plant)
-      .then(onSuccess)
-      .catch(onError)
+    this.setReference()
+    const docRef = this.collectionRef?.doc()
+    if (!!docRef) {
+      const plant = new Plant({ ...plantValues, id: docRef.id })
+      !!plant && docRef.withConverter(plantConverter).set(plant).then(onSuccess).catch(onError)
+    }
   }
 
   updatePlantNames = (
@@ -61,6 +65,7 @@ export default class DatabaseManager {
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
     onError?: ((reason: any) => PromiseLike<never>) | null | undefined
   ): void => {
+    this.setReference()
     this.collectionRef?.doc(id)?.update(values).then(onSuccess).catch(onError)
   }
 
@@ -71,6 +76,7 @@ export default class DatabaseManager {
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
     onError?: ((reason: any) => PromiseLike<never>) | null | undefined
   ): void => {
+    this.setReference()
     this.collectionRef
       ?.doc(id)
       ?.update({
@@ -87,6 +93,7 @@ export default class DatabaseManager {
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
     onError?: ((reason: any) => PromiseLike<never>) | null | undefined
   ): void => {
+    this.setReference()
     this.collectionRef?.doc(id)?.delete().then(onSuccess).catch(onError)
   }
 
@@ -97,6 +104,7 @@ export default class DatabaseManager {
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
     onError?: ((reason: any) => PromiseLike<never>) | null | undefined
   ) => {
+    this.setReference()
     const { id, getEventDateList } = plant
     const today = firestore.Timestamp.now()
     const newDate = !!date ? firestore.Timestamp.fromDate(date.toDate()) : today

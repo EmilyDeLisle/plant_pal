@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Button from '@material-ui/core/Button'
 import CloseIcon from '@material-ui/icons/Close'
 import DialogActions from '@material-ui/core/DialogActions'
@@ -13,8 +13,8 @@ import MoreVertIcon from '@material-ui/icons/MoreVert'
 import { Moment } from 'moment'
 import { firestore } from 'firebase'
 import { DatePicker } from '@material-ui/pickers'
-import { FormValues, Plant, PlantEventType } from '../../../models'
-import { getDatabase } from '../../../firebase'
+import { FormValues, Plant, PlantEventType, PlantProps } from '../../../models'
+import { getDatabase, getStorage } from '../../../firebase'
 import { EventSection } from './EventSection'
 
 export interface PlantDialogContentProps {
@@ -55,7 +55,7 @@ export const PlantDialogContentAdd = ({ handleClose, classes }: PlantDialogConte
       const fertilizingDates = lastFertilizedDate
         ? [firestore.Timestamp.fromDate(lastFertilizedDate.toDate())]
         : []
-      const plant = new Plant({ name, altName, wateringDates, fertilizingDates })
+      const plant: PlantProps = { name, altName, wateringDates, fertilizingDates }
       const db = getDatabase()
       db.addPlant(plant, () => {
         console.log('Plant added successfully')
@@ -142,7 +142,7 @@ export const PlantDialogContentView = ({
   classes,
   handleClose,
 }: PlantDialogContentViewProps) => {
-  const { altName, name, id } = plant
+  const { altName, name, id, imagePath } = plant
   const initialValues: FormValues = {
     name: name,
     altName: altName,
@@ -151,6 +151,11 @@ export const PlantDialogContentView = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [values, setValues] = useState(initialValues)
   const [errorState, setErrorState] = useState(false)
+  const [imageURL, setImageURL] = useState<string | null>('')
+
+  useEffect(() => {
+    !!imagePath ? getStorage().getImage(imagePath, (url) => setImageURL(url)) : setImageURL(null)
+  }, [])
 
   const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -200,9 +205,12 @@ export const PlantDialogContentView = ({
     handleClose()
   }
 
-  return (
+  return imageURL === '' ? null : (
     <>
-      <div className={`${classes.titleCard} plant-dialog__title-card`}>
+      <div
+        className={`${classes.titleCard} plant-dialog__title-card`}
+        style={{ backgroundImage: `url(${imageURL})` }}
+      >
         <div className="plant-dialog-content__title-card-text">
           {editMode ? (
             <>
