@@ -2,7 +2,19 @@
   flex-grow: 1;
 }
 
+.plant-dialog-content__edit-name-fields {
+  padding: 1em;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.6);
+  margin-right: 0.5em;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.3)
+}
+
 .plant-dialog-content__controls {
   margin-top: -1em;
   display: flex;
+}
+
+.plant-dialog-content--image-background {
+  background: no-repeat center center fixed;
 }

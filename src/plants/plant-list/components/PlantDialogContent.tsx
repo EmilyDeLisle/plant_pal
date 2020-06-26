@@ -16,6 +16,7 @@ import { DatePicker } from '@material-ui/pickers'
 import { FormValues, Plant, PlantEventType, PlantProps } from '../../../models'
 import { getDatabase, getStorage } from '../../../firebase'
 import { EventSection } from './EventSection'
+import { ImageUpload } from './ImageUpload'
 
 export interface PlantDialogContentProps {
   handleClose: () => void
@@ -35,15 +36,20 @@ export const PlantDialogContentAdd = ({ handleClose, classes }: PlantDialogConte
   }
   const [values, setValues] = useState(initialValues)
   const [errorState, setErrorState] = useState(false)
+  const [image, setImage] = useState<string | null>(null)
 
-  const handleChange = (name: string, value: string | Moment) => {
+  const handleChange = (name: string, value: string | Moment): void => {
     setValues((prevValues) => ({
       ...prevValues,
       [name]: value,
     }))
   }
 
-  const handleSubmit = (values: FormValues) => {
+  const handleSelectedImage = (imageFile: string): void => {
+    setImage(imageFile)
+  }
+
+  const handleSubmit = (values: FormValues): void => {
     const { name, altName, lastWateredDate, lastFertilizedDate } = values
     if (!name) {
       setErrorState(true)
@@ -67,11 +73,17 @@ export const PlantDialogContentAdd = ({ handleClose, classes }: PlantDialogConte
 
   return (
     <>
-      <div className={`${classes.titleCard} plant-dialog__title-card`}>
+      <div
+        className={`${classes.titleCard} plant-dialog__title-card ${
+          image !== null ? 'plant-dialog-content--image-background' : ''
+        }`}
+        style={{ backgroundImage: `url(${image})` }}
+      >
         <div className="plant-dialog-content__title-card-text">
           <Typography className={classes.titleText} variant="h4">
             Add new plant
           </Typography>
+          <ImageUpload handleSelectedImage={handleSelectedImage} />
         </div>
         <div>
           <div className="plant-dialog-content__controls">
@@ -208,12 +220,14 @@ export const PlantDialogContentView = ({
   return imageURL === '' ? null : (
     <>
       <div
-        className={`${classes.titleCard} plant-dialog__title-card`}
+        className={`${classes.titleCard} plant-dialog__title-card ${
+          imageURL !== null ? 'plant-dialog-content--image-background' : ''
+        }`}
         style={{ backgroundImage: `url(${imageURL})` }}
       >
         <div className="plant-dialog-content__title-card-text">
           {editMode ? (
-            <>
+            <div className="plant-dialog-content__edit-name-fields">
               <TextField
                 name="name"
                 label="Display name"
@@ -234,7 +248,7 @@ export const PlantDialogContentView = ({
               />
               <Button onClick={handleEndEdit}>Cancel</Button>
               <Button onClick={() => handleSubmitEdit(values)}>Confirm Changes</Button>
-            </>
+            </div>
           ) : (
             <>
               <Typography className={classes.titleText} variant="h4">
@@ -261,7 +275,8 @@ export const PlantDialogContentView = ({
               open={Boolean(anchorEl)}
               onClose={handleClose}
             >
-              <MenuItem onClick={handleClickEdit}>Edit plant</MenuItem>
+              <MenuItem onClick={handleClickEdit}>Edit name</MenuItem>
+              <MenuItem onClick={() => handleClose()}>Change image</MenuItem>
               <MenuItem onClick={() => handleDelete(id)}>Delete plant</MenuItem>
             </Menu>
           </div>

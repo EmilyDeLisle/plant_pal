@@ -1,0 +1,57 @@
+/* .dzu-inputLabel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  font-family: 'Helvetica', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: #2484FF;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  cursor: pointer;
+}
+
+.dzu-input {
+  display: none;
+}
+
+.dzu-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 120px;
+  overflow: scroll;
+  margin: 0 auto;
+  position: relative;
+  box-sizing: border-box;
+  transition: all .15s linear;
+  border: 2px solid #d9d9d9;
+  border-radius: 4px;
+}
+
+.dzu-previewImage {
+  width: auto;
+  max-height: 40px;
+  max-width: 140px;
+  border-radius: 4px;
+}
+
+.dzu-previewContainer {
+  padding: 40px 3%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  width: 100%;
+  min-height: 60px;
+  z-index: 1;
+  border-bottom: 1px solid #ECECEC;
+  box-sizing: border-box;
+} */
