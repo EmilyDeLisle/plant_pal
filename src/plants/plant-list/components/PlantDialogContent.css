@@ -1,5 +1,15 @@
-.plant-dialog-content__title-card-text {
-  flex-grow: 1;
+.plant-dialog__title-card {
+  width: calc(100% - 4em + 2px);
+  height: 13em;
+  background: url('../../../assets/palm.jpg') no-repeat center center fixed;
+  padding: 2em;
+  display: flex;
+  flex-direction: column;
+}
+
+.plant-dialog-content__title-card-top {
+  display: flex;
+  justify-content: space-between;
 }
 
 .plant-dialog-content__edit-name-fields {
@@ -12,9 +22,4 @@
 
 .plant-dialog-content__controls {
   margin-top: -1em;
-  display: flex;
-}
-
-.plant-dialog-content--image-background {
-  background: no-repeat center center fixed;
 }

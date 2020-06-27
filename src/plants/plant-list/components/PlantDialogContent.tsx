@@ -9,6 +9,7 @@ import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import { Moment } from 'moment'
 import { firestore } from 'firebase'
@@ -18,16 +19,26 @@ import { getDatabase, getStorage } from '../../../firebase'
 import { EventSection } from './EventSection'
 import { ImageUpload } from './ImageUpload'
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    titleCard: {
+      color: theme.palette.primary.contrastText,
+    },
+    titleText: {
+      textShadow: '2px 2px 6px rgba(0, 0, 0, 0.5)',
+    },
+  })
+)
+
 export interface PlantDialogContentProps {
   handleClose: () => void
-  classes: any
 }
 
 export interface PlantDialogContentViewProps extends PlantDialogContentProps {
   plant: Plant
 }
 
-export const PlantDialogContentAdd = ({ handleClose, classes }: PlantDialogContentProps) => {
+export const PlantDialogContentAdd = ({ handleClose }: PlantDialogContentProps) => {
   const initialValues: FormValues = {
     name: '',
     altName: '',
@@ -37,6 +48,7 @@ export const PlantDialogContentAdd = ({ handleClose, classes }: PlantDialogConte
   const [values, setValues] = useState(initialValues)
   const [errorState, setErrorState] = useState(false)
   const [image, setImage] = useState<string | null>(null)
+  const classes = useStyles()
 
   const handleChange = (name: string, value: string | Moment): void => {
     setValues((prevValues) => ({
@@ -77,21 +89,19 @@ export const PlantDialogContentAdd = ({ handleClose, classes }: PlantDialogConte
         className={`${classes.titleCard} plant-dialog__title-card ${
           image !== null ? 'plant-dialog-content--image-background' : ''
         }`}
-        style={{ backgroundImage: `url(${image})` }}
+        style={{ backgroundImage: image !== null ? `url(${image})` : '' }}
       >
-        <div className="plant-dialog-content__title-card-text">
+        <div className="plant-dialog-content__title-card-top">
           <Typography className={classes.titleText} variant="h4">
             Add new plant
           </Typography>
-          <ImageUpload handleSelectedImage={handleSelectedImage} />
-        </div>
-        <div>
           <div className="plant-dialog-content__controls">
             <IconButton color="inherit" edge="end" onClick={handleClose}>
               <CloseIcon />
             </IconButton>
           </div>
         </div>
+        <ImageUpload handleSelectedImage={handleSelectedImage} />
       </div>
       <>
         <DialogContent>
@@ -149,11 +159,7 @@ export const PlantDialogContentAdd = ({ handleClose, classes }: PlantDialogConte
   )
 }
 
-export const PlantDialogContentView = ({
-  plant,
-  classes,
-  handleClose,
-}: PlantDialogContentViewProps) => {
+export const PlantDialogContentView = ({ plant, handleClose }: PlantDialogContentViewProps) => {
   const { altName, name, id, imagePath } = plant
   const initialValues: FormValues = {
     name: name,
@@ -164,6 +170,7 @@ export const PlantDialogContentView = ({
   const [values, setValues] = useState(initialValues)
   const [errorState, setErrorState] = useState(false)
   const [imageURL, setImageURL] = useState<string | null>('')
+  const classes = useStyles()
 
   useEffect(() => {
     !!imagePath ? getStorage().getImage(imagePath, (url) => setImageURL(url)) : setImageURL(null)
@@ -220,12 +227,10 @@ export const PlantDialogContentView = ({
   return imageURL === '' ? null : (
     <>
       <div
-        className={`${classes.titleCard} plant-dialog__title-card ${
-          imageURL !== null ? 'plant-dialog-content--image-background' : ''
-        }`}
+        className={`${classes.titleCard} plant-dialog__title-card`}
         style={{ backgroundImage: `url(${imageURL})` }}
       >
-        <div className="plant-dialog-content__title-card-text">
+        <div className="plant-dialog-content__title-card-top">
           {editMode ? (
             <div className="plant-dialog-content__edit-name-fields">
               <TextField
@@ -250,15 +255,13 @@ export const PlantDialogContentView = ({
               <Button onClick={() => handleSubmitEdit(values)}>Confirm Changes</Button>
             </div>
           ) : (
-            <>
+            <div>
               <Typography className={classes.titleText} variant="h4">
                 {name}
               </Typography>
               <Typography className={classes.titleText}>{altName}</Typography>
-            </>
+            </div>
           )}
-        </div>
-        <div>
           <div className="plant-dialog-content__controls">
             {!editMode && (
               <IconButton color="inherit" edge="end" onClick={handleClickMenu}>
