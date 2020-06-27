@@ -29,7 +29,6 @@ export const ImageUpload = ({ handleSelectedImage }: ImageUploadProps) => {
 
   const handleChangeStatus = (file: IFileWithMeta, status: StatusValue) => {
     if (status === 'done') {
-      console.log(file)
       handleSelectedImage(file)
       setImageChosen(true)
       setShowDropzone(false)

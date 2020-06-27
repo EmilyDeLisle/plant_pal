@@ -5,6 +5,7 @@ import { getAuth } from './init'
 export default class StorageManager {
   static instance: StorageManager
   storageRef: storage.Reference
+  imagesRef: storage.Reference | null = null
 
   /**
    * Get an instance of StorageManager.
@@ -25,18 +26,38 @@ export default class StorageManager {
     this.storageRef = firebase.storage().ref()
   }
 
+  setReference = () => {
+    const uuid = getAuth().getCurrentUser()?.uid
+    this.imagesRef = uuid ? this.storageRef.child(uuid) : null
+  }
+
   getImage = (
     imagePath: string,
     handleImage?: (url: string) => void,
     onError?: (reason: any) => void | PromiseLike<void>
   ): void => {
+    this.setReference()
     this.storageRef
       ?.child(imagePath)
       .getDownloadURL()
       .then((url: string) => {
-        console.log(url)
         !!handleImage && handleImage(url)
       })
       .catch(onError)
+  }
+
+  uploadImage = (
+    imageFile: File,
+    plantID: string,
+    onSuccess?: (a: storage.UploadTaskSnapshot) => any,
+    onError?: (reason: any) => void | PromiseLike<void>
+  ): void => {
+    this.setReference()
+    !!this.imagesRef &&
+      this.imagesRef
+        .child(`${plantID}/${imageFile.name}`)
+        .put(imageFile)
+        .then(onSuccess)
+        .catch(onError)
   }
 }

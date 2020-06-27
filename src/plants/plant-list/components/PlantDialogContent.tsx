@@ -16,7 +16,7 @@ import { firestore } from 'firebase'
 import { DatePicker } from '@material-ui/pickers'
 import { IFileWithMeta } from 'react-dropzone-uploader'
 import { AddFormValues, FormValues, Plant, PlantEventType, PlantProps } from '../../../models'
-import { getAuth, getDatabase, getStorage } from '../../../firebase'
+import { getDatabase, getStorage } from '../../../firebase'
 import { EventSection } from './EventSection'
 import { ImageUpload } from './ImageUpload'
 
@@ -49,7 +49,7 @@ export const PlantDialogContentAdd = ({ handleClose }: PlantDialogContentProps) 
   }
   const [values, setValues] = useState(initialValues)
   const [errorState, setErrorState] = useState(false)
-  const [file, setFile] = useState<File | null>(null)
+  const [imageFile, setImageFile] = useState<File | null>(null)
   const [image, setImage] = useState<string | null>(null)
   const classes = useStyles()
 
@@ -67,13 +67,14 @@ export const PlantDialogContentAdd = ({ handleClose }: PlantDialogContentProps) 
     } = imageFile
     !!previewUrl && setImage(previewUrl)
     handleChange('fileName', name)
-    setFile(file)
+    setImageFile(file)
   }
 
   const handleSubmit = (values: AddFormValues): void => {
     const db = getDatabase()
     const storage = getStorage()
     const { name, altName, lastWateredDate, lastFertilizedDate, fileName } = values
+
     if (!name) {
       setErrorState(true)
     } else {
@@ -85,11 +86,21 @@ export const PlantDialogContentAdd = ({ handleClose }: PlantDialogContentProps) 
         ? [firestore.Timestamp.fromDate(lastFertilizedDate.toDate())]
         : []
       const plant: PlantProps = { name, altName, wateringDates, fertilizingDates }
-      db.addPlant(plant, fileName, () => {
+
+      // add plant to db
+      const plantID = db.addPlant(plant, fileName, () => {
         console.log('Plant added successfully')
         handleClose()
         setValues(initialValues)
       })
+
+      // add image file to storage
+      !!fileName &&
+        !!imageFile &&
+        plantID &&
+        storage.uploadImage(imageFile, plantID, (snapshot) => {
+          console.log('Image uploaded successfully')
+        })
     }
   }
 

@@ -52,14 +52,16 @@ export default class DatabaseManager {
     fileName?: string,
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
     onError?: ((reason: any) => PromiseLike<never>) | null | undefined
-  ): void => {
+  ): string | undefined => {
     this.setReference()
     const docRef = this.collectionRef?.doc()
+    const id = docRef?.id
     if (!!docRef) {
-      const imagePath = !!this.uuid && !!fileName ? `${this.uuid}/${docRef.id}/${fileName}` : ''
-      const plant = new Plant({ ...plantValues, id: docRef.id, imagePath })
+      const imagePath = !!this.uuid && !!fileName ? `${this.uuid}/${id}/${fileName}` : ''
+      const plant = new Plant({ ...plantValues, id: id, imagePath })
       !!plant && docRef.withConverter(plantConverter).set(plant).then(onSuccess).catch(onError)
     }
+    return id
   }
 
   updatePlantNames = (
