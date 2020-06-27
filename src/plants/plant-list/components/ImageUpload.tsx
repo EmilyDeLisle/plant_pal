@@ -1,8 +1,6 @@
 import React, { useState } from 'react'
 import Dropzone, {
-  IDropzoneProps,
   IFileWithMeta,
-  IInputProps,
   ILayoutProps,
   StatusValue,
 } from 'react-dropzone-uploader'
@@ -17,7 +15,7 @@ const Layout = ({ input, dropzoneProps, extra: { maxFiles } }: ILayoutProps) => 
 }
 
 interface ImageUploadProps {
-  handleSelectedImage: (image: string) => void
+  handleSelectedImage: (image: IFileWithMeta) => void
 }
 
 export const ImageUpload = ({ handleSelectedImage }: ImageUploadProps) => {
@@ -29,16 +27,10 @@ export const ImageUpload = ({ handleSelectedImage }: ImageUploadProps) => {
     inputLabel: 'image-upload__input-label',
   }
 
-  const handleSubmit: IDropzoneProps['onSubmit'] = (files, allFiles) => {
-    console.log(files.map((f) => f.meta))
-    allFiles.forEach((f) => f.remove())
-  }
-
   const handleChangeStatus = (file: IFileWithMeta, status: StatusValue) => {
-    const url = file.meta.previewUrl
-    if (status === 'done' && !!url) {
+    if (status === 'done') {
       console.log(file)
-      handleSelectedImage(url)
+      handleSelectedImage(file)
       setImageChosen(true)
       setShowDropzone(false)
     }
@@ -48,7 +40,6 @@ export const ImageUpload = ({ handleSelectedImage }: ImageUploadProps) => {
     <div>
       <Dropzone
         onChangeStatus={handleChangeStatus}
-        onSubmit={handleSubmit}
         maxFiles={1}
         multiple={false}
         LayoutComponent={Layout}

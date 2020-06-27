@@ -9,6 +9,7 @@ export default class DatabaseManager {
   static instance: DatabaseManager | null = null
   db: firestore.Firestore | null = null
   collectionRef: firestore.CollectionReference<firestore.DocumentData> | undefined
+  uuid?: string
   unsubscribe: (() => void) | undefined
 
   static getInstance() {
@@ -26,9 +27,9 @@ export default class DatabaseManager {
   }
 
   setReference = () => {
-    const uuid = getAuth().getCurrentUser()?.uid
-    if (!this.collectionRef && !!uuid) {
-      this.collectionRef = this.db?.collection(`users/${uuid}/plants`)
+    this.uuid = getAuth().getCurrentUser()?.uid
+    if (!this.collectionRef && !!this.uuid) {
+      this.collectionRef = this.db?.collection(`users/${this.uuid}/plants`)
     }
   }
 
@@ -48,13 +49,15 @@ export default class DatabaseManager {
 
   addPlant = (
     plantValues: PlantProps,
+    fileName?: string,
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
     onError?: ((reason: any) => PromiseLike<never>) | null | undefined
   ): void => {
     this.setReference()
     const docRef = this.collectionRef?.doc()
     if (!!docRef) {
-      const plant = new Plant({ ...plantValues, id: docRef.id })
+      const imagePath = !!this.uuid && !!fileName ? `${this.uuid}/${docRef.id}/${fileName}` : ''
+      const plant = new Plant({ ...plantValues, id: docRef.id, imagePath })
       !!plant && docRef.withConverter(plantConverter).set(plant).then(onSuccess).catch(onError)
     }
   }

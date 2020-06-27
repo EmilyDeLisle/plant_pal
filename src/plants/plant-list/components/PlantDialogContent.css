@@ -1,6 +1,7 @@
 .plant-dialog__title-card {
   width: calc(100% - 4em + 2px);
   height: 13em;
+  /* Background image by Freepik - https://www.freepik.com/free-photos-vectors/pattern*/ 
   background: url('../../../assets/palm.jpg') no-repeat center center fixed;
   padding: 2em;
   display: flex;

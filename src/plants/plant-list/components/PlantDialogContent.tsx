@@ -14,8 +14,9 @@ import MoreVertIcon from '@material-ui/icons/MoreVert'
 import { Moment } from 'moment'
 import { firestore } from 'firebase'
 import { DatePicker } from '@material-ui/pickers'
-import { FormValues, Plant, PlantEventType, PlantProps } from '../../../models'
-import { getDatabase, getStorage } from '../../../firebase'
+import { IFileWithMeta } from 'react-dropzone-uploader'
+import { AddFormValues, FormValues, Plant, PlantEventType, PlantProps } from '../../../models'
+import { getAuth, getDatabase, getStorage } from '../../../firebase'
 import { EventSection } from './EventSection'
 import { ImageUpload } from './ImageUpload'
 
@@ -39,14 +40,16 @@ export interface PlantDialogContentViewProps extends PlantDialogContentProps {
 }
 
 export const PlantDialogContentAdd = ({ handleClose }: PlantDialogContentProps) => {
-  const initialValues: FormValues = {
+  const initialValues: AddFormValues = {
     name: '',
     altName: '',
     lastWateredDate: null,
     lastFertilizedDate: null,
+    fileName: '',
   }
   const [values, setValues] = useState(initialValues)
   const [errorState, setErrorState] = useState(false)
+  const [file, setFile] = useState<File | null>(null)
   const [image, setImage] = useState<string | null>(null)
   const classes = useStyles()
 
@@ -57,25 +60,32 @@ export const PlantDialogContentAdd = ({ handleClose }: PlantDialogContentProps) 
     }))
   }
 
-  const handleSelectedImage = (imageFile: string): void => {
-    setImage(imageFile)
+  const handleSelectedImage = (imageFile: IFileWithMeta): void => {
+    const {
+      file,
+      meta: { name, previewUrl },
+    } = imageFile
+    !!previewUrl && setImage(previewUrl)
+    handleChange('fileName', name)
+    setFile(file)
   }
 
-  const handleSubmit = (values: FormValues): void => {
-    const { name, altName, lastWateredDate, lastFertilizedDate } = values
+  const handleSubmit = (values: AddFormValues): void => {
+    const db = getDatabase()
+    const storage = getStorage()
+    const { name, altName, lastWateredDate, lastFertilizedDate, fileName } = values
     if (!name) {
       setErrorState(true)
     } else {
       setErrorState(false)
-      const wateringDates = lastWateredDate
+      const wateringDates = !!lastWateredDate
         ? [firestore.Timestamp.fromDate(lastWateredDate.toDate())]
         : []
-      const fertilizingDates = lastFertilizedDate
+      const fertilizingDates = !!lastFertilizedDate
         ? [firestore.Timestamp.fromDate(lastFertilizedDate.toDate())]
         : []
       const plant: PlantProps = { name, altName, wateringDates, fertilizingDates }
-      const db = getDatabase()
-      db.addPlant(plant, () => {
+      db.addPlant(plant, fileName, () => {
         console.log('Plant added successfully')
         handleClose()
         setValues(initialValues)
@@ -228,7 +238,7 @@ export const PlantDialogContentView = ({ plant, handleClose }: PlantDialogConten
     <>
       <div
         className={`${classes.titleCard} plant-dialog__title-card`}
-        style={{ backgroundImage: `url(${imageURL})` }}
+        style={imageURL !== null ? { backgroundImage: `url(${imageURL})` } : undefined}
       >
         <div className="plant-dialog-content__title-card-top">
           {editMode ? (
