@@ -1,9 +1,5 @@
 import React, { useState } from 'react'
-import Dropzone, {
-  IFileWithMeta,
-  ILayoutProps,
-  StatusValue,
-} from 'react-dropzone-uploader'
+import Dropzone, { IExtra, IFileWithMeta, ILayoutProps, StatusValue } from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
@@ -15,11 +11,17 @@ const Layout = ({ input, dropzoneProps, extra: { maxFiles } }: ILayoutProps) => 
 }
 
 interface ImageUploadProps {
+  onlyDropzone?: boolean
   handleSelectedImage: (image: IFileWithMeta) => void
+  handleCancel?: () => void
 }
 
-export const ImageUpload = ({ handleSelectedImage }: ImageUploadProps) => {
-  const [showDropzone, setShowDropzone] = useState(false)
+export const ImageUpload = ({
+  onlyDropzone,
+  handleSelectedImage,
+  handleCancel,
+}: ImageUploadProps) => {
+  const [showDropzone, setShowDropzone] = useState(onlyDropzone ?? false)
   const [imageChosen, setImageChosen] = useState(false)
 
   const classNames = {
@@ -35,25 +37,30 @@ export const ImageUpload = ({ handleSelectedImage }: ImageUploadProps) => {
     }
   }
 
-  return showDropzone ? (
+  const getDropzone = () => (
+    <Dropzone
+      onChangeStatus={handleChangeStatus}
+      maxFiles={1}
+      maxSizeBytes={1048576}
+      multiple={false}
+      LayoutComponent={Layout}
+      accept=".png, .jpg, .jpeg"
+      classNames={classNames}
+      inputContent={(files, extra) =>
+        extra.reject ? '1 MB or less PNG or JPG/JPEG files only' : 'Click or drag and drop an image file'
+      }
+      styles={{
+        dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
+        inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),
+      }}
+    />
+  )
+
+  return onlyDropzone ? (
+    getDropzone()
+  ) : showDropzone ? (
     <div>
-      <Dropzone
-        onChangeStatus={handleChangeStatus}
-        maxFiles={1}
-        multiple={false}
-        LayoutComponent={Layout}
-        accept=".png, .jpg, .jpeg"
-        classNames={classNames}
-        inputContent={(files, extra) =>
-          extra.reject
-            ? 'PNG or JPG/JPEG files only'
-            : 'Click or drag and drop an image file'
-        }
-        styles={{
-          dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
-          inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),
-        }}
-      />
+      {getDropzone()}
       <Button color="inherit" onClick={() => setShowDropzone(false)}>
         Cancel
       </Button>

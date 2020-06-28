@@ -2,7 +2,15 @@ import { Plant, PlantProps } from '../models'
 
 export const plantConverter = {
   toFirestore: (plant: Plant) => {
-    const { id, name, altName, wateringDates, fertilizingDates, lastCheckedDate, imagePath } = plant
+    const {
+      id,
+      name,
+      altName,
+      wateringDates,
+      fertilizingDates,
+      lastCheckedDate,
+      imageFileName,
+    } = plant
     return {
       id: id,
       name: name,
@@ -10,7 +18,7 @@ export const plantConverter = {
       wateringDates: wateringDates,
       fertilizingDates: fertilizingDates,
       lastCheckedDate: lastCheckedDate,
-      imagePath: imagePath,
+      imageFileName: imageFileName,
     }
   },
   fromFirestore(

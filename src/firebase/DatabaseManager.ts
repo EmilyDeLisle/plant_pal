@@ -57,8 +57,8 @@ export default class DatabaseManager {
     const docRef = this.collectionRef?.doc()
     const id = docRef?.id
     if (!!docRef) {
-      const imagePath = !!this.uuid && !!fileName ? `${this.uuid}/${id}/${fileName}` : ''
-      const plant = new Plant({ ...plantValues, id: id, imagePath })
+      const imageFileName = !!fileName ? fileName : ''
+      const plant = new Plant({ ...plantValues, id: id, imageFileName })
       !!plant && docRef.withConverter(plantConverter).set(plant).then(onSuccess).catch(onError)
     }
     return id
@@ -72,6 +72,16 @@ export default class DatabaseManager {
   ): void => {
     this.setReference()
     this.collectionRef?.doc(id)?.update(values).then(onSuccess).catch(onError)
+  }
+
+  updatePlantImageFileName = (
+    id: string,
+    fileName: string,
+    onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
+    onError?: ((reason: any) => PromiseLike<never>) | null | undefined
+  ): void => {
+    this.setReference()
+    this.collectionRef?.doc(id)?.update({ imageFileName: fileName }).then(onSuccess).catch(onError)
   }
 
   deleteEvent = (

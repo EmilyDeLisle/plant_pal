@@ -28,17 +28,20 @@ export default class StorageManager {
 
   setReference = () => {
     const uuid = getAuth().getCurrentUser()?.uid
-    this.imagesRef = uuid ? this.storageRef.child(uuid) : null
+    if (!this.imagesRef) {
+      this.imagesRef = !!uuid ? this.storageRef.child(uuid) : null
+    }
   }
 
   getImage = (
-    imagePath: string,
+    plantID: string,
+    imageFileName: string,
     handleImage?: (url: string) => void,
     onError?: (reason: any) => void | PromiseLike<void>
   ): void => {
     this.setReference()
-    this.storageRef
-      ?.child(imagePath)
+    this.imagesRef
+      ?.child(`${plantID}/${imageFileName}`)
       .getDownloadURL()
       .then((url: string) => {
         !!handleImage && handleImage(url)
@@ -59,5 +62,16 @@ export default class StorageManager {
         .put(imageFile)
         .then(onSuccess)
         .catch(onError)
+  }
+
+  deleteImage = (
+    plantID: string,
+    prevFileName: string,
+    onSuccess?: (a: storage.UploadTaskSnapshot) => any,
+    onError?: (reason: any) => void | PromiseLike<void>
+  ): void => {
+    this.setReference()
+    !!this.imagesRef &&
+      this.imagesRef.child(`${plantID}/${prevFileName}`).delete().then(onSuccess).catch(onError)
   }
 }

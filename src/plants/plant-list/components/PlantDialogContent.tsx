@@ -181,20 +181,23 @@ export const PlantDialogContentAdd = ({ handleClose }: PlantDialogContentProps) 
 }
 
 export const PlantDialogContentView = ({ plant, handleClose }: PlantDialogContentViewProps) => {
-  const { altName, name, id, imagePath } = plant
+  const { altName, name, id, imageFileName } = plant
   const initialValues: FormValues = {
     name: name,
     altName: altName,
   }
-  const [editMode, setEditMode] = useState(false)
+  const [editMode, setEditMode] = useState<'names' | 'image' | ''>('')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [values, setValues] = useState(initialValues)
   const [errorState, setErrorState] = useState(false)
   const [imageURL, setImageURL] = useState<string | null>('')
+  const [newImageFile, setNewImageFile] = useState<File | null>(null)
   const classes = useStyles()
 
   useEffect(() => {
-    !!imagePath ? getStorage().getImage(imagePath, (url) => setImageURL(url)) : setImageURL(null)
+    !!imageFileName
+      ? getStorage().getImage(id, imageFileName, (url) => setImageURL(url))
+      : setImageURL(null)
   }, [])
 
   const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
@@ -205,14 +208,14 @@ export const PlantDialogContentView = ({ plant, handleClose }: PlantDialogConten
     setAnchorEl(null)
   }
 
-  const handleClickEdit = (): void => {
-    setEditMode(true)
+  const handleClickEdit = (mode: 'names' | 'image' | ''): void => {
+    setEditMode(mode)
     handleCloseMenu()
   }
 
-  const handleEndEdit = (): void => {
+  const handleEndEditNames = (): void => {
     setValues(initialValues)
-    setEditMode(false)
+    setEditMode('')
   }
 
   const handleEditValues = (name: string, value: string | Moment): void => {
@@ -231,7 +234,7 @@ export const PlantDialogContentView = ({ plant, handleClose }: PlantDialogConten
       const db = getDatabase()
       db.updatePlantNames(id, values, () => {
         console.log('Plant successfully updated')
-        handleEndEdit()
+        handleEndEditNames()
       })
     }
   }
@@ -245,6 +248,34 @@ export const PlantDialogContentView = ({ plant, handleClose }: PlantDialogConten
     handleClose()
   }
 
+  const handleSelectedImage = (imageFile: IFileWithMeta): void => {
+    const {
+      file,
+      meta: { previewUrl },
+    } = imageFile
+    !!previewUrl && setImageURL(previewUrl)
+    setNewImageFile(file)
+  }
+
+  const handleUploadNewImage = () => {
+    setEditMode('')
+    const db = getDatabase()
+    const storage = getStorage()
+    if (!!newImageFile) {
+      db.updatePlantImageFileName(id, newImageFile.name, () => {
+        console.log('Image file name updated in db')
+      })
+      storage.uploadImage(newImageFile, id, (snapshot) => {
+        console.log('New image successfully uploaded')
+        setEditMode('')
+        !!imageFileName &&
+          storage.deleteImage(id, imageFileName, () => {
+            console.log('Old image successfully deleted')
+          })
+      })
+    }
+  }
+
   return imageURL === '' ? null : (
     <>
       <div
@@ -252,30 +283,7 @@ export const PlantDialogContentView = ({ plant, handleClose }: PlantDialogConten
         style={imageURL !== null ? { backgroundImage: `url(${imageURL})` } : undefined}
       >
         <div className="plant-dialog-content__title-card-top">
-          {editMode ? (
-            <div className="plant-dialog-content__edit-name-fields">
-              <TextField
-                name="name"
-                label="Display name"
-                helperText={errorState ? 'Name is required' : 'Name to search and sort by'}
-                error={errorState}
-                value={values.name}
-                onChange={({ target: { name, value } }) => handleEditValues(name, value)}
-                required
-                fullWidth
-              />
-              <TextField
-                name="altName"
-                label="Alternate name (optional)"
-                helperText="Scientific name, nickname, unique identifier, etc"
-                value={values.altName}
-                onChange={({ target: { name, value } }) => handleEditValues(name, value)}
-                fullWidth
-              />
-              <Button onClick={handleEndEdit}>Cancel</Button>
-              <Button onClick={() => handleSubmitEdit(values)}>Confirm Changes</Button>
-            </div>
-          ) : (
+          {editMode !== 'names' && (
             <div>
               <Typography className={classes.titleText} variant="h4">
                 {name}
@@ -284,7 +292,7 @@ export const PlantDialogContentView = ({ plant, handleClose }: PlantDialogConten
             </div>
           )}
           <div className="plant-dialog-content__controls">
-            {!editMode && (
+            {editMode === '' && (
               <IconButton color="inherit" edge="end" onClick={handleClickMenu}>
                 <MoreVertIcon />
               </IconButton>
@@ -299,12 +307,49 @@ export const PlantDialogContentView = ({ plant, handleClose }: PlantDialogConten
               open={Boolean(anchorEl)}
               onClose={handleClose}
             >
-              <MenuItem onClick={handleClickEdit}>Edit name</MenuItem>
-              <MenuItem onClick={() => handleClose()}>Change image</MenuItem>
+              <MenuItem onClick={() => handleClickEdit('names')}>Edit name</MenuItem>
+              <MenuItem onClick={() => handleClickEdit('image')}>Change image</MenuItem>
               <MenuItem onClick={() => handleDelete(id)}>Delete plant</MenuItem>
             </Menu>
           </div>
         </div>
+        {editMode === 'image' && (
+          <>
+            <ImageUpload onlyDropzone handleSelectedImage={handleSelectedImage} />
+            <div>
+              <Button color='inherit' onClick={() => setEditMode('')}>Cancel</Button>
+              <Button color="primary" variant="contained" onClick={() => handleUploadNewImage()}>
+                Change image
+              </Button>
+            </div>
+          </>
+        )}
+        {editMode === 'names' && (
+          <div className="plant-dialog-content__edit-name-fields">
+            <TextField
+              name="name"
+              label="Display name"
+              helperText={errorState ? 'Name is required' : 'Name to search and sort by'}
+              error={errorState}
+              value={values.name}
+              onChange={({ target: { name, value } }) => handleEditValues(name, value)}
+              required
+              fullWidth
+            />
+            <TextField
+              name="altName"
+              label="Alternate name (optional)"
+              helperText="Scientific name, nickname, unique identifier, etc"
+              value={values.altName}
+              onChange={({ target: { name, value } }) => handleEditValues(name, value)}
+              fullWidth
+            />
+            <Button onClick={handleEndEditNames}>Cancel</Button>
+            <Button color="primary" variant="contained" onClick={() => handleSubmitEdit(values)}>
+              Confirm Changes
+            </Button>
+          </div>
+        )}
       </div>
       <DialogContent>
         <EventSection eventType={PlantEventType.WATER} plant={plant} />
