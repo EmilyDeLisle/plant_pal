@@ -53,6 +53,8 @@ export const PlantDialogContentAdd = ({ handleClose }: PlantDialogContentProps) 
   const [image, setImage] = useState<string | null>(null)
   const classes = useStyles()
 
+  // const [dates, setDates] = useState('')
+
   const handleChange = (name: string, value: string | Moment): void => {
     setValues((prevValues) => ({
       ...prevValues,
@@ -79,12 +81,30 @@ export const PlantDialogContentAdd = ({ handleClose }: PlantDialogContentProps) 
       setErrorState(true)
     } else {
       setErrorState(false)
-      const wateringDates = !!lastWateredDate
-        ? [firestore.Timestamp.fromDate(lastWateredDate.toDate())]
-        : []
-      const fertilizingDates = !!lastFertilizedDate
-        ? [firestore.Timestamp.fromDate(lastFertilizedDate.toDate())]
-        : []
+      // let wateringDates: firestore.Timestamp[] = []
+      // let fertilizingDates: firestore.Timestamp[] = []
+      // if (!!dates) {
+      //   const datesArray = dates.split(', ')
+      //   datesArray.forEach(date => {
+      //     const end = date.length - 1
+      //     const dateEnd = date.length - 2
+      //     if (date.charAt(end) === 'F') {
+      //       const dateString = date.substring(dateEnd, 0)
+      //       wateringDates.push(firestore.Timestamp.fromDate(new Date(dateString)))
+      //       fertilizingDates.push(firestore.Timestamp.fromDate(new Date(dateString)))
+      //     } else {
+      //       wateringDates.push(firestore.Timestamp.fromDate(new Date(date)))
+      //     }
+      //   })
+      // } else {
+        const wateringDates = !!lastWateredDate
+          ? [firestore.Timestamp.fromDate(lastWateredDate.toDate())]
+          : []
+        const fertilizingDates = !!lastFertilizedDate
+          ? [firestore.Timestamp.fromDate(lastFertilizedDate.toDate())]
+          : []
+      // }
+
       const plant: PlantProps = { name, altName, wateringDates, fertilizingDates }
 
       // add plant to db
@@ -94,11 +114,11 @@ export const PlantDialogContentAdd = ({ handleClose }: PlantDialogContentProps) 
         setValues(initialValues)
       })
 
-      // add image file to storage
+      // // add image file to storage
       !!fileName &&
         !!imageFile &&
         plantID &&
-        storage.uploadImage(imageFile, plantID, (snapshot) => {
+        storage.uploadImage(imageFile, plantID, (snapshot: firebase.storage.UploadTaskSnapshot) => {
           console.log('Image uploaded successfully')
         })
     }
@@ -145,6 +165,14 @@ export const PlantDialogContentAdd = ({ handleClose }: PlantDialogContentProps) 
             onChange={({ target: { name, value } }) => handleChange(name, value)}
             fullWidth
           />
+          {/* <TextField
+            name="Dates"
+            label="dates"
+            value={dates}
+            onChange={({ target: { value } }) => setDates(value)}
+            fullWidth
+            multiline
+          /> */}
           <DatePicker
             disableFuture
             variant="inline"
@@ -196,7 +224,7 @@ export const PlantDialogContentView = ({ plant, handleClose }: PlantDialogConten
 
   useEffect(() => {
     !!imageFileName
-      ? getStorage().getImage(id, imageFileName, (url) => setImageURL(url))
+      ? getStorage().getImage(id, imageFileName, (url: string) => setImageURL(url))
       : setImageURL(null)
   }, [])
 
@@ -265,7 +293,7 @@ export const PlantDialogContentView = ({ plant, handleClose }: PlantDialogConten
       db.updatePlantImageFileName(id, newImageFile.name, () => {
         console.log('Image file name updated in db')
       })
-      storage.uploadImage(newImageFile, id, (snapshot) => {
+      storage.uploadImage(newImageFile, id, (snapshot: firebase.storage.UploadTaskSnapshot) => {
         console.log('New image successfully uploaded')
         setEditMode('')
         !!imageFileName &&
@@ -317,7 +345,9 @@ export const PlantDialogContentView = ({ plant, handleClose }: PlantDialogConten
           <>
             <ImageUpload onlyDropzone handleSelectedImage={handleSelectedImage} />
             <div>
-              <Button color='inherit' onClick={() => setEditMode('')}>Cancel</Button>
+              <Button color="inherit" onClick={() => setEditMode('')}>
+                Cancel
+              </Button>
               <Button color="primary" variant="contained" onClick={() => handleUploadNewImage()}>
                 Change image
               </Button>
