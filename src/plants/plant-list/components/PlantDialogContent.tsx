@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Button from '@material-ui/core/Button'
 import CloseIcon from '@material-ui/icons/Close'
 import DialogActions from '@material-ui/core/DialogActions'
@@ -9,77 +9,120 @@ import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import { Moment } from 'moment'
 import { firestore } from 'firebase'
 import { DatePicker } from '@material-ui/pickers'
-import { FormValues, Plant, PlantEventType } from '../../../models'
-import { getDatabase } from '../../../firebase'
+import { IFileWithMeta } from 'react-dropzone-uploader'
+import { AddFormValues, FormValues, Plant, PlantEventType, PlantProps } from '../../../models'
+import { getDatabase, getStorage } from '../../../firebase'
 import { EventSection } from './EventSection'
+import { ImageUpload } from './ImageUpload'
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    titleCard: {
+      color: theme.palette.primary.contrastText,
+    },
+    titleText: {
+      textShadow: '2px 2px 6px rgba(0, 0, 0, 0.5)',
+    },
+  })
+)
 
 export interface PlantDialogContentProps {
   handleClose: () => void
-  classes: any
 }
 
 export interface PlantDialogContentViewProps extends PlantDialogContentProps {
   plant: Plant
 }
 
-export const PlantDialogContentAdd = ({ handleClose, classes }: PlantDialogContentProps) => {
-  const initialValues: FormValues = {
+export const PlantDialogContentAdd = ({ handleClose }: PlantDialogContentProps) => {
+  const initialValues: AddFormValues = {
     name: '',
     altName: '',
     lastWateredDate: null,
     lastFertilizedDate: null,
+    fileName: '',
   }
   const [values, setValues] = useState(initialValues)
   const [errorState, setErrorState] = useState(false)
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [image, setImage] = useState<string | null>(null)
+  const classes = useStyles()
 
-  const handleChange = (name: string, value: string | Moment) => {
+  const handleChange = (name: string, value: string | Moment): void => {
     setValues((prevValues) => ({
       ...prevValues,
       [name]: value,
     }))
   }
 
-  const handleSubmit = (values: FormValues) => {
-    const { name, altName, lastWateredDate, lastFertilizedDate } = values
+  const handleSelectedImage = (imageFile: IFileWithMeta): void => {
+    const {
+      file,
+      meta: { name, previewUrl },
+    } = imageFile
+    !!previewUrl && setImage(previewUrl)
+    handleChange('fileName', name)
+    setImageFile(file)
+  }
+
+  const handleSubmit = (values: AddFormValues): void => {
+    const db = getDatabase()
+    const storage = getStorage()
+    const { name, altName, lastWateredDate, lastFertilizedDate, fileName } = values
+
     if (!name) {
       setErrorState(true)
     } else {
       setErrorState(false)
-      const wateringDates = lastWateredDate
+      const wateringDates = !!lastWateredDate
         ? [firestore.Timestamp.fromDate(lastWateredDate.toDate())]
         : []
-      const fertilizingDates = lastFertilizedDate
+      const fertilizingDates = !!lastFertilizedDate
         ? [firestore.Timestamp.fromDate(lastFertilizedDate.toDate())]
         : []
-      const plant = new Plant({ name, altName, wateringDates, fertilizingDates })
-      const db = getDatabase()
-      db.addPlant(plant, () => {
+      const plant: PlantProps = { name, altName, wateringDates, fertilizingDates }
+
+      // add plant to db
+      const plantID = db.addPlant(plant, fileName, () => {
         console.log('Plant added successfully')
         handleClose()
         setValues(initialValues)
       })
+
+      // add image file to storage
+      !!fileName &&
+        !!imageFile &&
+        plantID &&
+        storage.uploadImage(imageFile, plantID, (snapshot) => {
+          console.log('Image uploaded successfully')
+        })
     }
   }
 
   return (
     <>
-      <div className={`${classes.titleCard} plant-dialog__title-card`}>
-        <div className="plant-dialog-content__title-card-text">
+      <div
+        className={`${classes.titleCard} plant-dialog__title-card ${
+          image !== null ? 'plant-dialog-content--image-background' : ''
+        }`}
+        style={{ backgroundImage: image !== null ? `url(${image})` : '' }}
+      >
+        <div className="plant-dialog-content__title-card-top">
           <Typography className={classes.titleText} variant="h4">
             Add new plant
           </Typography>
-        </div>
-        <div>
           <div className="plant-dialog-content__controls">
             <IconButton color="inherit" edge="end" onClick={handleClose}>
               <CloseIcon />
             </IconButton>
           </div>
         </div>
+        <ImageUpload handleSelectedImage={handleSelectedImage} />
       </div>
       <>
         <DialogContent>
@@ -137,20 +180,25 @@ export const PlantDialogContentAdd = ({ handleClose, classes }: PlantDialogConte
   )
 }
 
-export const PlantDialogContentView = ({
-  plant,
-  classes,
-  handleClose,
-}: PlantDialogContentViewProps) => {
-  const { altName, name, id } = plant
+export const PlantDialogContentView = ({ plant, handleClose }: PlantDialogContentViewProps) => {
+  const { altName, name, id, imageFileName } = plant
   const initialValues: FormValues = {
     name: name,
     altName: altName,
   }
-  const [editMode, setEditMode] = useState(false)
+  const [editMode, setEditMode] = useState<'names' | 'image' | ''>('')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [values, setValues] = useState(initialValues)
   const [errorState, setErrorState] = useState(false)
+  const [imageURL, setImageURL] = useState<string | null>('')
+  const [newImageFile, setNewImageFile] = useState<File | null>(null)
+  const classes = useStyles()
+
+  useEffect(() => {
+    !!imageFileName
+      ? getStorage().getImage(id, imageFileName, (url) => setImageURL(url))
+      : setImageURL(null)
+  }, [])
 
   const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -160,14 +208,14 @@ export const PlantDialogContentView = ({
     setAnchorEl(null)
   }
 
-  const handleClickEdit = (): void => {
-    setEditMode(true)
+  const handleClickEdit = (mode: 'names' | 'image' | ''): void => {
+    setEditMode(mode)
     handleCloseMenu()
   }
 
-  const handleEndEdit = (): void => {
+  const handleEndEditNames = (): void => {
     setValues(initialValues)
-    setEditMode(false)
+    setEditMode('')
   }
 
   const handleEditValues = (name: string, value: string | Moment): void => {
@@ -186,7 +234,7 @@ export const PlantDialogContentView = ({
       const db = getDatabase()
       db.updatePlantNames(id, values, () => {
         console.log('Plant successfully updated')
-        handleEndEdit()
+        handleEndEditNames()
       })
     }
   }
@@ -200,45 +248,51 @@ export const PlantDialogContentView = ({
     handleClose()
   }
 
-  return (
+  const handleSelectedImage = (imageFile: IFileWithMeta): void => {
+    const {
+      file,
+      meta: { previewUrl },
+    } = imageFile
+    !!previewUrl && setImageURL(previewUrl)
+    setNewImageFile(file)
+  }
+
+  const handleUploadNewImage = () => {
+    setEditMode('')
+    const db = getDatabase()
+    const storage = getStorage()
+    if (!!newImageFile) {
+      db.updatePlantImageFileName(id, newImageFile.name, () => {
+        console.log('Image file name updated in db')
+      })
+      storage.uploadImage(newImageFile, id, (snapshot) => {
+        console.log('New image successfully uploaded')
+        setEditMode('')
+        !!imageFileName &&
+          storage.deleteImage(id, imageFileName, () => {
+            console.log('Old image successfully deleted')
+          })
+      })
+    }
+  }
+
+  return imageURL === '' ? null : (
     <>
-      <div className={`${classes.titleCard} plant-dialog__title-card`}>
-        <div className="plant-dialog-content__title-card-text">
-          {editMode ? (
-            <>
-              <TextField
-                name="name"
-                label="Display name"
-                helperText={errorState ? 'Name is required' : 'Name to search and sort by'}
-                error={errorState}
-                value={values.name}
-                onChange={({ target: { name, value } }) => handleEditValues(name, value)}
-                required
-                fullWidth
-              />
-              <TextField
-                name="altName"
-                label="Alternate name (optional)"
-                helperText="Scientific name, nickname, unique identifier, etc"
-                value={values.altName}
-                onChange={({ target: { name, value } }) => handleEditValues(name, value)}
-                fullWidth
-              />
-              <Button onClick={handleEndEdit}>Cancel</Button>
-              <Button onClick={() => handleSubmitEdit(values)}>Confirm Changes</Button>
-            </>
-          ) : (
-            <>
+      <div
+        className={`${classes.titleCard} plant-dialog__title-card`}
+        style={imageURL !== null ? { backgroundImage: `url(${imageURL})` } : undefined}
+      >
+        <div className="plant-dialog-content__title-card-top">
+          {editMode !== 'names' && (
+            <div>
               <Typography className={classes.titleText} variant="h4">
                 {name}
               </Typography>
               <Typography className={classes.titleText}>{altName}</Typography>
-            </>
+            </div>
           )}
-        </div>
-        <div>
           <div className="plant-dialog-content__controls">
-            {!editMode && (
+            {editMode === '' && (
               <IconButton color="inherit" edge="end" onClick={handleClickMenu}>
                 <MoreVertIcon />
               </IconButton>
@@ -253,11 +307,49 @@ export const PlantDialogContentView = ({
               open={Boolean(anchorEl)}
               onClose={handleClose}
             >
-              <MenuItem onClick={handleClickEdit}>Edit plant</MenuItem>
+              <MenuItem onClick={() => handleClickEdit('names')}>Edit name</MenuItem>
+              <MenuItem onClick={() => handleClickEdit('image')}>Change image</MenuItem>
               <MenuItem onClick={() => handleDelete(id)}>Delete plant</MenuItem>
             </Menu>
           </div>
         </div>
+        {editMode === 'image' && (
+          <>
+            <ImageUpload onlyDropzone handleSelectedImage={handleSelectedImage} />
+            <div>
+              <Button color='inherit' onClick={() => setEditMode('')}>Cancel</Button>
+              <Button color="primary" variant="contained" onClick={() => handleUploadNewImage()}>
+                Change image
+              </Button>
+            </div>
+          </>
+        )}
+        {editMode === 'names' && (
+          <div className="plant-dialog-content__edit-name-fields">
+            <TextField
+              name="name"
+              label="Display name"
+              helperText={errorState ? 'Name is required' : 'Name to search and sort by'}
+              error={errorState}
+              value={values.name}
+              onChange={({ target: { name, value } }) => handleEditValues(name, value)}
+              required
+              fullWidth
+            />
+            <TextField
+              name="altName"
+              label="Alternate name (optional)"
+              helperText="Scientific name, nickname, unique identifier, etc"
+              value={values.altName}
+              onChange={({ target: { name, value } }) => handleEditValues(name, value)}
+              fullWidth
+            />
+            <Button onClick={handleEndEditNames}>Cancel</Button>
+            <Button color="primary" variant="contained" onClick={() => handleSubmitEdit(values)}>
+              Confirm Changes
+            </Button>
+          </div>
+        )}
       </div>
       <DialogContent>
         <EventSection eventType={PlantEventType.WATER} plant={plant} />

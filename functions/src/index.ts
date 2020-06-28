@@ -2,12 +2,6 @@ import * as functions from 'firebase-functions'
 import { compareDate } from './functionHelpers'
 import { getIntervals } from './intervalHelpers'
 
-export const addID = functions.firestore
-  .document('users/{userID}/plants/{plantID}')
-  .onCreate((doc) => {
-    return doc.ref.update({ id: doc.id })
-  })
-
 export const updateFertilizingStatus = functions.firestore
   .document('users/{userID}/plants/{plantID}')
   .onWrite((change) => {

@@ -3,6 +3,10 @@ import { Moment } from 'moment'
 export interface FormValues {
   name: string
   altName: string
-  lastWateredDate?: Moment | null
-  lastFertilizedDate?: Moment | null
+}
+
+export interface AddFormValues extends FormValues {
+  lastWateredDate: Moment | null
+  lastFertilizedDate: Moment | null
+  fileName: string
 }

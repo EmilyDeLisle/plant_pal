@@ -1,6 +1,7 @@
 import firebase from 'firebase/app'
-import DatabaseManager from './DatabaseManager'
 import AuthenticationManager from './AuthenticationManager'
+import DatabaseManager from './DatabaseManager'
+import StorageManager from './StorageManager'
 import { CONFIG } from './firebaseConfig'
 
 let initialized = false
@@ -20,4 +21,9 @@ export const getAuth = (): AuthenticationManager => {
 export const getDatabase = (): DatabaseManager => {
   init()
   return DatabaseManager.getInstance()
+}
+
+export const getStorage = (): StorageManager => {
+  init()
+  return StorageManager.getInstance()
 }

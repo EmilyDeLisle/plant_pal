@@ -1,7 +1,7 @@
 import firebase, { firestore } from 'firebase'
 import 'firebase/firestore'
 import { Moment } from 'moment'
-import { FormValues, Plant, PlantEventType, PlantMap } from '../models'
+import { FormValues, Plant, PlantEventType, PlantMap, PlantProps } from '../models'
 import { plantConverter, isDateUnavailable } from '../utils'
 import { getAuth } from './init'
 
@@ -9,6 +9,7 @@ export default class DatabaseManager {
   static instance: DatabaseManager | null = null
   db: firestore.Firestore | null = null
   collectionRef: firestore.CollectionReference<firestore.DocumentData> | undefined
+  uuid?: string
   unsubscribe: (() => void) | undefined
 
   static getInstance() {
@@ -25,11 +26,15 @@ export default class DatabaseManager {
     this.db = firebase.firestore()
   }
 
-  getPlants = (handlePlants: (plants: PlantMap) => void): void => {
-    const uuid = getAuth().getCurrentUser()?.uid
-    if (!this.collectionRef && !!uuid) {
-      this.collectionRef = this.db?.collection(`users/${uuid}/plants`)
+  setReference = () => {
+    this.uuid = getAuth().getCurrentUser()?.uid
+    if (!this.collectionRef && !!this.uuid) {
+      this.collectionRef = this.db?.collection(`users/${this.uuid}/plants`)
     }
+  }
+
+  getPlants = (handlePlants: (plants: PlantMap) => void): void => {
+    this.setReference()
     this.unsubscribe = this.collectionRef
       ?.withConverter(plantConverter)
       .onSnapshot((querySnapshot: firestore.QuerySnapshot<Plant>) => {
@@ -43,16 +48,20 @@ export default class DatabaseManager {
   }
 
   addPlant = (
-    plant: Plant,
+    plantValues: PlantProps,
+    fileName?: string,
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
     onError?: ((reason: any) => PromiseLike<never>) | null | undefined
-  ): void => {
-    this.collectionRef
-      ?.doc()
-      ?.withConverter(plantConverter)
-      .set(plant)
-      .then(onSuccess)
-      .catch(onError)
+  ): string | undefined => {
+    this.setReference()
+    const docRef = this.collectionRef?.doc()
+    const id = docRef?.id
+    if (!!docRef) {
+      const imageFileName = !!fileName ? fileName : ''
+      const plant = new Plant({ ...plantValues, id: id, imageFileName })
+      !!plant && docRef.withConverter(plantConverter).set(plant).then(onSuccess).catch(onError)
+    }
+    return id
   }
 
   updatePlantNames = (
@@ -61,7 +70,18 @@ export default class DatabaseManager {
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
     onError?: ((reason: any) => PromiseLike<never>) | null | undefined
   ): void => {
+    this.setReference()
     this.collectionRef?.doc(id)?.update(values).then(onSuccess).catch(onError)
+  }
+
+  updatePlantImageFileName = (
+    id: string,
+    fileName: string,
+    onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
+    onError?: ((reason: any) => PromiseLike<never>) | null | undefined
+  ): void => {
+    this.setReference()
+    this.collectionRef?.doc(id)?.update({ imageFileName: fileName }).then(onSuccess).catch(onError)
   }
 
   deleteEvent = (
@@ -71,6 +91,7 @@ export default class DatabaseManager {
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
     onError?: ((reason: any) => PromiseLike<never>) | null | undefined
   ): void => {
+    this.setReference()
     this.collectionRef
       ?.doc(id)
       ?.update({
@@ -87,6 +108,7 @@ export default class DatabaseManager {
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
     onError?: ((reason: any) => PromiseLike<never>) | null | undefined
   ): void => {
+    this.setReference()
     this.collectionRef?.doc(id)?.delete().then(onSuccess).catch(onError)
   }
 
@@ -97,6 +119,7 @@ export default class DatabaseManager {
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
     onError?: ((reason: any) => PromiseLike<never>) | null | undefined
   ) => {
+    this.setReference()
     const { id, getEventDateList } = plant
     const today = firestore.Timestamp.now()
     const newDate = !!date ? firestore.Timestamp.fromDate(date.toDate()) : today

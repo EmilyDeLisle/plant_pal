@@ -19,11 +19,15 @@ export const compare = (
   if (!a && !!b) {
     return 1
   }
-  if (!!a && !!b) {
-    if (b < a) {
+
+  const valueA = typeof a === 'string' ? a.toLowerCase() : a
+  const valueB = typeof b === 'string' ? b.toLowerCase() : b
+  
+  if (!!valueA && !!valueB) {
+    if (valueB < valueA) {
       return -1
     }
-    if (b > a) {
+    if (valueB > valueA) {
       return 1
     }
   }
