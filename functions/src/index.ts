@@ -8,10 +8,10 @@ export const updateFertilizingStatus = functions.firestore
     const oldPlantData = change.before.data()
     const newPlantData = change.after.data()
     if (
-      !!oldPlantData &&
+      (!!oldPlantData &&
       !!newPlantData &&
       oldPlantData.fertilizingDates !== newPlantData.fertilizingDates
-    ) {
+    ) || (!oldPlantData && !!newPlantData)) {
       const newDates = newPlantData.fertilizingDates.sort(compareDate)
       return change.after.ref.update({
         fertilizingDates: newDates,
@@ -29,10 +29,10 @@ export const updateWateringStatus = functions.firestore
     const oldPlantData = change.before.data()
     const newPlantData = change.after.data()
     if (
-      !!oldPlantData &&
+      (!!oldPlantData &&
       !!newPlantData &&
       oldPlantData.wateringDates !== newPlantData.wateringDates
-    ) {
+    ) || (!oldPlantData && !!newPlantData)) {
       const newDates = newPlantData.wateringDates.sort(compareDate)
       return change.after.ref.update({
         lastWateredDate: !!newDates.length ? newDates[0] : null,

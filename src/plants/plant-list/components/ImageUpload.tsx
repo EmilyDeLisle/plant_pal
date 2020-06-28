@@ -13,13 +13,11 @@ const Layout = ({ input, dropzoneProps, extra: { maxFiles } }: ILayoutProps) => 
 interface ImageUploadProps {
   onlyDropzone?: boolean
   handleSelectedImage: (image: IFileWithMeta) => void
-  handleCancel?: () => void
 }
 
 export const ImageUpload = ({
   onlyDropzone,
   handleSelectedImage,
-  handleCancel,
 }: ImageUploadProps) => {
   const [showDropzone, setShowDropzone] = useState(onlyDropzone ?? false)
   const [imageChosen, setImageChosen] = useState(false)
