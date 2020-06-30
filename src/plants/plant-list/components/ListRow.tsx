@@ -8,10 +8,11 @@ import DoneIcon from '@material-ui/icons/Done'
 import EcoIcon from '@material-ui/icons/Eco'
 import WateringCanIcon from './WateringCanIcon'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
+import moment from 'moment'
 import { Plant, PlantEventType } from '../../../models'
 import { getDatabase } from '../../../firebase'
 import { plantStore } from '../../../injectables'
-import { calculateDays } from './plantHelpers'
+import { calculateDays, formatDays } from './plantHelpers'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -21,6 +22,9 @@ const useStyles = makeStyles((theme: Theme) =>
         cursor: 'pointer',
       },
     },
+    wateringNumber: {
+      opacity: 0.3
+    }
   })
 )
 
@@ -75,6 +79,11 @@ export const ListRow = observer(
         <Card>
           <div className={`${classes.root} plant-list-row`}>
             <div className="list-row__text">
+              <div className="list-row__watering-days-number">
+                <Typography className={classes.wateringNumber} variant="h3" display="inline" noWrap>
+                  {!!lastWateredDate ? calculateDays(moment(lastWateredDate?.toDate())) : '?'}
+                </Typography>
+              </div>
               <div className="list-row__plant-name">
                 <Typography variant="h5" display="inline" noWrap>
                   {name}
@@ -89,10 +98,10 @@ export const ListRow = observer(
                   </strong>
                 )}
                 {`${
-                  !!lastWateredDate ? `Watered ${calculateDays(lastWateredDate)}` : `Never watered`
+                  !!lastWateredDate ? `Watered ${formatDays(lastWateredDate)}` : `Never watered`
                 } | ${
                   !!lastFertilizedDate
-                    ? `Fertilized ${calculateDays(lastFertilizedDate)}`
+                    ? `Fertilized ${formatDays(lastFertilizedDate)}`
                     : `Never fertilized`
                 }`}
               </Typography>
@@ -101,8 +110,8 @@ export const ListRow = observer(
               {buttons.map((button) => {
                 return (
                   ((toBeChecked && button.eventType === PlantEventType.CHECK) ||
-                  button.eventType !== PlantEventType.CHECK) && (
-                    <Tooltip key={button.eventType} title={button.tooltip}>
+                    button.eventType !== PlantEventType.CHECK) && (
+                    <Tooltip key={`button-${button.tooltip}-${id}`} title={button.tooltip}>
                       <IconButton
                         onClick={(event) => {
                           event.stopPropagation()

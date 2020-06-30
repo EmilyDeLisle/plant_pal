@@ -15,16 +15,19 @@ export const plappTheme = createMuiTheme({
       '"Segoe UI Emoji"',
       '"Segoe UI Symbol"',
     ].join(','),
-    //   h5: {
-    //     fontSize: 30,
-    //     fontWeight: 800,
-    //     [theme.breakpoints.up('md')]: {
-    //       fontSize: '2.4rem',
-    //     },
-    //   }
   },
 })
 
+// set h3 styles
+plappTheme.typography.h3 = {
+  fontSize: 120,
+  fontWeight: 800,
+  [plappTheme.breakpoints.up('md')]: {
+    fontSize: 72,
+  },
+}
+
+// set h5 styles
 plappTheme.typography.h5 = {
   fontSize: 22,
   fontWeight: 800,

@@ -17,8 +17,12 @@
   white-space: nowrap;
 }
 
+.list-row__watering-days-number {
+  position: absolute;
+}
+
 .list-row__plant-name {
-  margin: 0 0.5em 0 3em;
+  margin: 0 0.5em 0 2em;
   max-width: 50%;
 }
 

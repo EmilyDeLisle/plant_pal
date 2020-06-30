@@ -11,7 +11,7 @@ import { getDatabase, getAuth } from '../../firebase'
 
 export const TopNavNar = inject('plantStore')(
   observer(() => {
-    const { sortingMode, sortingDirection, setSortingMode, setSortingDirection } = plantStore
+    const { sortingMode, sortingDirection, setSortingMode, setSortingDirection, clearStore } = plantStore
     const db = getDatabase()
     const auth = getAuth()
     return (
@@ -24,6 +24,7 @@ export const TopNavNar = inject('plantStore')(
                 const user = auth.getCurrentUser()
                 !!user ? auth.signOut(() => { 
                   db.unsubscribe && db.unsubscribe()
+                  clearStore()
                   navigate('/')
                   console.log('Signing out')
                 }) : navigate('/')

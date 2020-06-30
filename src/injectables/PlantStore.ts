@@ -60,6 +60,14 @@ class PlantStore {
     newPlants[plant.id] = plant
     this.setPlants(newPlants)
   }
+
+  clearStore = (): void => {
+    this.plants = {}
+    this.selectedPlantID = undefined
+    this.sortingMode = SortingMode.WATER
+    this.sortingDirection = SortingDirection.ASC
+    this.dialogMode = PlantDialogMode.VIEW
+  }
 }
 
 decorate(PlantStore, {
