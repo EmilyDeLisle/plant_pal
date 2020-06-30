@@ -7,4 +7,22 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: calc(100% - 1em);
+}
+
+.list-row__text {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.list-row__plant-name {
+  margin: 0 0.5em 0 3em;
+  max-width: 50%;
+}
+
+.list-row__buttons {
+  /* min-width: 20%; */
+  white-space:nowrap;
 }
