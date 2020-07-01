@@ -47,7 +47,7 @@ const buttons = [
   },
   {
     tooltip: 'Water plant (with fertilizer) today',
-    eventType: PlantEventType.WATER,
+    eventType: PlantEventType.WATER_WITH_FERTILIZER,
     successMessage: 'Plant successfully watered with fertilizer',
     icon: <WateringCanIcon />,
   },
