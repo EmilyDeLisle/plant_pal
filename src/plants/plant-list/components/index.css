@@ -1,5 +1,8 @@
 @import 'EventSection.css';
 @import 'EventSectionPicker.css';
 @import 'ImageUpload.css';
+@import 'InspectorPanel.css';
+@import 'InspectorPanelContent.css';
+@import 'ListControls.css';
 @import 'ListRow.css';
-@import 'PlantDialogContent.css';
+@import 'SortingButton.css';

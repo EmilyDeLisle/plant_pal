@@ -1,7 +1,14 @@
 import { observable, computed, action, decorate } from 'mobx'
-import { Plant, PlantDialogMode, PlantMap, SortingMode, SortingDirection } from '../models'
+import {
+  InspectorMode,
+  Plant,
+  PlantDialogMode,
+  PlantMap,
+  SortingMode,
+  SortingDirection,
+} from '../models'
 import { getComparator } from '../utils'
-import { DatabaseManager, getDatabase } from '../firebase'
+import { getDatabase } from '../firebase'
 
 class PlantStore {
   db = getDatabase()
@@ -10,10 +17,7 @@ class PlantStore {
   sortingMode: SortingMode = SortingMode.WATER
   sortingDirection: SortingDirection = SortingDirection.ASC
   dialogMode: PlantDialogMode = PlantDialogMode.VIEW
-
-  constructor() {
-    // this.db?.getPlants((plants: PlantMap) => this.setPlants(plants))
-  }
+  inspectorMode: InspectorMode = InspectorMode.DEFAULT
 
   getPlants() {
     this.db?.getPlants((plants: PlantMap) => this.setPlants(plants))
@@ -55,10 +59,8 @@ class PlantStore {
     this.dialogMode = dialogMode
   }
 
-  addPlant = (plant: Plant): void => {
-    let newPlants = { ...this.plants }
-    newPlants[plant.id] = plant
-    this.setPlants(newPlants)
+  setInspectorMode = (inspectorMode: InspectorMode): void => {
+    this.inspectorMode = inspectorMode
   }
 
   clearStore = (): void => {
@@ -67,6 +69,7 @@ class PlantStore {
     this.sortingMode = SortingMode.WATER
     this.sortingDirection = SortingDirection.ASC
     this.dialogMode = PlantDialogMode.VIEW
+    this.inspectorMode = InspectorMode.DEFAULT
   }
 }
 
@@ -75,6 +78,7 @@ decorate(PlantStore, {
   selectedPlantID: observable,
   sortingMode: observable,
   sortingDirection: observable,
+  inspectorMode: observable,
   plantList: computed,
   plantsToWaterList: computed,
   plantsRemainingList: computed,
@@ -83,6 +87,7 @@ decorate(PlantStore, {
   setSortingMode: action,
   setSortingDirection: action,
   setSelectedPlantID: action,
+  setInspectorMode: action
 })
 
 export interface PlantStoreProps {

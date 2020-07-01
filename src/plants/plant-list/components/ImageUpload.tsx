@@ -15,16 +15,14 @@ interface ImageUploadProps {
   handleSelectedImage: (image: IFileWithMeta) => void
 }
 
-export const ImageUpload = ({
-  onlyDropzone,
-  handleSelectedImage,
-}: ImageUploadProps) => {
+export const ImageUpload = ({ onlyDropzone, handleSelectedImage }: ImageUploadProps) => {
   const [showDropzone, setShowDropzone] = useState(onlyDropzone ?? false)
   const [imageChosen, setImageChosen] = useState(false)
 
   const classNames = {
     dropzone: 'image-upload__dropzone',
     inputLabel: 'image-upload__input-label',
+    inputLabelWithFiles: 'image-upload__input-label'
   }
 
   const handleChangeStatus = (file: IFileWithMeta, status: StatusValue) => {
@@ -44,8 +42,15 @@ export const ImageUpload = ({
       LayoutComponent={Layout}
       accept=".png, .jpg, .jpeg"
       classNames={classNames}
+      inputWithFilesContent={(files, extra) =>
+        extra.reject
+          ? '1 MB or less PNG or JPG/JPEG files only'
+          : 'Click or drag and drop an image file'
+      }
       inputContent={(files, extra) =>
-        extra.reject ? '1 MB or less PNG or JPG/JPEG files only' : 'Click or drag and drop an image file'
+        extra.reject
+          ? '1 MB or less PNG or JPG/JPEG files only'
+          : 'Click or drag and drop an image file'
       }
       styles={{
         dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },

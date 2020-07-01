@@ -1,4 +1,5 @@
 import { Plant, PlantProps } from '../models'
+import { getStorage } from '../firebase'
 
 export const plantConverter = {
   toFirestore: (plant: Plant) => {
@@ -26,6 +27,13 @@ export const plantConverter = {
     options: firebase.firestore.SnapshotOptions
   ): any {
     const data = snapshot.data(options)
-    return new Plant(data as PlantProps)
+    const plant = new Plant(data as PlantProps)
+    const { id, imageFileName, setImageURL } = plant
+
+    if (!!imageFileName) {
+      getStorage().getImage(id, imageFileName, (url: string) => setImageURL(url))
+    }
+    
+    return plant
   },
 }

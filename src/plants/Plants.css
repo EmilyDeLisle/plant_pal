@@ -6,21 +6,25 @@
 }
 
 .plants__container {
-  padding: 4em 5% 0 5%;
-  display: relative;
+  display: flex;
   background-color: rgba(255, 255, 255, 0.9);
-  height: calc(100% - 12em);
-  width: calc(100% - 8em);
-  overflow: scroll;
+  height: calc(100% - 6em);
+}
+
+.plants__lists-container {
+  flex-grow: 1;
+  padding: 2em 2em 0 2em;
 }
 
 .plants__lists {
-  padding-bottom: 8em;
+  overflow-y: scroll;
+  height: calc(100% - 3em - 4px);
 }
 
 .plants__attention-list {
-  border: 2px solid;
+  border: 2px solid rgba(76, 136, 119, 0.5);
   border-radius: 8px;
   padding: 0.5em;
+  margin-bottom: 1em;
   background-color: rgba(179, 254, 191, 0.2);
 }

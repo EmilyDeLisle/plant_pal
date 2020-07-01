@@ -35,6 +35,7 @@ export interface PlantProps {
   lastWateredDate?: firestore.Timestamp | null
   lastCheckedDate?: firestore.Timestamp | null
   imageFileName?: string
+  imageURL?: string
 }
 
 export class Plant {
@@ -49,6 +50,7 @@ export class Plant {
   lastWateredDate: firestore.Timestamp | null
   lastCheckedDate: firestore.Timestamp | null
   imageFileName: string
+  imageURL: string | undefined
 
   constructor({
     id = '',
@@ -61,7 +63,7 @@ export class Plant {
     wateringIntervals = emptyIntervals,
     lastWateredDate = null,
     lastCheckedDate = null,
-    imageFileName = '',
+    imageFileName = ''
   }: PlantProps) {
     this.id = id
     this.name = name
@@ -143,6 +145,10 @@ export class Plant {
   setAltName = (altName: string): void => {
     this.altName = altName
   }
+
+  setImageURL = (url: string): void => {
+    this.imageURL = url
+  }
 }
 
 decorate(Plant, {
@@ -151,10 +157,12 @@ decorate(Plant, {
   wateringDates: observable,
   fertilizingDates: observable,
   lastCheckedDate: observable,
+  imageURL: observable,
   daysSinceLastWatered: computed,
   daysSinceLastFertilized: computed,
   checkedToday: computed,
   isFertilized: computed,
   setName: action,
   setAltName: action,
+  setImageURL: action
 })
