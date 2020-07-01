@@ -6,21 +6,35 @@
 }
 
 .plants__container {
-  padding: 4em 5% 0 5%;
-  display: relative;
+  
+  display: flex;
   background-color: rgba(255, 255, 255, 0.9);
-  height: calc(100% - 12em);
-  width: calc(100% - 8em);
-  overflow: scroll;
+  height: calc(100% - 8em);
+  /* width: calc(100% - 8em); */
+  /* height: 100%; */
+  width: 100%;
+  
 }
 
 .plants__lists {
+  padding: 4em 2em 0 2em;
   padding-bottom: 8em;
+  flex-grow: 1;
+  overflow: scroll;
 }
 
 .plants__attention-list {
   border: 2px solid;
   border-radius: 8px;
   padding: 0.5em;
+  margin: 0 -0.5em 2em 0;
   background-color: rgba(179, 254, 191, 0.2);
 }
+
+.plants__inspector-panel {
+  width: 540px;
+  height: 100%;
+  /* height: calc(100% - 10em); */
+  border: 1px solid red;
+}
+

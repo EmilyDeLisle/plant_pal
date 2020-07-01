@@ -76,6 +76,9 @@ export const Plants = inject('plantStore')(
                 </>
               )}
             </div>
+            <div className='plants__inspector-panel'>
+              Inspector panel
+            </div>
 
             <div className="plants__fab">
               <Tooltip title="Add new plant" placement="left">
