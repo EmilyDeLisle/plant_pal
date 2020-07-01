@@ -61,7 +61,7 @@ export class Plant {
     wateringIntervals = emptyIntervals,
     lastWateredDate = null,
     lastCheckedDate = null,
-    imageFileName = ''
+    imageFileName = '',
   }: PlantProps) {
     this.id = id
     this.name = name
@@ -104,6 +104,20 @@ export class Plant {
     )
   }
 
+  get isFertilized(): boolean {
+    if (!!this.lastWateredDate && !!this.lastFertilizedDate) {
+      return (
+        moment(this.lastWateredDate.toDate()).diff(
+          moment(this.lastFertilizedDate.toDate()),
+          'days'
+        ) === 0
+      )
+    } else if (!this.lastWateredDate && this.lastFertilizedDate) {
+      return true
+    }
+    return false
+  }
+
   getLastEventDate = (eventType: PlantEventType): firestore.Timestamp | null => {
     return eventType === PlantEventType.FERTILIZE ? this.lastFertilizedDate : this.lastWateredDate
   }
@@ -140,6 +154,7 @@ decorate(Plant, {
   daysSinceLastWatered: computed,
   daysSinceLastFertilized: computed,
   checkedToday: computed,
+  isFertilized: computed,
   setName: action,
   setAltName: action,
 })

@@ -1,6 +1,17 @@
 import { unstable_createMuiStrictModeTheme as createMuiTheme } from '@material-ui/core/styles'
 
 export const plappTheme = createMuiTheme({
+  palette: {
+    primary: {
+      light: '#b872c2',
+      main: '#A74FB3',
+      dark: '#74377d',
+      contrastText: '#fff',
+    },
+    text: {
+      primary: '#498877'
+    }
+  },
   typography: {
     fontFamily: [
       'Open Sans',

@@ -17,14 +17,18 @@ import { calculateDays, formatDays } from './plantHelpers'
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
+      backgroundColor: '#B3FEBF',
       '&:hover': {
-        backgroundColor: theme.palette.grey[100],
+        backgroundColor: '#DBFFE1',
         cursor: 'pointer',
       },
     },
+    fertilized: {
+      backgroundImage: 'linear-gradient(to right, #65F6D3 , #B3FEBF)',
+    },
     wateringNumber: {
-      opacity: 0.3
-    }
+      opacity: 0.3,
+    },
   })
 )
 
@@ -62,7 +66,15 @@ interface ListRowProps {
 
 export const ListRow = observer(
   ({ plant, handleOpen }: ListRowProps): ReactElement => {
-    const { id, name, lastWateredDate, lastFertilizedDate, toBeChecked, getAvgInterval } = plant
+    const {
+      id,
+      name,
+      lastWateredDate,
+      lastFertilizedDate,
+      toBeChecked,
+      isFertilized,
+      getAvgInterval,
+    } = plant
     const classes = useStyles()
     const db = getDatabase()
     const avgWateringInterval = getAvgInterval(PlantEventType.WATER)
@@ -77,7 +89,9 @@ export const ListRow = observer(
         }}
       >
         <Card>
-          <div className={`${classes.root} plant-list-row`}>
+          <div
+            className={`${classes.root} ${isFertilized ? classes.fertilized : ''} plant-list-row`}
+          >
             <div className="list-row__text">
               <div className="list-row__watering-days-number">
                 <Typography className={classes.wateringNumber} variant="h3" display="inline" noWrap>
@@ -85,11 +99,11 @@ export const ListRow = observer(
                 </Typography>
               </div>
               <div className="list-row__plant-name">
-                <Typography variant="h5" display="inline" noWrap>
+                <Typography variant="h5" display="inline" color="primary" noWrap>
                   {name}
                 </Typography>
               </div>
-              <Typography color="textSecondary" display="inline" variant="body2">
+              <Typography color="textPrimary" display="inline" variant="body2">
                 {!!avgWateringInterval && (
                   <strong>
                     {` Watered every ${avgWateringInterval !== 1 ? avgWateringInterval : ''} day${
