@@ -1,12 +1,12 @@
 .inspector-panel__title-card {
   /* Background image by Freepik - https://www.freepik.com/free-photos-vectors/pattern*/
-  background: url('../../../assets/palm.jpg') no-repeat center center fixed;
+  background: url('../../../assets/palm.jpg') no-repeat;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
+  background-position: 50% 50%;
   width: calc(100% - 4em + 2px);
-  /* min-height: 30%; */
   height: calc(50% - 6em);
   padding: 2em;
   display: flex;

@@ -2,7 +2,7 @@
   max-width: 540px;
   min-width: 540px;
   height: 100%;
-  background: url('../../../assets/palm.jpg') no-repeat center center fixed;
+  background: url('../../../assets/palm.jpg') no-repeat;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;

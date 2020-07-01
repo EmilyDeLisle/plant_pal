@@ -77,12 +77,12 @@ export const InspectorPanelContentAdd = ({ handleClose }: InspectorPanelContentP
       setErrorState(true)
     } else {
       setErrorState(false)
-        const wateringDates = !!lastWateredDate
-          ? [firestore.Timestamp.fromDate(lastWateredDate.toDate())]
-          : []
-        const fertilizingDates = !!lastFertilizedDate
-          ? [firestore.Timestamp.fromDate(lastFertilizedDate.toDate())]
-          : []
+      const wateringDates = !!lastWateredDate
+        ? [firestore.Timestamp.fromDate(lastWateredDate.toDate())]
+        : []
+      const fertilizingDates = !!lastFertilizedDate
+        ? [firestore.Timestamp.fromDate(lastFertilizedDate.toDate())]
+        : []
 
       const plant: PlantProps = { name, altName, wateringDates, fertilizingDates }
 
@@ -116,67 +116,77 @@ export const InspectorPanelContentAdd = ({ handleClose }: InspectorPanelContentP
             Add new plant
           </Typography>
           <div className="inspector-panel-content__controls">
-            <IconButton color="inherit" edge="end" onClick={handleClose}>
+            <IconButton
+              color="inherit"
+              edge="end"
+              onClick={() => {
+                setImage('')
+                handleClose()
+              }}
+            >
               <CloseIcon />
             </IconButton>
           </div>
         </div>
         <ImageUpload handleSelectedImage={handleSelectedImage} />
       </div>
-      <div className='inspector-panel-content__contents'>
-          <TextField
-            name="name"
-            label="Display name"
-            helperText="Name to search and sort by"
-            error={errorState}
-            value={values.name}
-            onChange={({ target: { name, value } }) => handleChange(name, value)}
-            required
-            fullWidth
-          />
-          {errorState && <FormHelperText error={errorState}>Name is required</FormHelperText>}
-          <TextField
-            name="altName"
-            label="Alternate name (optional)"
-            helperText="Scientific name, nickname, unique identifier, etc"
-            value={values.altName}
-            onChange={({ target: { name, value } }) => handleChange(name, value)}
-            fullWidth
-          />
-          <DatePicker
-            disableFuture
-            variant="inline"
-            label="Last watered date (optional)"
-            format="MMM D, YYYY"
-            value={values.lastWateredDate}
-            onChange={(date: Moment | null) => {
-              !!date && handleChange('lastWateredDate', date)
-            }}
-            animateYearScrolling
-            fullWidth
-          />
-          <DatePicker
-            disableFuture
-            variant="inline"
-            label="Last fertilized date (optional)"
-            format="MMM D, YYYY"
-            value={values.lastFertilizedDate}
-            onChange={(date: Moment | null) => {
-              !!date && handleChange('lastFertilizedDate', date)
-            }}
-            animateYearScrolling
-            fullWidth
-          />
-          <Button variant="contained" onClick={() => handleSubmit(values)}>
-            Submit
-          </Button>
+      <div className="inspector-panel-content__contents">
+        <TextField
+          name="name"
+          label="Display name"
+          helperText="Name to search and sort by"
+          error={errorState}
+          value={values.name}
+          onChange={({ target: { name, value } }) => handleChange(name, value)}
+          required
+          fullWidth
+        />
+        {errorState && <FormHelperText error={errorState}>Name is required</FormHelperText>}
+        <TextField
+          name="altName"
+          label="Alternate name (optional)"
+          helperText="Scientific name, nickname, unique identifier, etc"
+          value={values.altName}
+          onChange={({ target: { name, value } }) => handleChange(name, value)}
+          fullWidth
+        />
+        <DatePicker
+          disableFuture
+          variant="inline"
+          label="Last watered date (optional)"
+          format="MMM D, YYYY"
+          value={values.lastWateredDate}
+          onChange={(date: Moment | null) => {
+            !!date && handleChange('lastWateredDate', date)
+          }}
+          animateYearScrolling
+          fullWidth
+        />
+        <DatePicker
+          disableFuture
+          variant="inline"
+          label="Last fertilized date (optional)"
+          format="MMM D, YYYY"
+          value={values.lastFertilizedDate}
+          onChange={(date: Moment | null) => {
+            !!date && handleChange('lastFertilizedDate', date)
+          }}
+          animateYearScrolling
+          fullWidth
+        />
+        <Button variant="contained" onClick={() => handleSubmit(values)}>
+          Submit
+        </Button>
       </div>
     </>
   )
 }
 
-export const InspectorPanelContentView = ({ plant, handleClose }: InspectorPanelContentViewProps) => {
-  const { altName, name, id, imageFileName } = plant
+export const InspectorPanelContentView = ({
+  plant,
+  handleClose,
+}: InspectorPanelContentViewProps) => {
+  const { altName, name, id, imageFileName, imageURL } = plant
   const initialValues: FormValues = {
     name: name,
     altName: altName,
@@ -185,15 +195,14 @@ export const InspectorPanelContentView = ({ plant, handleClose }: InspectorPanel
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [values, setValues] = useState(initialValues)
   const [errorState, setErrorState] = useState(false)
-  const [imageURL, setImageURL] = useState<string | null>('')
+  const [previewImageURL, setPreviewImageURL] = useState('')
   const [newImageFile, setNewImageFile] = useState<File | null>(null)
   const classes = useStyles()
 
   useEffect(() => {
-    !!imageFileName
-      ? getStorage().getImage(id, imageFileName, (url: string) => setImageURL(url))
-      : setImageURL(null)
-  }, [])
+    setPreviewImageURL('')
+    setEditMode('')
+  }, [id])
 
   const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -240,6 +249,7 @@ export const InspectorPanelContentView = ({ plant, handleClose }: InspectorPanel
       db.deletePlant(id, () => console.log('Plant successfully deleted'))
     }
     handleCloseMenu()
+    setPreviewImageURL('')
     handleClose()
   }
 
@@ -248,7 +258,7 @@ export const InspectorPanelContentView = ({ plant, handleClose }: InspectorPanel
       file,
       meta: { previewUrl },
     } = imageFile
-    !!previewUrl && setImageURL(previewUrl)
+    !!previewUrl && setPreviewImageURL(previewUrl)
     setNewImageFile(file)
   }
 
@@ -271,12 +281,18 @@ export const InspectorPanelContentView = ({ plant, handleClose }: InspectorPanel
     }
   }
 
-  return imageURL === '' ? null : (
+  const getImage = (): React.CSSProperties | undefined => {
+    if (!!previewImageURL) {
+      return { backgroundImage: `url(${previewImageURL})` }
+    } else if (!!imageURL) {
+      return { backgroundImage: `url(${imageURL})` }
+    }
+    return undefined
+  }
+
+  return (
     <>
-      <div
-        className={`${classes.titleCard} inspector-panel__title-card`}
-        style={imageURL !== null ? { backgroundImage: `url(${imageURL})` } : undefined}
-      >
+      <div className={`${classes.titleCard} inspector-panel__title-card`} style={getImage()}>
         <div className="inspector-panel-content__title-card-top">
           {editMode !== 'names' && (
             <div>
@@ -292,7 +308,14 @@ export const InspectorPanelContentView = ({ plant, handleClose }: InspectorPanel
                 <MoreVertIcon />
               </IconButton>
             )}
-            <IconButton color="inherit" edge="end" onClick={handleClose}>
+            <IconButton
+              color="inherit"
+              edge="end"
+              onClick={() => {
+                setPreviewImageURL('')
+                handleClose()
+              }}
+            >
               <CloseIcon />
             </IconButton>
             <Menu
@@ -300,7 +323,7 @@ export const InspectorPanelContentView = ({ plant, handleClose }: InspectorPanel
               anchorEl={anchorEl}
               keepMounted
               open={Boolean(anchorEl)}
-              onClose={handleClose}
+              onClose={handleCloseMenu}
             >
               <MenuItem onClick={() => handleClickEdit('names')}>Edit name</MenuItem>
               <MenuItem onClick={() => handleClickEdit('image')}>Change image</MenuItem>
@@ -312,7 +335,13 @@ export const InspectorPanelContentView = ({ plant, handleClose }: InspectorPanel
           <>
             <ImageUpload onlyDropzone handleSelectedImage={handleSelectedImage} />
             <div>
-              <Button color="inherit" onClick={() => setEditMode('')}>
+              <Button
+                color="inherit"
+                onClick={() => {
+                  setPreviewImageURL('')
+                  setEditMode('')
+                }}
+              >
                 Cancel
               </Button>
               <Button color="primary" variant="contained" onClick={() => handleUploadNewImage()}>
@@ -348,7 +377,7 @@ export const InspectorPanelContentView = ({ plant, handleClose }: InspectorPanel
           </div>
         )}
       </div>
-      <div className='inspector-panel-content__contents'>
+      <div className="inspector-panel-content__contents">
         <EventSection eventType={PlantEventType.WATER} plant={plant} />
         <EventSection eventType={PlantEventType.FERTILIZE} plant={plant} />
       </div>
