@@ -69,11 +69,10 @@ const buttons = [
 
 interface ListRowProps {
   plant: Plant
-  handleOpen: () => void
 }
 
 export const ListRow = observer(
-  ({ plant, handleOpen }: ListRowProps): ReactElement => {
+  ({ plant }: ListRowProps): ReactElement => {
     const {
       id,
       name,

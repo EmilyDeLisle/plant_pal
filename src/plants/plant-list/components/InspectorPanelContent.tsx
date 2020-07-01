@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Button from '@material-ui/core/Button'
 import CloseIcon from '@material-ui/icons/Close'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import IconButton from '@material-ui/core/IconButton'
 import Menu from '@material-ui/core/Menu'
@@ -31,15 +29,15 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-export interface PlantDialogContentProps {
+export interface InspectorPanelContentProps {
   handleClose: () => void
 }
 
-export interface PlantDialogContentViewProps extends PlantDialogContentProps {
+export interface InspectorPanelContentViewProps extends InspectorPanelContentProps {
   plant: Plant
 }
 
-export const PlantDialogContentAdd = ({ handleClose }: PlantDialogContentProps) => {
+export const InspectorPanelContentAdd = ({ handleClose }: InspectorPanelContentProps) => {
   const initialValues: AddFormValues = {
     name: '',
     altName: '',
@@ -52,8 +50,6 @@ export const PlantDialogContentAdd = ({ handleClose }: PlantDialogContentProps) 
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [image, setImage] = useState<string | null>(null)
   const classes = useStyles()
-
-  // const [dates, setDates] = useState('')
 
   const handleChange = (name: string, value: string | Moment): void => {
     setValues((prevValues) => ({
@@ -81,29 +77,12 @@ export const PlantDialogContentAdd = ({ handleClose }: PlantDialogContentProps) 
       setErrorState(true)
     } else {
       setErrorState(false)
-      // let wateringDates: firestore.Timestamp[] = []
-      // let fertilizingDates: firestore.Timestamp[] = []
-      // if (!!dates) {
-      //   const datesArray = dates.split(', ')
-      //   datesArray.forEach(date => {
-      //     const end = date.length - 1
-      //     const dateEnd = date.length - 2
-      //     if (date.charAt(end) === 'F') {
-      //       const dateString = date.substring(dateEnd, 0)
-      //       wateringDates.push(firestore.Timestamp.fromDate(new Date(dateString)))
-      //       fertilizingDates.push(firestore.Timestamp.fromDate(new Date(dateString)))
-      //     } else {
-      //       wateringDates.push(firestore.Timestamp.fromDate(new Date(date)))
-      //     }
-      //   })
-      // } else {
         const wateringDates = !!lastWateredDate
           ? [firestore.Timestamp.fromDate(lastWateredDate.toDate())]
           : []
         const fertilizingDates = !!lastFertilizedDate
           ? [firestore.Timestamp.fromDate(lastFertilizedDate.toDate())]
           : []
-      // }
 
       const plant: PlantProps = { name, altName, wateringDates, fertilizingDates }
 
@@ -127,16 +106,16 @@ export const PlantDialogContentAdd = ({ handleClose }: PlantDialogContentProps) 
   return (
     <>
       <div
-        className={`${classes.titleCard} plant-dialog__title-card ${
-          image !== null ? 'plant-dialog-content--image-background' : ''
+        className={`${classes.titleCard} inspector-panel__title-card ${
+          image !== null ? 'inspector-panel-content--image-background' : ''
         }`}
         style={{ backgroundImage: image !== null ? `url(${image})` : '' }}
       >
-        <div className="plant-dialog-content__title-card-top">
+        <div className="inspector-panel-content__title-card-top">
           <Typography className={classes.titleText} variant="h4">
             Add new plant
           </Typography>
-          <div className="plant-dialog-content__controls">
+          <div className="inspector-panel-content__controls">
             <IconButton color="inherit" edge="end" onClick={handleClose}>
               <CloseIcon />
             </IconButton>
@@ -144,8 +123,7 @@ export const PlantDialogContentAdd = ({ handleClose }: PlantDialogContentProps) 
         </div>
         <ImageUpload handleSelectedImage={handleSelectedImage} />
       </div>
-      <>
-        <DialogContent>
+      <div className='inspector-panel-content__contents'>
           <TextField
             name="name"
             label="Display name"
@@ -165,14 +143,6 @@ export const PlantDialogContentAdd = ({ handleClose }: PlantDialogContentProps) 
             onChange={({ target: { name, value } }) => handleChange(name, value)}
             fullWidth
           />
-          {/* <TextField
-            name="Dates"
-            label="dates"
-            value={dates}
-            onChange={({ target: { value } }) => setDates(value)}
-            fullWidth
-            multiline
-          /> */}
           <DatePicker
             disableFuture
             variant="inline"
@@ -197,18 +167,15 @@ export const PlantDialogContentAdd = ({ handleClose }: PlantDialogContentProps) 
             animateYearScrolling
             fullWidth
           />
-        </DialogContent>
-        <DialogActions>
           <Button variant="contained" onClick={() => handleSubmit(values)}>
             Submit
           </Button>
-        </DialogActions>
-      </>
+      </div>
     </>
   )
 }
 
-export const PlantDialogContentView = ({ plant, handleClose }: PlantDialogContentViewProps) => {
+export const InspectorPanelContentView = ({ plant, handleClose }: InspectorPanelContentViewProps) => {
   const { altName, name, id, imageFileName } = plant
   const initialValues: FormValues = {
     name: name,
@@ -307,10 +274,10 @@ export const PlantDialogContentView = ({ plant, handleClose }: PlantDialogConten
   return imageURL === '' ? null : (
     <>
       <div
-        className={`${classes.titleCard} plant-dialog__title-card`}
+        className={`${classes.titleCard} inspector-panel__title-card`}
         style={imageURL !== null ? { backgroundImage: `url(${imageURL})` } : undefined}
       >
-        <div className="plant-dialog-content__title-card-top">
+        <div className="inspector-panel-content__title-card-top">
           {editMode !== 'names' && (
             <div>
               <Typography className={classes.titleText} variant="h4">
@@ -319,7 +286,7 @@ export const PlantDialogContentView = ({ plant, handleClose }: PlantDialogConten
               <Typography className={classes.titleText}>{altName}</Typography>
             </div>
           )}
-          <div className="plant-dialog-content__controls">
+          <div className="inspector-panel-content__controls">
             {editMode === '' && (
               <IconButton color="inherit" edge="end" onClick={handleClickMenu}>
                 <MoreVertIcon />
@@ -355,7 +322,7 @@ export const PlantDialogContentView = ({ plant, handleClose }: PlantDialogConten
           </>
         )}
         {editMode === 'names' && (
-          <div className="plant-dialog-content__edit-name-fields">
+          <div className="inspector-panel-content__edit-name-fields">
             <TextField
               name="name"
               label="Display name"
@@ -381,10 +348,10 @@ export const PlantDialogContentView = ({ plant, handleClose }: PlantDialogConten
           </div>
         )}
       </div>
-      <DialogContent>
+      <div className='inspector-panel-content__contents'>
         <EventSection eventType={PlantEventType.WATER} plant={plant} />
         <EventSection eventType={PlantEventType.FERTILIZE} plant={plant} />
-      </DialogContent>
+      </div>
     </>
   )
 }

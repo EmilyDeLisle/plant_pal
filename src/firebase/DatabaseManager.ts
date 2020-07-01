@@ -33,6 +33,10 @@ export default class DatabaseManager {
     }
   }
 
+  unsetReference = () => {
+    this.collectionRef = undefined
+  }
+
   getPlants = (handlePlants: (plants: PlantMap) => void): void => {
     this.setReference()
     this.unsubscribe = this.collectionRef

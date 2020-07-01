@@ -8,7 +8,7 @@ import {
   SortingDirection,
 } from '../models'
 import { getComparator } from '../utils'
-import { DatabaseManager, getDatabase } from '../firebase'
+import { getDatabase } from '../firebase'
 
 class PlantStore {
   db = getDatabase()

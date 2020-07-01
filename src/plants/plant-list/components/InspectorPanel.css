@@ -1,5 +1,6 @@
 .inspector-panel__default {
-  width: 540px;
+  max-width: 540px;
+  min-width: 540px;
   height: 100%;
   background: url('../../../assets/palm.jpg') no-repeat center center fixed;
   -webkit-background-size: cover;
@@ -9,6 +10,8 @@
 }
 
 .inspector-panel__container {
+  max-width: 540px;
+  min-width: 540px;
   display: flex;
   flex-direction: column;
 }

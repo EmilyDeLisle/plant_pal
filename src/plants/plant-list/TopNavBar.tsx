@@ -1,8 +1,6 @@
 import React from 'react'
-import { navigate } from '@reach/router'
 import { inject, observer } from 'mobx-react'
 import AppBar from '@material-ui/core/AppBar'
-import Hidden from '@material-ui/core/Hidden'
 import IconButton from '@material-ui/core/IconButton'
 import Typography from '@material-ui/core/Typography'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
@@ -20,13 +18,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const TopNavNar = inject('plantStore')(
   observer(() => {
-    const {
-      sortingMode,
-      sortingDirection,
-      setSortingMode,
-      setSortingDirection,
-      clearStore,
-    } = plantStore
+    const { clearStore } = plantStore
     const db = getDatabase()
     const auth = getAuth()
     const classes = useStyles()
@@ -39,15 +31,9 @@ export const TopNavNar = inject('plantStore')(
             size="medium"
             edge="end"
             onClick={() => {
-              const user = auth.getCurrentUser()
-              !!user
-                ? auth.signOut(() => {
-                    db.unsubscribe && db.unsubscribe()
-                    clearStore()
-                    navigate('/')
-                    console.log('Signing out')
-                  })
-                : navigate('/')
+              auth.signOut(() => {
+                console.log('Signing out')
+              })
             }}
           >
             <UserIcon />
