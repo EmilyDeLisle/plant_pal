@@ -49,7 +49,7 @@ export default class DatabaseManager {
 
   addPlant = (
     plantValues: PlantProps,
-    fileName?: string,
+    imageFileName?: string,
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
     onError?: ((reason: any) => PromiseLike<never>) | null | undefined
   ): string | undefined => {
@@ -57,8 +57,11 @@ export default class DatabaseManager {
     const docRef = this.collectionRef?.doc()
     const id = docRef?.id
     if (!!docRef) {
-      const imageFileName = !!fileName ? fileName : ''
-      const plant = new Plant({ ...plantValues, id: id, imageFileName })
+      const plant = new Plant({
+        ...plantValues,
+        id: id,
+        imageFileName: !!imageFileName ? imageFileName : '',
+      })
       !!plant && docRef.withConverter(plantConverter).set(plant).then(onSuccess).catch(onError)
     }
     return id
@@ -120,7 +123,7 @@ export default class DatabaseManager {
     onError?: ((reason: any) => PromiseLike<never>) | null | undefined
   ) => {
     this.setReference()
-    const { id, getEventDateList } = plant
+    const { id, fertilizingDates, wateringDates, getEventDateList } = plant
     const today = firestore.Timestamp.now()
     const newDate = !!date ? firestore.Timestamp.fromDate(date.toDate()) : today
 
@@ -129,6 +132,33 @@ export default class DatabaseManager {
     if (eventType === PlantEventType.CHECK) {
       updateValue = {
         lastCheckedDate: newDate,
+      }
+    } else if (eventType === PlantEventType.WATER_WITH_FERTILIZER) {
+      // if plant has been neither watered nor fertilized today, update both lists
+      if (
+        !isDateUnavailable(newDate, fertilizingDates) &&
+        !isDateUnavailable(newDate, wateringDates)
+      ) {
+        updateValue = {
+          fertilizingDates: [newDate, ...fertilizingDates],
+          wateringDates: [newDate, ...wateringDates],
+        }
+        // if plant has been watered but not fertilized today, update fertilized list
+      } else if (
+        !isDateUnavailable(newDate, fertilizingDates) &&
+        isDateUnavailable(newDate, wateringDates)
+      ) {
+        updateValue = {
+          fertilizingDates: [newDate, ...fertilizingDates],
+        }
+        // if plant has been fertilized but not watered today, update watered list
+      } else if (
+        isDateUnavailable(newDate, fertilizingDates) &&
+        !isDateUnavailable(newDate, wateringDates)
+      ) {
+        updateValue = {
+          wateringDates: [newDate, ...wateringDates],
+        }
       }
     } else {
       const eventList = getEventDateList(eventType)

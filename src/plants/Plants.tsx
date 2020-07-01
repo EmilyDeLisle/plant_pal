@@ -2,21 +2,25 @@ import React, { ReactElement, useEffect, useState } from 'react'
 import { inject, observer } from 'mobx-react'
 import { navigate, RouteComponentProps } from '@reach/router'
 import Fab from '@material-ui/core/Fab'
-import AddIcon from '@material-ui/icons/Add'
 import Tooltip from '@material-ui/core/Tooltip'
+import Typography from '@material-ui/core/Typography'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import { PlantList, TopNavNar, PlantDialog } from './plant-list'
 import { plantStore } from '../injectables'
 import { PlantDialogMode } from '../models'
 import { getAuth } from '../firebase'
+import MonsteraIcon from '../assets/MonsteraIcon'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     fab: {
-      position: 'absolute',
-      bottom: theme.spacing(8),
-      right: theme.spacing(8),
+      position: 'fixed',
+      bottom: theme.spacing(4),
+      right: theme.spacing(4),
     },
+    attentionList: {
+      borderColor: theme.palette.text.primary
+    }
   })
 )
 
@@ -52,19 +56,36 @@ export const Plants = inject('plantStore')(
       }
 
       return (
-        <>
+        <div className="plants">
           <TopNavNar />
           <div className="plants__container">
-            {plantsToWaterList.length > 0 && (
-              <PlantList plants={plantsToWaterList} handleOpen={() => handleOpenViewDialog()} />
-            )}
-            {plantsRemainingList.length > 0 && (
-              <PlantList plants={plantsRemainingList} handleOpen={() => handleOpenViewDialog()} />
-            )}
+            <div className="plants__lists">
+              {plantsToWaterList.length > 0 && (
+                <div className={`${classes.attentionList} plants__attention-list`}>
+                  <Typography variant="h5" color='primary'>Plants needing attention</Typography>
+                  <PlantList plants={plantsToWaterList} handleOpen={() => handleOpenViewDialog()} />
+                </div>
+              )}
+              {plantsRemainingList.length > 0 && (
+                <>
+                  <Typography variant="h4" color='primary'>Plants</Typography>
+                  <PlantList
+                    plants={plantsRemainingList}
+                    handleOpen={() => handleOpenViewDialog()}
+                  />
+                </>
+              )}
+            </div>
+
             <div className="plants__fab">
               <Tooltip title="Add new plant" placement="left">
-                <Fab className={classes.fab} color="primary" onClick={() => handleOpenAddDialog()}>
-                  <AddIcon />
+                <Fab
+                  className={classes.fab}
+                  size="large"
+                  color="primary"
+                  onClick={() => handleOpenAddDialog()}
+                >
+                  <MonsteraIcon />
                 </Fab>
               </Tooltip>
             </div>
@@ -75,7 +96,7 @@ export const Plants = inject('plantStore')(
             dialogMode={dialogMode}
             handleClose={() => setDialogOpen(false)}
           />
-        </>
+        </div>
       )
     }
   )

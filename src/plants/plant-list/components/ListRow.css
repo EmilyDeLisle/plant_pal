@@ -3,8 +3,31 @@
 }
 
 .plant-list-row {
-  padding: 0.5em;
+  padding: 0.2em 1em;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: calc(100% - 1.5em);
+}
+
+.list-row__text {
+  width: 100%;
+  white-space: nowrap;
+}
+
+.list-row__watering-days-number {
+  height: 2.5em;
+  display: flex;
+  align-items: center;
+  margin-top: 0.25em;
+}
+
+.list-row__plant-name {
+  max-width: 50%;
+}
+
+.list-row__buttons {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
 }

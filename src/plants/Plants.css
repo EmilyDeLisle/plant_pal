@@ -1,5 +1,26 @@
+.plants {
+  /* Summer vector created by winkimages - www.freepik.com */
+  background: url('../assets/leaf_pattern.jpg') repeat fixed;
+  background-size: 500px;
+  height: 100vh;
+}
+
 .plants__container {
-  margin: 4em 5% 0 5%;
+  padding: 4em 5% 0 5%;
   display: relative;
-  height: 65vh;
+  background-color: rgba(255, 255, 255, 0.9);
+  height: calc(100% - 12em);
+  width: calc(100% - 8em);
+  overflow: scroll;
+}
+
+.plants__lists {
+  padding-bottom: 8em;
+}
+
+.plants__attention-list {
+  border: 2px solid;
+  border-radius: 8px;
+  padding: 0.5em;
+  background-color: rgba(179, 254, 191, 0.2);
 }

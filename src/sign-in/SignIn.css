@@ -4,7 +4,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  /* Summer vector created by winkimages - www.freepik.com */
+  background: url('../assets/leaf_pattern.jpg') repeat fixed;
+  background-size: 500px;
 }
+
 
 .sign-in__fields {
   padding: 2em;
