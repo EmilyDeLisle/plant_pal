@@ -9,8 +9,8 @@ export const plappTheme = createMuiTheme({
       contrastText: '#fff',
     },
     text: {
-      primary: '#498877'
-    }
+      primary: '#498877',
+    },
   },
   typography: {
     fontFamily: [
@@ -26,17 +26,16 @@ export const plappTheme = createMuiTheme({
       '"Segoe UI Emoji"',
       '"Segoe UI Symbol"',
     ].join(','),
+    h3: {
+      fontSize: 72,
+      fontWeight: 800,
+    },
+    h4: {
+      fontSize: 48,
+      fontWeight: 800,
+    },
   },
 })
-
-// set h3 styles
-plappTheme.typography.h3 = {
-  fontSize: 120,
-  fontWeight: 800,
-  [plappTheme.breakpoints.up('md')]: {
-    fontSize: 72,
-  },
-}
 
 // set h5 styles
 plappTheme.typography.h5 = {

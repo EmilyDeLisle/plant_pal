@@ -1,18 +1,20 @@
 import React, { ReactElement } from 'react'
 import { observer } from 'mobx-react'
 import Card from '@material-ui/core/Card'
+import Hidden from '@material-ui/core/Hidden'
 import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
-import DoneIcon from '@material-ui/icons/Done'
-import EcoIcon from '@material-ui/icons/Eco'
-import WateringCanIcon from './WateringCanIcon'
+import CheckIcon from '@material-ui/icons/Done'
+import FertilizeIcon from '@material-ui/icons/Eco'
+import OptionsIcon from '@material-ui/icons/MoreVert'
+import WaterIcon from './WateringCanIcon'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import moment from 'moment'
 import { Plant, PlantEventType } from '../../../models'
 import { getDatabase } from '../../../firebase'
 import { plantStore } from '../../../injectables'
-import { calculateDays, formatDays } from './plantHelpers'
+import { calculateDays, formatDays, formatDate } from './plantHelpers'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -25,9 +27,14 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     fertilized: {
       backgroundImage: 'linear-gradient(to right, #65F6D3 , #B3FEBF)',
+      '&:hover': {
+        backgroundImage: 'none',
+      },
     },
     wateringNumber: {
       opacity: 0.3,
+      fontSize: 72,
+      fontWeight: 800,
     },
   })
 )
@@ -37,25 +44,25 @@ const buttons = [
     tooltip: 'Water not needed today',
     eventType: PlantEventType.CHECK,
     successMessage: 'Plant successfully checked',
-    icon: <DoneIcon />,
+    icon: <CheckIcon />,
   },
   {
     tooltip: 'Fertilize plant today',
     eventType: PlantEventType.FERTILIZE,
     successMessage: 'Plant successfully fertilized',
-    icon: <EcoIcon />,
+    icon: <FertilizeIcon />,
   },
   {
     tooltip: 'Water plant (with fertilizer) today',
     eventType: PlantEventType.WATER_WITH_FERTILIZER,
     successMessage: 'Plant successfully watered with fertilizer',
-    icon: <WateringCanIcon />,
+    icon: <WaterIcon />,
   },
   {
     tooltip: 'Water plant today',
     eventType: PlantEventType.WATER,
     successMessage: 'Plant successfully watered',
-    icon: <WateringCanIcon />,
+    icon: <WaterIcon />,
   },
 ]
 
@@ -93,11 +100,6 @@ export const ListRow = observer(
             className={`${classes.root} ${isFertilized ? classes.fertilized : ''} plant-list-row`}
           >
             <div className="list-row__text">
-              <div className="list-row__watering-days-number">
-                <Typography className={classes.wateringNumber} variant="h3" display="inline" noWrap>
-                  {!!lastWateredDate ? calculateDays(moment(lastWateredDate?.toDate())) : '?'}
-                </Typography>
-              </div>
               <div className="list-row__plant-name">
                 <Typography variant="h5" display="inline" color="primary" noWrap>
                   {name}
@@ -111,35 +113,57 @@ export const ListRow = observer(
                     } | `}
                   </strong>
                 )}
-                {`${
-                  !!lastWateredDate ? `Watered ${formatDays(lastWateredDate)}` : `Never watered`
-                } | ${
-                  !!lastFertilizedDate
-                    ? `Fertilized ${formatDays(lastFertilizedDate)}`
-                    : `Never fertilized`
-                }`}
+                <Hidden smDown>
+                  {`Last watered: ${
+                    !!lastWateredDate ? formatDate(lastWateredDate) : `Never`
+                  } | Last fertilized: ${
+                    !!lastFertilizedDate ? formatDate(lastFertilizedDate) : `Never`
+                  }`}
+                </Hidden>
+                <Hidden mdUp>
+                  {!!lastWateredDate ? `Watered ${formatDays(lastWateredDate)}` : 'Never watered'}
+                  <Hidden xsDown>
+                    {!!lastFertilizedDate
+                      ? ` | Fertilized ${formatDays(lastFertilizedDate)}`
+                      : ' | Never fertilized'}
+                  </Hidden>
+                </Hidden>
               </Typography>
             </div>
             <div className="list-row__buttons">
-              {buttons.map((button) => {
-                return (
-                  ((toBeChecked && button.eventType === PlantEventType.CHECK) ||
-                    button.eventType !== PlantEventType.CHECK) && (
-                    <Tooltip key={`button-${button.tooltip}-${id}`} title={button.tooltip}>
-                      <IconButton
-                        onClick={(event) => {
-                          event.stopPropagation()
-                          db.modifyPlant(plant, button.eventType, undefined, () =>
-                            console.log(button.successMessage)
-                          )
-                        }}
-                      >
-                        {button.icon}
-                      </IconButton>
-                    </Tooltip>
-                  )
-                )
-              })}
+              <Hidden xsDown>
+                <div className="list-row__watering-days-number">
+                  <Typography className={classes.wateringNumber} display="inline" noWrap>
+                    {!!lastWateredDate ? calculateDays(moment(lastWateredDate?.toDate())) : '?'}
+                  </Typography>
+                </div>
+                <Hidden smDown>
+                  {buttons.map((button) => {
+                    return (
+                      ((toBeChecked && button.eventType === PlantEventType.CHECK) ||
+                        button.eventType !== PlantEventType.CHECK) && (
+                        <Tooltip key={`button-${button.tooltip}-${id}`} title={button.tooltip}>
+                          <IconButton
+                            onClick={(event) => {
+                              event.stopPropagation()
+                              db.modifyPlant(plant, button.eventType, undefined, () =>
+                                console.log(button.successMessage)
+                              )
+                            }}
+                          >
+                            {button.icon}
+                          </IconButton>
+                        </Tooltip>
+                      )
+                    )
+                  })}
+                </Hidden>
+              </Hidden>
+              <Hidden mdUp>
+                <IconButton>
+                  <OptionsIcon />
+                </IconButton>
+              </Hidden>
             </div>
           </div>
         </Card>

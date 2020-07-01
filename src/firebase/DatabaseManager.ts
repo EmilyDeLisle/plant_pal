@@ -49,7 +49,7 @@ export default class DatabaseManager {
 
   addPlant = (
     plantValues: PlantProps,
-    fileName?: string,
+    imageFileName?: string,
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
     onError?: ((reason: any) => PromiseLike<never>) | null | undefined
   ): string | undefined => {
@@ -57,8 +57,11 @@ export default class DatabaseManager {
     const docRef = this.collectionRef?.doc()
     const id = docRef?.id
     if (!!docRef) {
-      const imageFileName = !!fileName ? fileName : ''
-      const plant = new Plant({ ...plantValues, id: id, imageFileName })
+      const plant = new Plant({
+        ...plantValues,
+        id: id,
+        imageFileName: !!imageFileName ? imageFileName : '',
+      })
       !!plant && docRef.withConverter(plantConverter).set(plant).then(onSuccess).catch(onError)
     }
     return id
@@ -140,7 +143,7 @@ export default class DatabaseManager {
           fertilizingDates: [newDate, ...fertilizingDates],
           wateringDates: [newDate, ...wateringDates],
         }
-      // if plant has been watered but not fertilized today, update fertilized list
+        // if plant has been watered but not fertilized today, update fertilized list
       } else if (
         !isDateUnavailable(newDate, fertilizingDates) &&
         isDateUnavailable(newDate, wateringDates)
@@ -148,7 +151,7 @@ export default class DatabaseManager {
         updateValue = {
           fertilizingDates: [newDate, ...fertilizingDates],
         }
-      // if plant has been fertilized but not watered today, update watered list
+        // if plant has been fertilized but not watered today, update watered list
       } else if (
         isDateUnavailable(newDate, fertilizingDates) &&
         !isDateUnavailable(newDate, wateringDates)

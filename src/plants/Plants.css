@@ -1,3 +1,7 @@
+.plants {
+  margin-bottom: 10em;
+}
+
 .plants__container {
   margin: 4em 5% 0 5%;
   display: relative;

@@ -13,9 +13,9 @@ import { getAuth } from '../firebase'
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     fab: {
-      position: 'absolute',
-      bottom: theme.spacing(8),
-      right: theme.spacing(8),
+      position: 'fixed',
+      bottom: theme.spacing(4),
+      right: theme.spacing(4),
     },
   })
 )
@@ -52,7 +52,7 @@ export const Plants = inject('plantStore')(
       }
 
       return (
-        <>
+        <div className='plants'>
           <TopNavNar />
           <div className="plants__container">
             {plantsToWaterList.length > 0 && (
@@ -63,7 +63,12 @@ export const Plants = inject('plantStore')(
             )}
             <div className="plants__fab">
               <Tooltip title="Add new plant" placement="left">
-                <Fab className={classes.fab} color="primary" onClick={() => handleOpenAddDialog()}>
+                <Fab
+                  className={classes.fab}
+                  size="large"
+                  color="primary"
+                  onClick={() => handleOpenAddDialog()}
+                >
                   <AddIcon />
                 </Fab>
               </Tooltip>
@@ -75,7 +80,7 @@ export const Plants = inject('plantStore')(
             dialogMode={dialogMode}
             handleClose={() => setDialogOpen(false)}
           />
-        </>
+        </div>
       )
     }
   )
