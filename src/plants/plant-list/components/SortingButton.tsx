@@ -2,7 +2,7 @@ import React from 'react'
 import Button from '@material-ui/core/Button'
 import DescendingIcon from '@material-ui/icons/ExpandMore'
 import AscendingIcon from '@material-ui/icons/ExpandLess'
-import { SortingMode, SortingDirection } from '../../models'
+import { SortingMode, SortingDirection } from '../../../models'
 
 export interface SortingButtonProps {
   selected: boolean
@@ -32,7 +32,7 @@ export const SortingButton = ({
   handleChangeDirection,
 }: SortingButtonProps) => {
   return (
-    <div className="top-nav-bar__sorting-button">
+    <div className="sorting-button">
       <Button
         variant={selected ? 'contained' : undefined}
         color="primary"
