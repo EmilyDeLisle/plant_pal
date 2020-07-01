@@ -8,13 +8,14 @@ import Tooltip from '@material-ui/core/Tooltip'
 import CheckIcon from '@material-ui/icons/Done'
 import FertilizeIcon from '@material-ui/icons/Eco'
 import OptionsIcon from '@material-ui/icons/MoreVert'
-import WaterIcon from './WateringCanIcon'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import moment from 'moment'
 import { Plant, PlantEventType } from '../../../models'
 import { getDatabase } from '../../../firebase'
 import { plantStore } from '../../../injectables'
 import { calculateDays, formatDays, formatDate } from './plantHelpers'
+import WaterIcon from '../../../assets/WateringCanIcon'
+import WaterFertilizeIcon from '../../../assets/WateringCanLeafIcon'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -56,7 +57,7 @@ const buttons = [
     tooltip: 'Water plant (with fertilizer) today',
     eventType: PlantEventType.WATER_WITH_FERTILIZER,
     successMessage: 'Plant successfully watered with fertilizer',
-    icon: <WaterIcon />,
+    icon: <WaterFertilizeIcon />,
   },
   {
     tooltip: 'Water plant today',

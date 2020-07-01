@@ -1,6 +1,7 @@
 import React from 'react'
 import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon'
 
+// Icon made by Freepik from https://www.flaticon.com
 export const WateringCanIcon = (props: SvgIconProps) => {
   return (
     <SvgIcon {...props} viewBox='0 0 511.998 511.998'>
