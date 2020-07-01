@@ -1,26 +1,28 @@
-import React, { ReactElement, useEffect, useState } from 'react'
+import React from 'react'
 import { inject, observer } from 'mobx-react'
-import { navigate, RouteComponentProps } from '@reach/router'
 import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
-// import { plantStore } from '../injectables'
-// import { PlantDialogMode } from '../models'
-// import { getAuth } from '../firebase'
 import { SortingButton } from './SortingButton'
-import { SortingMode } from '../../../models'
+import { InspectorMode, SortingMode } from '../../../models'
 import MonsteraIcon from '../../../assets/MonsteraIcon'
 import { plantStore } from '../../../injectables'
 
 export const ListControls = inject('plantStore')(
   observer(() => {
-    const { setSortingDirection, setSortingMode, sortingDirection, sortingMode } = plantStore
+    const {
+      setInspectorMode,
+      setSortingDirection,
+      setSortingMode,
+      sortingDirection,
+      sortingMode,
+    } = plantStore
     return (
       <div className="list-controls__container">
         <Button
           color="primary"
           variant="contained"
           startIcon={<MonsteraIcon />}
-          // onClick={() => handleOpenAddDialog()}
+          onClick={() => setInspectorMode(InspectorMode.ADD)}
         >
           Add Plant
         </Button>
@@ -28,6 +30,7 @@ export const ListControls = inject('plantStore')(
           <Typography>Sort by: </Typography>
           {Object.values(SortingMode).map((mode) => (
             <SortingButton
+              key={mode}
               selected={sortingMode === mode}
               mode={mode}
               direction={sortingDirection}

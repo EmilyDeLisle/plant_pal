@@ -6,7 +6,7 @@
   -o-background-size: cover;
   background-size: cover;
   width: calc(100% - 4em + 2px);
-  height: 13em;
+  height: calc(50% - 6em);
   padding: 2em;
   display: flex;
   flex-direction: column;
@@ -28,4 +28,5 @@
 .plant-dialog-content__controls {
   margin-top: -1em;
   margin-left: auto;
+  white-space: nowrap;
 }

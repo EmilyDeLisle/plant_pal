@@ -1,32 +1,36 @@
-import React, { useEffect, useState } from 'react'
-import Button from '@material-ui/core/Button'
-import CloseIcon from '@material-ui/icons/Close'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import FormHelperText from '@material-ui/core/FormHelperText'
-import IconButton from '@material-ui/core/IconButton'
-import Menu from '@material-ui/core/Menu'
-import MenuItem from '@material-ui/core/MenuItem'
-import TextField from '@material-ui/core/TextField'
-import Typography from '@material-ui/core/Typography'
+import React from 'react'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
-import MoreVertIcon from '@material-ui/icons/MoreVert'
-import { Moment } from 'moment'
-import { firestore } from 'firebase'
-import { DatePicker } from '@material-ui/pickers'
-import { IFileWithMeta } from 'react-dropzone-uploader'
-import { AddFormValues, FormValues, Plant, PlantEventType, PlantProps } from '../../../models'
-import { getDatabase, getStorage } from '../../../firebase'
-import { EventSection } from './EventSection'
-import { ImageUpload } from './ImageUpload'
+import { observer } from 'mobx-react'
+import { InspectorMode } from '../../../models'
+import { PlantDialogContentAdd, PlantDialogContentView } from './PlantDialogContent'
+import { plantStore } from '../../../injectables'
 
-export const InspectorPanel = () => {
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    titleCard: {
+      color: theme.palette.primary.contrastText,
+    },
+    titleText: {
+      textShadow: '2px 2px 6px rgba(0, 0, 0, 0.5)',
+    },
+  })
+)
 
+export const InspectorPanel = observer(() => {
+  const { selectedPlant, inspectorMode, setInspectorMode } = plantStore
 
-  return (
+  return inspectorMode === InspectorMode.DEFAULT ? (
+    <div className="inspector-panel__default"></div>
+  ) : (
     <div className='inspector-panel__container'>
+      {inspectorMode === InspectorMode.VIEW && !!selectedPlant ? (
+        <PlantDialogContentView
+          plant={selectedPlant}
+          handleClose={() => setInspectorMode(InspectorMode.DEFAULT)}
+        />
+      ) : (
+        <PlantDialogContentAdd handleClose={() => setInspectorMode(InspectorMode.DEFAULT)} />
+      )}
     </div>
   )
-
-}
-
+})

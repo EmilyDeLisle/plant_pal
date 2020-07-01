@@ -1,4 +1,5 @@
 export * from './FormValues'
+export * from './InspectorMode'
 export * from './Map'
 export * from './Plant'
 export * from './PlantDialogMode'

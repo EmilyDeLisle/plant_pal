@@ -10,7 +10,7 @@ import FertilizeIcon from '@material-ui/icons/Eco'
 import OptionsIcon from '@material-ui/icons/MoreVert'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import moment from 'moment'
-import { Plant, PlantEventType } from '../../../models'
+import { InspectorMode, Plant, PlantEventType } from '../../../models'
 import { getDatabase } from '../../../firebase'
 import { plantStore } from '../../../injectables'
 import { calculateDays, formatDays, formatDate } from './plantHelpers'
@@ -86,14 +86,14 @@ export const ListRow = observer(
     const classes = useStyles()
     const db = getDatabase()
     const avgWateringInterval = getAvgInterval(PlantEventType.WATER)
-    const { setSelectedPlantID } = plantStore
+    const { setInspectorMode, setSelectedPlantID } = plantStore
 
     return (
       <div
         className={`plant-list-row-container`}
         onClick={() => {
           setSelectedPlantID(id)
-          handleOpen()
+          setInspectorMode(InspectorMode.VIEW)
         }}
       >
         <Card>

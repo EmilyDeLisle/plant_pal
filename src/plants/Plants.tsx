@@ -6,7 +6,6 @@ import { InspectorPanel, ListControls, PlantList, TopNavNar, PlantDialog } from 
 import { plantStore } from '../injectables'
 import { PlantDialogMode } from '../models'
 import { getAuth } from '../firebase'
-import MonsteraIcon from '../assets/MonsteraIcon'
 
 export const Plants = inject('plantStore')(
   observer(
