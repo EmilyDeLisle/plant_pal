@@ -1,6 +1,7 @@
 import React, { ReactElement, useEffect, useState } from 'react'
 import { inject, observer } from 'mobx-react'
 import { RouteComponentProps } from '@reach/router'
+import Hidden from '@material-ui/core/Hidden'
 import Typography from '@material-ui/core/Typography'
 import { InspectorPanel, ListControls, PlantList, TopNavNar } from './plant-list'
 import { plantStore } from '../injectables'
@@ -19,23 +20,21 @@ export const Plants = inject('plantStore')(
               <div className="plants__lists">
                 {plantsToWaterList.length > 0 && (
                   <div className="plants__attention-list">
-                    <Typography variant="h5" color="primary">
-                      Plants needing attention
-                    </Typography>
+                    <Typography variant="h5">Plants needing attention</Typography>
                     <PlantList plants={plantsToWaterList} />
                   </div>
                 )}
                 {plantsRemainingList.length > 0 && (
                   <>
-                    <Typography variant="h4" color="primary">
-                      Plants
-                    </Typography>
+                    <Typography variant="h4">Plants</Typography>
                     <PlantList plants={plantsRemainingList} />
                   </>
                 )}
               </div>
             </div>
-            <InspectorPanel />
+            <Hidden smDown>
+              <InspectorPanel />
+            </Hidden>
           </div>
         </div>
       )

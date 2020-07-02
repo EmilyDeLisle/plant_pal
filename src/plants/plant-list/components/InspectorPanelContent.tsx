@@ -22,9 +22,14 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     titleCard: {
       color: theme.palette.primary.contrastText,
+      textShadow: '2px 2px 6px rgba(0, 0, 0, 0.5)',
     },
     titleText: {
       textShadow: '2px 2px 6px rgba(0, 0, 0, 0.5)',
+    },
+    controlIcon: {
+      color: theme.palette.primary.contrastText,
+      filter: 'drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.5))',
     },
   })
 )
@@ -106,13 +111,13 @@ export const InspectorPanelContentAdd = ({ handleClose }: InspectorPanelContentP
   return (
     <>
       <div
-        className={`${classes.titleCard} inspector-panel__title-card ${
+        className={`inspector-panel__title-card ${
           image !== null ? 'inspector-panel-content--image-background' : ''
         }`}
         style={{ backgroundImage: image !== null ? `url(${image})` : '' }}
       >
         <div className="inspector-panel-content__title-card-top">
-          <Typography className={classes.titleText} variant="h4">
+          <Typography className={classes.titleCard} variant="h4">
             Add new plant
           </Typography>
           <div className="inspector-panel-content__controls">
@@ -124,13 +129,13 @@ export const InspectorPanelContentAdd = ({ handleClose }: InspectorPanelContentP
                 handleClose()
               }}
             >
-              <CloseIcon />
+              <CloseIcon className={classes.controlIcon} />
             </IconButton>
           </div>
         </div>
         <ImageUpload handleSelectedImage={handleSelectedImage} />
       </div>
-      <div className="inspector-panel-content__contents">
+      <div className="inspector-panel-content__contents inspector-panel-content__add-fields">
         <TextField
           name="name"
           label="Display name"
@@ -174,9 +179,11 @@ export const InspectorPanelContentAdd = ({ handleClose }: InspectorPanelContentP
           animateYearScrolling
           fullWidth
         />
-        <Button variant="contained" onClick={() => handleSubmit(values)}>
-          Submit
-        </Button>
+        <div className='inspector-panel-content__edit-buttons'>
+          <Button variant="contained" color='primary' onClick={() => handleSubmit(values)}>
+            Submit
+          </Button>
+        </div>
       </div>
     </>
   )
@@ -292,21 +299,34 @@ export const InspectorPanelContentView = ({
 
   return (
     <>
-      <div className={`${classes.titleCard} inspector-panel__title-card`} style={getImage()}>
+      <div className='inspector-panel__title-card' style={getImage()}>
         <div className="inspector-panel-content__title-card-top">
           {editMode !== 'names' && (
             <div>
-              <Typography className={classes.titleText} variant="h4">
+              <Typography className={classes.titleCard} variant="h4">
                 {name}
               </Typography>
-              <Typography className={classes.titleText}>{altName}</Typography>
+              <Typography className={classes.titleCard}>{altName}</Typography>
             </div>
           )}
           <div className="inspector-panel-content__controls">
             {editMode === '' && (
-              <IconButton color="inherit" edge="end" onClick={handleClickMenu}>
-                <MoreVertIcon />
-              </IconButton>
+              <>
+                <IconButton color="inherit" edge="end" onClick={handleClickMenu}>
+                  <MoreVertIcon className={classes.controlIcon} />
+                </IconButton>
+                <Menu
+                  id="simple-menu"
+                  anchorEl={anchorEl}
+                  keepMounted
+                  open={Boolean(anchorEl)}
+                  onClose={handleCloseMenu}
+                >
+                  <MenuItem onClick={() => handleClickEdit('names')}>Edit name</MenuItem>
+                  <MenuItem onClick={() => handleClickEdit('image')}>Change image</MenuItem>
+                  <MenuItem onClick={() => handleDelete(id)}>Delete plant</MenuItem>
+                </Menu>
+              </>
             )}
             <IconButton
               color="inherit"
@@ -316,25 +336,14 @@ export const InspectorPanelContentView = ({
                 handleClose()
               }}
             >
-              <CloseIcon />
+              <CloseIcon className={classes.controlIcon} />
             </IconButton>
-            <Menu
-              id="simple-menu"
-              anchorEl={anchorEl}
-              keepMounted
-              open={Boolean(anchorEl)}
-              onClose={handleCloseMenu}
-            >
-              <MenuItem onClick={() => handleClickEdit('names')}>Edit name</MenuItem>
-              <MenuItem onClick={() => handleClickEdit('image')}>Change image</MenuItem>
-              <MenuItem onClick={() => handleDelete(id)}>Delete plant</MenuItem>
-            </Menu>
           </div>
         </div>
         {editMode === 'image' && (
-          <>
+          <div className="inspector-panel-content__edit-fields">
             <ImageUpload onlyDropzone handleSelectedImage={handleSelectedImage} />
-            <div>
+            <div className="inspector-panel-content__edit-buttons">
               <Button
                 color="inherit"
                 onClick={() => {
@@ -344,14 +353,12 @@ export const InspectorPanelContentView = ({
               >
                 Cancel
               </Button>
-              <Button color="primary" variant="contained" onClick={() => handleUploadNewImage()}>
-                Change image
-              </Button>
+              <Button onClick={() => handleUploadNewImage()}>Change image</Button>
             </div>
-          </>
+          </div>
         )}
         {editMode === 'names' && (
-          <div className="inspector-panel-content__edit-name-fields">
+          <div className="inspector-panel-content__edit-fields">
             <TextField
               name="name"
               label="Display name"
@@ -370,10 +377,10 @@ export const InspectorPanelContentView = ({
               onChange={({ target: { name, value } }) => handleEditValues(name, value)}
               fullWidth
             />
-            <Button onClick={handleEndEditNames}>Cancel</Button>
-            <Button color="primary" variant="contained" onClick={() => handleSubmitEdit(values)}>
-              Confirm Changes
-            </Button>
+            <div className="inspector-panel-content__edit-buttons">
+              <Button onClick={handleEndEditNames}>Cancel</Button>
+              <Button onClick={() => handleSubmitEdit(values)}>Confirm Changes</Button>
+            </div>
           </div>
         )}
       </div>
