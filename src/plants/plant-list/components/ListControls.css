@@ -7,4 +7,9 @@
 .list-controls__sorting-buttons {
   display: flex;
   align-items: center;
+  margin-left: auto;
+}
+
+.list-controls__split-sorting-button {
+  margin-left: 0.5em;
 }
