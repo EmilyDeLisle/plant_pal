@@ -35,6 +35,10 @@ class PlantStore {
     return this.plantList.filter((plant) => !plant.toBeChecked)
   }
 
+  get plantCount() {
+    return this.plantList.length
+  }
+
   get selectedPlant() {
     return !!this.selectedPlantID ? this.plants[this.selectedPlantID] : undefined
   }
@@ -82,6 +86,7 @@ decorate(PlantStore, {
   plantList: computed,
   plantsToWaterList: computed,
   plantsRemainingList: computed,
+  plantCount: computed,
   selectedPlant: computed,
   setPlants: action,
   setSortingMode: action,
