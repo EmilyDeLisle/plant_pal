@@ -20,13 +20,13 @@ export const Plants = inject('plantStore')(
               <div className="plants__lists">
                 {plantsToWaterList.length > 0 && (
                   <div className="plants__attention-list">
-                    <Typography variant="h5">Plants needing attention</Typography>
+                    <Typography color='textPrimary' variant="h5">Plants needing attention</Typography>
                     <PlantList plants={plantsToWaterList} />
                   </div>
                 )}
                 {plantsRemainingList.length > 0 && (
                   <>
-                    <Typography variant="h4">Plants</Typography>
+                    <Typography color='textPrimary' variant="h4">Plants</Typography>
                     <PlantList plants={plantsRemainingList} />
                   </>
                 )}

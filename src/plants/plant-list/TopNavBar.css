@@ -2,8 +2,18 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5em 1em;
+  padding: 0 1em;
   box-shadow: 1px 0px 3px 3px rgba(0, 0, 0, 0.3);
-  height: 5em;
   z-index: 100;
+}
+
+.top-nav-bar__user-panel {
+  padding: 1em;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.top-nav-bar__user-panel-button {
+  margin-top: 1em;
 }

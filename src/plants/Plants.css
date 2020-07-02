@@ -8,7 +8,7 @@
 .plants__container {
   display: flex;
   background-color: rgba(255, 255, 255, 0.9);
-  height: calc(100% - 6em);
+  height: calc(100% - 3em);
 }
 
 .plants__lists-container {
