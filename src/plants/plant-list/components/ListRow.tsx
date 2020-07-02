@@ -100,12 +100,10 @@ export const ListRow = observer(
             className={`${classes.root} ${isFertilized ? classes.fertilized : ''} plant-list-row`}
           >
             <div className="list-row__text">
-              <div className="list-row__plant-name">
-                <Typography variant="h5" display="inline" color="primary" noWrap>
+              <Typography variant="h5" color="primary" noWrap>
                   {name}
                 </Typography>
-              </div>
-              <Typography color="textPrimary" display="inline" variant="body2">
+              <Typography color="textPrimary" variant="body2">
                 {!!avgWateringInterval && (
                   <strong>
                     {` Watered every ${avgWateringInterval !== 1 ? avgWateringInterval : ''} day${
@@ -113,16 +111,16 @@ export const ListRow = observer(
                     } | `}
                   </strong>
                 )}
-                <Hidden smDown>
+                <Hidden mdDown>
                   {`Last watered: ${
                     !!lastWateredDate ? formatDate(lastWateredDate) : `Never`
                   } | Last fertilized: ${
                     !!lastFertilizedDate ? formatDate(lastFertilizedDate) : `Never`
                   }`}
                 </Hidden>
-                <Hidden mdUp>
+                <Hidden lgUp>
                   {!!lastWateredDate ? `Watered ${formatDays(lastWateredDate)}` : 'Never watered'}
-                  <Hidden xsDown>
+                  <Hidden lgDown>
                     {!!lastFertilizedDate
                       ? ` | Fertilized ${formatDays(lastFertilizedDate)}`
                       : ' | Never fertilized'}

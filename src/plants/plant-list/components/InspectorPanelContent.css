@@ -1,3 +1,7 @@
+.inspector-panel-contents__container {
+  overflow-y: scroll;
+}
+
 .inspector-panel__title-card {
   /* Background image by Freepik - https://www.freepik.com/free-photos-vectors/pattern*/
   background: url('../../../assets/palm.jpg') no-repeat;
@@ -34,6 +38,7 @@
 
 .inspector-panel-content__contents {
   padding: 0.5em;
+  overflow-y: scroll;
 }
 
 .inspector-panel-content__add-fields {

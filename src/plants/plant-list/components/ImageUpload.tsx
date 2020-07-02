@@ -1,10 +1,20 @@
 import React, { useState } from 'react'
-import Dropzone, { IExtra, IFileWithMeta, ILayoutProps, StatusValue } from 'react-dropzone-uploader'
+import Dropzone, { IFileWithMeta, ILayoutProps, StatusValue } from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import CameraIcon from '@material-ui/icons/CameraAlt'
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    icon: {
+      color: theme.palette.primary.contrastText,
+      filter: 'drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.5))',
+    },
+  })
+)
 
 const Layout = ({ input, dropzoneProps, extra: { maxFiles } }: ILayoutProps) => {
   return <div {...dropzoneProps}>{input}</div>
@@ -18,6 +28,7 @@ interface ImageUploadProps {
 export const ImageUpload = ({ onlyDropzone, handleSelectedImage }: ImageUploadProps) => {
   const [showDropzone, setShowDropzone] = useState(onlyDropzone ?? false)
   const [imageChosen, setImageChosen] = useState(false)
+  const classes = useStyles()
 
   const classNames = {
     dropzone: 'image-upload__dropzone',
@@ -73,7 +84,7 @@ export const ImageUpload = ({ onlyDropzone, handleSelectedImage }: ImageUploadPr
       <div className="image-upload__button">
         <Tooltip placement="right" title={imageChosen ? 'Change image' : 'Upload image'}>
           <IconButton edge="start" color="inherit" onClick={() => setShowDropzone(true)}>
-            <CameraIcon />
+            <CameraIcon className={classes.icon}/>
           </IconButton>
         </Tooltip>
       </div>
