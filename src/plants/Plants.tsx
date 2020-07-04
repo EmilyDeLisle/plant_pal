@@ -3,6 +3,7 @@ import { inject, observer } from 'mobx-react'
 import { RouteComponentProps } from '@reach/router'
 import Fab from '@material-ui/core/Fab'
 import Hidden from '@material-ui/core/Hidden'
+import Tooltip from '@material-ui/core/Tooltip'
 import Typography from '@material-ui/core/Typography'
 import { makeStyles, Theme, createStyles, useTheme } from '@material-ui/core/styles'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
@@ -15,15 +16,17 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     fab: {
       position: 'fixed',
-      bottom: theme.spacing(4),
-      right: theme.spacing(4),
+      bottom: theme.spacing(6),
+      right: theme.spacing(6),
     },
     listsContainer: {
-      [theme.breakpoints.up('md')]: {
+      flexGrow: 1,
+      [theme.breakpoints.up('lg')]: {
         padding: '2em 2em 0 2em',
       },
-      [theme.breakpoints.down('sm')]: {
+      [theme.breakpoints.down('md')]: {
         padding: '0.5em 0.5em 0 0.5em',
+        width: 'calc(100% - 1em)',
       },
     },
   })
@@ -64,19 +67,23 @@ export const Plants = inject('plantStore')(
                         <PlantList plants={plantsRemainingList} />
                       </>
                     )}
+                    <div className="plants__list-spacer"></div>
                   </div>
                 </div>
                 <Hidden smDown>
                   <InspectorPanel />
                 </Hidden>
                 {inspectorMode === InspectorMode.DEFAULT && (
-                  <Hidden mdUp>
-                    <Fab
-                      className={classes.fab}
-                      onClick={() => setInspectorMode(InspectorMode.ADD)}
-                    >
-                      <MonsteraIcon />
-                    </Fab>
+                  <Hidden smUp>
+                    <Tooltip title='Add new plant' placement='left'>
+                      <Fab
+                        className={classes.fab}
+                        color="primary"
+                        onClick={() => setInspectorMode(InspectorMode.ADD)}
+                      >
+                        <MonsteraIcon />
+                      </Fab>
+                    </Tooltip>
                   </Hidden>
                 )}
               </>

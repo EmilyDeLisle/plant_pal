@@ -41,7 +41,7 @@ export const plappTheme = createMuiTheme({
 plappTheme.typography.h5 = {
   fontSize: 22,
   fontWeight: 800,
-  [plappTheme.breakpoints.up('md')]: {
+  [plappTheme.breakpoints.up('lg')]: {
     fontSize: 30,
   },
 }

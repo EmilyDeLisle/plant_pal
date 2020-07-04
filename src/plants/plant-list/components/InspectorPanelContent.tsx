@@ -94,8 +94,8 @@ export const InspectorPanelContentAdd = ({ handleClose }: InspectorPanelContentP
       // add plant to db
       const plantID = db.addPlant(plant, fileName, () => {
         console.log('Plant added successfully')
-        handleClose()
         setValues(initialValues)
+        handleClose()
       })
 
       // // add image file to storage

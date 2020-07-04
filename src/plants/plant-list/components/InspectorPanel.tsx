@@ -8,10 +8,10 @@ import { plantStore } from '../../../injectables'
 const useStyles = makeStyles((theme: Theme) =>
 createStyles({
   inspectorPanel: {
-    width: '540px',
-    [theme.breakpoints.down('md')]: {
-      width: '400px',
-    },
+    minWidth: '540px',
+    // [theme.breakpoints.down('md')]: {
+    //   minWidth: '400px',
+    // },
     [theme.breakpoints.down('sm')]: {
       width: '100%',
     },

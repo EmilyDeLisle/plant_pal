@@ -1,24 +1,28 @@
-import React, { ReactElement } from 'react'
+import React, { ReactElement, useState } from 'react'
 import { observer } from 'mobx-react'
 import Card from '@material-ui/core/Card'
 import Hidden from '@material-ui/core/Hidden'
-import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
+import Menu from '@material-ui/core/Menu'
+import MenuItem from '@material-ui/core/MenuItem'
 import Tooltip from '@material-ui/core/Tooltip'
+import Typography from '@material-ui/core/Typography'
 import CheckIcon from '@material-ui/icons/Done'
 import FertilizeIcon from '@material-ui/icons/Eco'
 import OptionsIcon from '@material-ui/icons/MoreVert'
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
-import moment from 'moment'
+import { makeStyles, Theme, createStyles, useTheme } from '@material-ui/core/styles'
 import { InspectorMode, Plant, PlantEventType } from '../../../models'
 import { getDatabase } from '../../../firebase'
 import { plantStore } from '../../../injectables'
-import { calculateDays, formatDays, formatDate } from './plantHelpers'
+import { formatDate, formatDays } from './plantHelpers'
 import WaterIcon from '../../../assets/WateringCanIcon'
 import WaterFertilizeIcon from '../../../assets/WateringCanLeafIcon'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    menu: {
+      backgroundColor: '#B3FEBF',
+    },
     root: {
       backgroundColor: '#B3FEBF',
       '&:hover': {
@@ -34,8 +38,14 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     wateringNumber: {
       opacity: 0.3,
-      fontSize: 72,
+      fontSize: '64pt',
       fontWeight: 800,
+      position: 'absolute',
+      right: 0,
+      top: '-0.3em',
+      [theme.breakpoints.only('sm')]: {
+        right: '1em',
+      },
     },
   })
 )
@@ -86,6 +96,16 @@ export const ListRow = observer(
     const db = getDatabase()
     const avgWateringInterval = getAvgInterval(PlantEventType.WATER)
     const { setInspectorMode, setSelectedPlantID } = plantStore
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+
+    const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
+      setAnchorEl(event.currentTarget)
+    }
+
+    const handleCloseMenu = (event: React.MouseEvent<HTMLLIElement>): void => {
+      event.stopPropagation()
+      setAnchorEl(null)
+    }
 
     return (
       <div
@@ -101,8 +121,8 @@ export const ListRow = observer(
           >
             <div className="list-row__text">
               <Typography variant="h5" color="primary" noWrap>
-                  {name}
-                </Typography>
+                {name}
+              </Typography>
               <Typography color="textPrimary" variant="body2">
                 {!!avgWateringInterval && (
                   <strong>
@@ -111,16 +131,16 @@ export const ListRow = observer(
                     } | `}
                   </strong>
                 )}
-                <Hidden mdDown>
+                <Hidden lgDown>
                   {`Last watered: ${
-                    !!lastWateredDate ? formatDate(lastWateredDate) : `Never`
+                    !!lastWateredDate ? formatDate(lastWateredDate) : 'Never'
                   } | Last fertilized: ${
-                    !!lastFertilizedDate ? formatDate(lastFertilizedDate) : `Never`
+                    !!lastFertilizedDate ? formatDate(lastFertilizedDate) : 'Never'
                   }`}
                 </Hidden>
-                <Hidden lgUp>
+                <Hidden xlUp>
                   {!!lastWateredDate ? `Watered ${formatDays(lastWateredDate)}` : 'Never watered'}
-                  <Hidden lgDown>
+                  <Hidden only={['xs', 'md']}>
                     {!!lastFertilizedDate
                       ? ` | Fertilized ${formatDays(lastFertilizedDate)}`
                       : ' | Never fertilized'}
@@ -128,39 +148,78 @@ export const ListRow = observer(
                 </Hidden>
               </Typography>
             </div>
+
             <div className="list-row__buttons">
-              <Hidden xsDown>
-                <div className="list-row__watering-days-number">
-                  <Typography className={classes.wateringNumber} display="inline" noWrap>
-                    {!!lastWateredDate ? calculateDays(moment(lastWateredDate?.toDate())) : '?'}
-                  </Typography>
-                </div>
-                <Hidden smDown>
-                  {buttons.map((button) => {
-                    return (
-                      ((toBeChecked && button.eventType === PlantEventType.CHECK) ||
-                        button.eventType !== PlantEventType.CHECK) && (
-                        <Tooltip key={`button-${button.tooltip}-${id}`} title={button.tooltip}>
-                          <IconButton
+              <div className="list-row__watering-days-number">
+                <Typography className={classes.wateringNumber} variant="h3">
+                  {!!avgWateringInterval ? avgWateringInterval : '?'}
+                </Typography>
+              </div>
+              <Hidden mdDown>
+                {buttons.map((button) => {
+                  return (
+                    ((toBeChecked && button.eventType === PlantEventType.CHECK) ||
+                      button.eventType !== PlantEventType.CHECK) && (
+                      <Tooltip key={`button-${button.tooltip}-${id}`} title={button.tooltip}>
+                        <IconButton
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            db.modifyPlant(plant, button.eventType, undefined, () =>
+                              console.log(button.successMessage)
+                            )
+                          }}
+                        >
+                          {button.icon}
+                        </IconButton>
+                      </Tooltip>
+                    )
+                  )
+                })}
+              </Hidden>
+              <Hidden lgUp>
+                <IconButton
+                  size="small"
+                  edge="end"
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    handleClickMenu(event)
+                  }}
+                >
+                  <OptionsIcon />
+                </IconButton>
+                <Menu
+                  id="simple-menu"
+                  anchorEl={anchorEl}
+                  keepMounted
+                  open={Boolean(anchorEl)}
+                  MenuListProps={{ disablePadding: true }}
+                  onClose={handleCloseMenu}
+                >
+                  <div className={classes.menu}>
+                    {buttons.map((button) => {
+                      return (
+                        ((toBeChecked && button.eventType === PlantEventType.CHECK) ||
+                          button.eventType !== PlantEventType.CHECK) && (
+                          <MenuItem
+                            key={`menuItem-${button.tooltip}-${id}`}
                             onClick={(event) => {
                               event.stopPropagation()
                               db.modifyPlant(plant, button.eventType, undefined, () =>
                                 console.log(button.successMessage)
                               )
+                              handleCloseMenu(event)
                             }}
                           >
-                            {button.icon}
-                          </IconButton>
-                        </Tooltip>
+                            <>
+                              {button.icon}
+                              <span className='list-row__menu-item-text'>{button.tooltip}</span>
+                            </>
+                          </MenuItem>
+                        )
                       )
-                    )
-                  })}
-                </Hidden>
-              </Hidden>
-              <Hidden mdUp>
-                <IconButton>
-                  <OptionsIcon />
-                </IconButton>
+                    })}
+                  </div>
+                </Menu>
               </Hidden>
             </div>
           </div>

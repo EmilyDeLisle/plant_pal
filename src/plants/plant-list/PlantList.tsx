@@ -9,12 +9,10 @@ export interface PlantListProps {
 export const PlantList = ({ plants }: PlantListProps): ReactElement => {
   return (
     <>
-      <div className="plant-list__row-container">
         {plants.map((plant: Plant) => {
           const { id, name } = plant
           return <ListRow key={id ? id : name} plant={plant} />
         })}
-      </div>
     </>
   )
 }

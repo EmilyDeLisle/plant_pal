@@ -7,23 +7,25 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  /* width: calc(100% - 1.5em); */
 }
 
 .list-row__text {
-  width: 100%;
-  /* white-space: nowrap; */
+  max-width: 90%;
 }
 
 .list-row__watering-days-number {
   height: 2.5em;
-  display: flex;
-  align-items: center;
-  margin-top: 0.25em;
+  position: relative;
+
 }
 
 .list-row__buttons {
   display: flex;
   align-items: center;
   white-space: nowrap;
+  margin-right: -0.5em;
+}
+
+.list-row__menu-item-text {
+  margin-left: 1em;
 }

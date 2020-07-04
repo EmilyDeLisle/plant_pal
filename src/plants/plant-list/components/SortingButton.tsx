@@ -1,15 +1,22 @@
 import React, { useRef, useState } from 'react'
 import Button from '@material-ui/core/Button'
 import ButtonGroup from '@material-ui/core/ButtonGroup'
-import ClickAwayListener from '@material-ui/core/ClickAwayListener'
-import Grow from '@material-ui/core/Grow'
-import Paper from '@material-ui/core/Paper'
-import Popper from '@material-ui/core/Popper'
+import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
-import MenuList from '@material-ui/core/MenuList'
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import DescendingIcon from '@material-ui/icons/ExpandMore'
 import AscendingIcon from '@material-ui/icons/ExpandLess'
 import { SortingMode, SortingDirection } from '../../../models'
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    menu: {
+      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.primary.contrastText,
+      zIndex: 1000
+    },
+  })
+)
 
 export interface SortingButtonProps {
   direction: SortingDirection
@@ -61,16 +68,16 @@ export const SortingButton = ({
   )
 }
 
-
-
 export const SplitSortingButton = ({
   direction,
   handleChangeMode,
   handleChangeDirection,
 }: SortingButtonProps) => {
-  const [open, setOpen] = useState(false)
   const anchorRef = useRef<HTMLDivElement>(null)
+  const [open, setOpen] = useState(false)
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [selectedMode, setSelectedMode] = useState<SortingMode>(SortingMode.WATER)
+  const classes = useStyles()
 
   const iconMap = {
     [SortingDirection.ASC]: <AscendingIcon />,
@@ -83,21 +90,19 @@ export const SplitSortingButton = ({
     setOpen(false)
   }
 
-  const handleToggle = () => {
-    setOpen((prevOpen) => !prevOpen)
+  const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
+    setAnchorEl(event.currentTarget)
   }
 
-  const handleClose = (event: React.MouseEvent<Document, MouseEvent>) => {
-    if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {
-      return
-    }
-    setOpen(false)
+  const handleCloseMenu = (event: React.MouseEvent<HTMLLIElement>): void => {
+    event.stopPropagation()
+    setAnchorEl(null)
   }
 
   return (
     <>
       <ButtonGroup variant="contained" color="primary" ref={anchorRef} aria-label="split button">
-        <Button onClick={handleToggle}>{titleMap[selectedMode]}</Button>
+        <Button onClick={handleClickMenu}>{titleMap[selectedMode]}</Button>
         <Button
           color="primary"
           size="small"
@@ -114,32 +119,26 @@ export const SplitSortingButton = ({
           {iconMap[direction]}
         </Button>
       </ButtonGroup>
-      <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
-        {({ TransitionProps, placement }) => (
-          <Grow
-            {...TransitionProps}
-            style={{
-              transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
-            }}
-          >
-            <Paper>
-              <ClickAwayListener onClickAway={handleClose}>
-                <MenuList id="split-button-menu">
-                  {Object.values(SortingMode).map((mode) => (
-                    <MenuItem
-                      key={mode}
-                      selected={mode === selectedMode}
-                      onClick={() => handleMenuItemClick(mode)}
-                    >
-                      {titleMap[mode]}
-                    </MenuItem>
-                  ))}
-                </MenuList>
-              </ClickAwayListener>
-            </Paper>
-          </Grow>
-        )}
-      </Popper>
+      <Menu
+        id="simple-menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        MenuListProps={{ disablePadding: true }}
+        onClose={handleCloseMenu}
+      >
+        <div className={classes.menu}>
+          {Object.values(SortingMode).map((mode) => (
+            <MenuItem
+              key={mode}
+              selected={mode === selectedMode}
+              onClick={() => handleMenuItemClick(mode)}
+            >
+              {titleMap[mode]}
+            </MenuItem>
+          ))}
+        </div>
+      </Menu>
     </>
   )
 }

@@ -23,7 +23,7 @@ export const ListControls = inject('plantStore')(
     const isNarrow = useMediaQuery(theme.breakpoints.down('md'))
     return (
       <div className="list-controls__container">
-        <Hidden mdDown>
+        <Hidden xsDown>
           <Button
             color="primary"
             variant="contained"
