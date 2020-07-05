@@ -1,10 +1,10 @@
 import moment from 'moment'
 import { action, computed, decorate, observable } from 'mobx'
 import { firestore } from 'firebase'
+import { calculateDays } from '../utils'
 import { IntervalMap } from './Map'
 import { PlantEventType } from './PlantEventType'
-
-const HOURS_IN_DAY = 24
+import { HOURS_IN_DAY } from './Time'
 
 export interface PlantValues {
   name: string
@@ -63,7 +63,7 @@ export class Plant {
     wateringIntervals = emptyIntervals,
     lastWateredDate = null,
     lastCheckedDate = null,
-    imageFileName = ''
+    imageFileName = '',
   }: PlantProps) {
     this.id = id
     this.name = name
@@ -79,14 +79,12 @@ export class Plant {
   }
 
   get daysSinceLastWatered(): number | undefined {
-    return !!this.lastWateredDate
-      ? moment().diff(moment(this.lastWateredDate.toDate()), 'days')
-      : undefined
+    return !!this.lastWateredDate ? calculateDays(moment(this.lastWateredDate.toDate())) : undefined
   }
 
   get daysSinceLastFertilized(): number | undefined {
     return !!this.lastFertilizedDate
-      ? moment().diff(moment(this.lastFertilizedDate.toDate()), 'days')
+      ? calculateDays(moment(this.lastFertilizedDate.toDate()))
       : undefined
   }
 
@@ -164,5 +162,5 @@ decorate(Plant, {
   isFertilized: computed,
   setName: action,
   setAltName: action,
-  setImageURL: action
+  setImageURL: action,
 })

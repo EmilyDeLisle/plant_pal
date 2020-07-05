@@ -36,7 +36,13 @@ export const Plants = inject('plantStore')(
   observer(
     (props: RouteComponentProps): ReactElement => {
       const theme = useTheme()
-      const { plantsToWaterList, plantsRemainingList, inspectorMode, setInspectorMode } = plantStore
+      const {
+        plantsNeedingAttentionList,
+        plantsRemainingList,
+        inspectorMode,
+        setInspectorMode,
+      } = plantStore
+      const plantsNeedingAttentionCount = plantsNeedingAttentionList.length
       const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
       const classes = useStyles()
 
@@ -51,12 +57,14 @@ export const Plants = inject('plantStore')(
                 <div className={classes.listsContainer}>
                   <ListControls />
                   <div className="plants__lists">
-                    {plantsToWaterList.length > 0 && (
+                    {!!plantsNeedingAttentionCount && (
                       <div className="plants__attention-list">
                         <Typography color="textPrimary" variant="h5">
-                          Plants needing attention
+                          {`${plantsNeedingAttentionCount} plant${
+                            plantsNeedingAttentionCount !== 1 ? 's' : ''
+                          } needing attention`}
                         </Typography>
-                        <PlantList plants={plantsToWaterList} />
+                        <PlantList plants={plantsNeedingAttentionList} />
                       </div>
                     )}
                     {plantsRemainingList.length > 0 && (
@@ -75,7 +83,7 @@ export const Plants = inject('plantStore')(
                 </Hidden>
                 {inspectorMode === InspectorMode.DEFAULT && (
                   <Hidden smUp>
-                    <Tooltip title='Add new plant' placement='left'>
+                    <Tooltip title="Add new plant" placement="left">
                       <Fab
                         className={classes.fab}
                         color="primary"

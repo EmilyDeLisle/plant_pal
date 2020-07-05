@@ -27,7 +27,7 @@ class PlantStore {
     return Object.values(this.plants).sort(getComparator(this.sortingDirection, this.sortingMode))
   }
 
-  get plantsToWaterList() {
+  get plantsNeedingAttentionList() {
     return this.plantList.filter((plant) => plant.toBeChecked)
   }
 
@@ -84,7 +84,7 @@ decorate(PlantStore, {
   sortingDirection: observable,
   inspectorMode: observable,
   plantList: computed,
-  plantsToWaterList: computed,
+  plantsNeedingAttentionList: computed,
   plantsRemainingList: computed,
   plantCount: computed,
   selectedPlant: computed,

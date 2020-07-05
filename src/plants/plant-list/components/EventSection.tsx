@@ -16,8 +16,8 @@ import CloseIcon from '@material-ui/icons/Close'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import { Plant, PlantEventType } from '../../../models'
 import { getDatabase } from '../../../firebase'
+import { formatDate } from '../../../utils'
 import { EventSectionPicker } from './EventSectionPicker'
-import { formatDate } from './plantHelpers'
 
 export interface EventSectionProps {
   eventType: PlantEventType.WATER | PlantEventType.FERTILIZE
