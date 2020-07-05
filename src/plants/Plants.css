@@ -11,11 +11,6 @@
   height: calc(100% - 3em);
 }
 
-.plants__lists-container {
-  flex-grow: 1;
-  padding: 2em 2em 0 2em;
-}
-
 .plants__lists {
   overflow-y: scroll;
   height: calc(100% - 3em - 4px);
@@ -27,4 +22,8 @@
   padding: 0.5em;
   margin-bottom: 1em;
   background-color: rgba(179, 254, 191, 0.2);
+}
+
+.plants__list-spacer {
+  height: 9em;
 }

@@ -1,40 +1,93 @@
-import React, { ReactElement, useEffect, useState } from 'react'
+import React, { ReactElement } from 'react'
 import { inject, observer } from 'mobx-react'
 import { RouteComponentProps } from '@reach/router'
+import Fab from '@material-ui/core/Fab'
 import Hidden from '@material-ui/core/Hidden'
+import Tooltip from '@material-ui/core/Tooltip'
 import Typography from '@material-ui/core/Typography'
+import { makeStyles, Theme, createStyles, useTheme } from '@material-ui/core/styles'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 import { InspectorPanel, ListControls, PlantList, TopNavNar } from './plant-list'
 import { plantStore } from '../injectables'
+import { InspectorMode } from '../models'
+import MonsteraIcon from '../assets/MonsteraIcon'
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    fab: {
+      position: 'fixed',
+      bottom: theme.spacing(6),
+      right: theme.spacing(6),
+    },
+    listsContainer: {
+      flexGrow: 1,
+      [theme.breakpoints.up('lg')]: {
+        padding: '2em 2em 0 2em',
+      },
+      [theme.breakpoints.down('md')]: {
+        padding: '0.5em 0.5em 0 0.5em',
+        width: 'calc(100% - 1em)',
+      },
+    },
+  })
+)
 
 export const Plants = inject('plantStore')(
   observer(
     (props: RouteComponentProps): ReactElement => {
-      const { plantsToWaterList, plantsRemainingList } = plantStore
+      const theme = useTheme()
+      const { plantsToWaterList, plantsRemainingList, inspectorMode, setInspectorMode } = plantStore
+      const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+      const classes = useStyles()
 
       return (
         <div className="plants">
           <TopNavNar />
           <div className="plants__container">
-            <div className="plants__lists-container">
-              <ListControls />
-              <div className="plants__lists">
-                {plantsToWaterList.length > 0 && (
-                  <div className="plants__attention-list">
-                    <Typography color='textPrimary' variant="h5">Plants needing attention</Typography>
-                    <PlantList plants={plantsToWaterList} />
-                  </div>
-                )}
-                {plantsRemainingList.length > 0 && (
-                  <>
-                    <Typography color='textPrimary' variant="h4">Plants</Typography>
-                    <PlantList plants={plantsRemainingList} />
-                  </>
-                )}
-              </div>
-            </div>
-            <Hidden smDown>
+            {isMobile && inspectorMode !== InspectorMode.DEFAULT ? (
               <InspectorPanel />
-            </Hidden>
+            ) : (
+              <>
+                <div className={classes.listsContainer}>
+                  <ListControls />
+                  <div className="plants__lists">
+                    {plantsToWaterList.length > 0 && (
+                      <div className="plants__attention-list">
+                        <Typography color="textPrimary" variant="h5">
+                          Plants needing attention
+                        </Typography>
+                        <PlantList plants={plantsToWaterList} />
+                      </div>
+                    )}
+                    {plantsRemainingList.length > 0 && (
+                      <>
+                        <Typography color="textPrimary" variant="h4">
+                          Plants
+                        </Typography>
+                        <PlantList plants={plantsRemainingList} />
+                      </>
+                    )}
+                    <div className="plants__list-spacer"></div>
+                  </div>
+                </div>
+                <Hidden smDown>
+                  <InspectorPanel />
+                </Hidden>
+                {inspectorMode === InspectorMode.DEFAULT && (
+                  <Hidden smUp>
+                    <Tooltip title='Add new plant' placement='left'>
+                      <Fab
+                        className={classes.fab}
+                        color="primary"
+                        onClick={() => setInspectorMode(InspectorMode.ADD)}
+                      >
+                        <MonsteraIcon />
+                      </Fab>
+                    </Tooltip>
+                  </Hidden>
+                )}
+              </>
+            )}
           </div>
         </div>
       )
