@@ -61,9 +61,9 @@ export const TopNavNar = observer(() => {
               {plantCount}
             </Typography>
             <Typography variant="h6" align="right">
-              plants
+              {`plant${plantCount !== 1 ? 's' : ''}`}
             </Typography>
-            <div className='top-nav-bar__user-panel-button'>
+            <div className="top-nav-bar__user-panel-button">
               <Button
                 color="inherit"
                 onClick={() => {

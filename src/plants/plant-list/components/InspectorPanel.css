@@ -1,9 +1,11 @@
 .inspector-panel__default {
-  height: 100%;
+  height: calc(100% - 6em);
   background-image: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, #fff 10%);
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
+  flex-direction: column;
+  padding: 3em 0;
 }
 
 .inspector-panel__container {
@@ -15,6 +17,21 @@
 
 .inspector-panel__img {
   width: 80%;
-  align-self: flex-end;
-  margin-bottom: 1em;
+}
+
+@keyframes float {
+  0% {
+    transform: translate(0px, 0px);
+  }
+  50% {
+    transform: translate(0px, -10px);
+  }
+  100% {
+    transform: translate(0px, 0px);
+  }
+}
+
+.inspector-panel__bubble {
+  margin-bottom: 7em;
+  animation: float 5s infinite;
 }

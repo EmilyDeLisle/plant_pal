@@ -18,9 +18,13 @@ class PlantStore {
   sortingDirection: SortingDirection = SortingDirection.ASC
   dialogMode: PlantDialogMode = PlantDialogMode.VIEW
   inspectorMode: InspectorMode = InspectorMode.DEFAULT
+  plantsLoaded: boolean = false
 
   getPlants() {
-    this.db?.getPlants((plants: PlantMap) => this.setPlants(plants))
+    this.db?.getPlants((plants: PlantMap) => {
+      this.setPlants(plants)
+      this.setPlantsLoaded(true)
+    })
   }
 
   get plantList() {
@@ -67,6 +71,10 @@ class PlantStore {
     this.inspectorMode = inspectorMode
   }
 
+  setPlantsLoaded = (loaded: boolean): void => {
+    this.plantsLoaded = loaded
+  }
+
   clearStore = (): void => {
     this.plants = {}
     this.selectedPlantID = undefined
@@ -74,6 +82,7 @@ class PlantStore {
     this.sortingDirection = SortingDirection.ASC
     this.dialogMode = PlantDialogMode.VIEW
     this.inspectorMode = InspectorMode.DEFAULT
+    this.plantsLoaded = false
   }
 }
 
@@ -83,6 +92,7 @@ decorate(PlantStore, {
   sortingMode: observable,
   sortingDirection: observable,
   inspectorMode: observable,
+  plantsLoaded: observable,
   plantList: computed,
   plantsNeedingAttentionList: computed,
   plantsRemainingList: computed,
@@ -92,7 +102,8 @@ decorate(PlantStore, {
   setSortingMode: action,
   setSortingDirection: action,
   setSelectedPlantID: action,
-  setInspectorMode: action
+  setInspectorMode: action,
+  setPlantsLoaded: action,
 })
 
 export interface PlantStoreProps {

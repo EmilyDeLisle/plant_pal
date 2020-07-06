@@ -1,3 +1,4 @@
+export * from './Bubble'
 export * from './EventSectionPicker'
 export * from './EventSection'
 export * from './ImageUpload'

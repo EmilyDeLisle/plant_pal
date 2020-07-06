@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react'
 import { inject, observer } from 'mobx-react'
 import { RouteComponentProps } from '@reach/router'
+import CircularProgress from '@material-ui/core/CircularProgress'
 import Fab from '@material-ui/core/Fab'
 import Hidden from '@material-ui/core/Hidden'
 import Tooltip from '@material-ui/core/Tooltip'
@@ -40,6 +41,7 @@ export const Plants = inject('plantStore')(
         plantsNeedingAttentionList,
         plantsRemainingList,
         inspectorMode,
+        plantsLoaded,
         setInspectorMode,
       } = plantStore
       const plantsNeedingAttentionCount = plantsNeedingAttentionList.length
@@ -67,13 +69,21 @@ export const Plants = inject('plantStore')(
                         <PlantList plants={plantsNeedingAttentionList} />
                       </div>
                     )}
-                    {plantsRemainingList.length > 0 && (
-                      <>
-                        <Typography color="textPrimary" variant="h4">
-                          Plants
-                        </Typography>
+                    <Typography color="textPrimary" variant="h4">
+                      Plants
+                    </Typography>
+                    {plantsLoaded ? (
+                      plantsRemainingList.length > 0 ? (
                         <PlantList plants={plantsRemainingList} />
-                      </>
+                      ) : (
+                        <Typography color="textPrimary" align="center">
+                          <em>No plants yet</em>
+                        </Typography>
+                      )
+                    ) : (
+                      <div className='plants__list-progress'>
+                        <CircularProgress color="primary" />
+                      </div>
                     )}
                     <div className="plants__list-spacer"></div>
                   </div>
