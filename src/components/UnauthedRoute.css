@@ -8,3 +8,7 @@
   background: url('../assets/leaf_pattern.jpg') repeat fixed;
   background-size: 500px;
 }
+
+.unauthed-route__contents {
+  padding: 2em;
+}
