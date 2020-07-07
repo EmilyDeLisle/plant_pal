@@ -1,22 +1,37 @@
 .inspector-panel__default {
-  /* max-width: 540px;
-  min-width: 540px; */
-  height: 100%;
-  /* Photo by Annie Spratt on Unsplash */
-  background: url('../../../assets/annie-spratt-unsplash.jpg') no-repeat;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
-  box-shadow: -1px 2px 4px 2px rgba(0, 0, 0, 0.3);
-  background-color: #fff;
+  height: calc(100% - 6em);
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, #fff 10%);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-direction: column;
+  padding: 3em 0;
 }
 
 .inspector-panel__container {
-  /* max-width: 540px;
-  min-width: 540px; */
   display: flex;
   flex-direction: column;
   box-shadow: -1px 2px 4px 2px rgba(0, 0, 0, 0.3);
   background-color: #fff;
+}
+
+.inspector-panel__img {
+  width: 80%;
+}
+
+@keyframes float {
+  0% {
+    transform: translate(0px, 0px);
+  }
+  50% {
+    transform: translate(0px, -10px);
+  }
+  100% {
+    transform: translate(0px, 0px);
+  }
+}
+
+.inspector-panel__bubble {
+  margin-bottom: 7em;
+  animation: float 5s infinite;
 }

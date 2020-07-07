@@ -16,6 +16,7 @@ export const plappTheme = createMuiTheme({
     fontFamily: [
       'Open Sans',
       'Roboto',
+      'Roboto Mono',
       '"Helvetica Neue"',
       'Arial',
       '-apple-system',

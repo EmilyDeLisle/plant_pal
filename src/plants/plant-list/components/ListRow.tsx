@@ -10,11 +10,12 @@ import Typography from '@material-ui/core/Typography'
 import CheckIcon from '@material-ui/icons/Done'
 import FertilizeIcon from '@material-ui/icons/Eco'
 import OptionsIcon from '@material-ui/icons/MoreVert'
-import { makeStyles, Theme, createStyles, useTheme } from '@material-ui/core/styles'
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
+import moment from 'moment'
 import { InspectorMode, Plant, PlantEventType } from '../../../models'
 import { getDatabase } from '../../../firebase'
 import { plantStore } from '../../../injectables'
-import { formatDate, formatDays } from './plantHelpers'
+import { formatDate, formatDays } from '../../../utils'
 import WaterIcon from '../../../assets/WateringCanIcon'
 import WaterFertilizeIcon from '../../../assets/WateringCanLeafIcon'
 
@@ -90,6 +91,7 @@ export const ListRow = observer(
       lastFertilizedDate,
       toBeChecked,
       isFertilized,
+      daysSinceLastWatered,
       getAvgInterval,
     } = plant
     const classes = useStyles()
@@ -152,7 +154,7 @@ export const ListRow = observer(
             <div className="list-row__buttons">
               <div className="list-row__watering-days-number">
                 <Typography className={classes.wateringNumber} variant="h3">
-                  {!!avgWateringInterval ? avgWateringInterval : '?'}
+                  {daysSinceLastWatered}
                 </Typography>
               </div>
               <Hidden mdDown>

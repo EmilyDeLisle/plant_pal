@@ -54,11 +54,12 @@ export const EventSectionPicker = ({ eventType, plant }: EventSectionPickerProps
       <Button
         color="primary"
         variant="contained"
+        disabled={!selectedDate && dateMode === 'another'}
         onClick={() => handleModifyPlant()}
       >{`${action} plant`}</Button>
       <div className="event-section-picker__radio-group">
         <FormControl component="fieldset">
-          <RadioGroup name="gender1" value={dateMode} onChange={handleChange} row>
+          <RadioGroup name='todayOrNot' value={dateMode} onChange={handleChange} row>
             <FormControlLabel value="today" control={<Radio />} label="Today" />
             <FormControlLabel value="another" control={<Radio />} label="Another day" />
           </RadioGroup>

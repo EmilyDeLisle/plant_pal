@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react'
 import { inject, observer } from 'mobx-react'
 import { RouteComponentProps } from '@reach/router'
+import CircularProgress from '@material-ui/core/CircularProgress'
 import Fab from '@material-ui/core/Fab'
 import Hidden from '@material-ui/core/Hidden'
 import Tooltip from '@material-ui/core/Tooltip'
@@ -36,7 +37,14 @@ export const Plants = inject('plantStore')(
   observer(
     (props: RouteComponentProps): ReactElement => {
       const theme = useTheme()
-      const { plantsToWaterList, plantsRemainingList, inspectorMode, setInspectorMode } = plantStore
+      const {
+        plantsNeedingAttentionList,
+        plantsRemainingList,
+        inspectorMode,
+        plantsLoaded,
+        setInspectorMode,
+      } = plantStore
+      const plantsNeedingAttentionCount = plantsNeedingAttentionList.length
       const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
       const classes = useStyles()
 
@@ -51,21 +59,31 @@ export const Plants = inject('plantStore')(
                 <div className={classes.listsContainer}>
                   <ListControls />
                   <div className="plants__lists">
-                    {plantsToWaterList.length > 0 && (
+                    {!!plantsNeedingAttentionCount && (
                       <div className="plants__attention-list">
                         <Typography color="textPrimary" variant="h5">
-                          Plants needing attention
+                          {`${plantsNeedingAttentionCount} plant${
+                            plantsNeedingAttentionCount !== 1 ? 's' : ''
+                          } needing attention`}
                         </Typography>
-                        <PlantList plants={plantsToWaterList} />
+                        <PlantList plants={plantsNeedingAttentionList} />
                       </div>
                     )}
-                    {plantsRemainingList.length > 0 && (
-                      <>
-                        <Typography color="textPrimary" variant="h4">
-                          Plants
-                        </Typography>
+                    <Typography color="textPrimary" variant="h4">
+                      Plants
+                    </Typography>
+                    {plantsLoaded ? (
+                      plantsRemainingList.length > 0 ? (
                         <PlantList plants={plantsRemainingList} />
-                      </>
+                      ) : (
+                        <Typography color="textPrimary" align="center">
+                          <em>No plants yet</em>
+                        </Typography>
+                      )
+                    ) : (
+                      <div className='plants__list-progress'>
+                        <CircularProgress color="primary" />
+                      </div>
                     )}
                     <div className="plants__list-spacer"></div>
                   </div>
@@ -75,7 +93,7 @@ export const Plants = inject('plantStore')(
                 </Hidden>
                 {inspectorMode === InspectorMode.DEFAULT && (
                   <Hidden smUp>
-                    <Tooltip title='Add new plant' placement='left'>
+                    <Tooltip title="Add new plant" placement="left">
                       <Fab
                         className={classes.fab}
                         color="primary"
