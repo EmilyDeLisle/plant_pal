@@ -7,7 +7,7 @@ import MomentUtils from '@date-io/moment'
 import { AuthProvider } from './firebase'
 import { plantStore } from './injectables'
 import { Plants } from './plants'
-import { SignIn } from './sign-in'
+import { NotFound, SignIn } from './components'
 import { plappTheme } from './utils'
 
 function App() {
@@ -19,9 +19,9 @@ function App() {
             <Router>
               <AuthProvider path="/">
                 <Plants path="/plants" />
-              <SignIn path="/" />
+                <SignIn path="/" />
+                <NotFound default />
               </AuthProvider>
-              
             </Router>
           </Provider>
         </MuiPickersUtilsProvider>

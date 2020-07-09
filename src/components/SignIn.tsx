@@ -1,11 +1,11 @@
 import React, { ReactElement, useState } from 'react'
 import { RouteComponentProps } from '@reach/router'
 import Button from '@material-ui/core/Button'
-import Card from '@material-ui/core/Card'
 import Link from '@material-ui/core/Link'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 import { getAuth } from '../firebase'
+import { UnauthedRoute } from './UnauthedRoute'
 
 export const SignIn = (props: RouteComponentProps): ReactElement => {
   const [mode, setMode] = useState<'Sign in' | 'Sign up'>('Sign in')
@@ -31,34 +31,31 @@ export const SignIn = (props: RouteComponentProps): ReactElement => {
   }
 
   return (
-    <div className="sign-in__container">
-      <Card>
-        <div className="sign-in__fields">
-          <Typography variant="h3">Plant Pal</Typography>
-          <Typography>{mode}</Typography>
-          <TextField
-            label="Email address"
-            type="email"
-            value={email}
-            onChange={({ target: { value } }) => setEmail(value)}
-            fullWidth
-            required
-          />
-          <TextField
-            label="Password"
-            type="password"
-            fullWidth
-            required
-            value={password}
-            onChange={({ target: { value } }) => setPassword(value)}
-          />
-          <Button onClick={handleSubmit}>{mode}</Button>
-          <Typography variant="body2" color="textSecondary">
-            {isSignIn ? "Don't have an account? " : 'Have an account? '}
-            <Link onClick={() => toggleSignInMode()}>{isSignIn ? 'Sign up' : 'Sign in'}</Link>.
-          </Typography>
-        </div>
-      </Card>
-    </div>
+    <UnauthedRoute title="Plant Pal">
+      <div className="sign-in__fields">
+        <Typography>{mode}</Typography>
+        <TextField
+          label="Email address"
+          type="email"
+          value={email}
+          onChange={({ target: { value } }) => setEmail(value)}
+          fullWidth
+          required
+        />
+        <TextField
+          label="Password"
+          type="password"
+          fullWidth
+          required
+          value={password}
+          onChange={({ target: { value } }) => setPassword(value)}
+        />
+        <Button onClick={handleSubmit}>{mode}</Button>
+        <Typography variant="body2" color="textSecondary">
+          {isSignIn ? "Don't have an account? " : 'Have an account? '}
+          <Link onClick={() => toggleSignInMode()}>{isSignIn ? 'Sign up' : 'Sign in'}</Link>.
+        </Typography>
+      </div>
+    </UnauthedRoute>
   )
 }

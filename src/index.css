@@ -1,5 +1,5 @@
 @import './plants/index.css';
-@import './sign-in/index.css';
+@import './components/index.css';
 
 html {
   height: 100%;
