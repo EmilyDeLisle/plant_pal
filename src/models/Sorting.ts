@@ -1,8 +1,9 @@
 export enum SortingMode {
-  NAME = 'name',
+  DAYS_TO_WATER = 'days to water',
   WATER = 'wateringDates',
   FERTILIZE = 'fertilizingDates',
-  INTERVAL = 'interval'
+  NAME = 'name',
+  INTERVAL = 'interval',
 }
 
 export enum SortingDirection {

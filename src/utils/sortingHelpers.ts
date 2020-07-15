@@ -72,6 +72,9 @@ export const compareDate = (
 export const descendingComparator = (a: Plant, b: Plant, orderBy: SortingMode): number => {
   let compareValue
   switch (orderBy) {
+    case SortingMode.DAYS_TO_WATER:
+      compareValue = compare(a.daysToWater, b.daysToWater)
+      break
     case SortingMode.FERTILIZE:
       compareValue = compareDate(a.lastFertilizedDate, b.lastFertilizedDate)
       break

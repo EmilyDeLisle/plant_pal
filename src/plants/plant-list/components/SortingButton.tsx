@@ -19,6 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 export interface SortingButtonProps {
+  mode: SortingMode
   direction: SortingDirection
   handleChangeMode: (mode: SortingMode) => void
   handleChangeDirection: (mode: SortingDirection) => void
@@ -26,10 +27,10 @@ export interface SortingButtonProps {
 
 export interface SingleSortingButtonProps extends SortingButtonProps {
   selected: boolean
-  mode: SortingMode
 }
 
 const titleMap = {
+  [SortingMode.DAYS_TO_WATER]: 'Days to water',
   [SortingMode.NAME]: 'Name',
   [SortingMode.WATER]: 'Last watered',
   [SortingMode.FERTILIZE]: 'Last fertilized',
@@ -69,6 +70,7 @@ export const SortingButton = ({
 }
 
 export const SplitSortingButton = ({
+  mode,
   direction,
   handleChangeMode,
   handleChangeDirection,
@@ -76,7 +78,7 @@ export const SplitSortingButton = ({
   const anchorRef = useRef<HTMLDivElement>(null)
   const [open, setOpen] = useState(false)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const [selectedMode, setSelectedMode] = useState<SortingMode>(SortingMode.WATER)
+  const [selectedMode, setSelectedMode] = useState<SortingMode>(mode)
   const classes = useStyles()
 
   const iconMap = {

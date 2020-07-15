@@ -88,6 +88,11 @@ export class Plant {
       : undefined
   }
 
+  get daysToWater(): number | undefined {
+    const interval = this.getAvgInterval(PlantEventType.WATER)
+    return !!interval && this.daysSinceLastWatered != undefined ? interval - this.daysSinceLastWatered : undefined
+  }
+
   get checkedToday(): boolean {
     return !!this.lastCheckedDate
       ? moment().diff(moment(this.lastCheckedDate.toDate()), 'hours') < HOURS_IN_DAY
@@ -158,6 +163,7 @@ decorate(Plant, {
   imageURL: observable,
   daysSinceLastWatered: computed,
   daysSinceLastFertilized: computed,
+  daysToWater: computed,
   checkedToday: computed,
   isFertilized: computed,
   setName: action,
