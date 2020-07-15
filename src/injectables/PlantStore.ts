@@ -14,7 +14,7 @@ class PlantStore {
   db = getDatabase()
   plants: PlantMap = {}
   selectedPlantID: string | undefined = undefined
-  sortingMode: SortingMode = SortingMode.WATER
+  sortingMode: SortingMode = SortingMode.DAYS_TO_WATER
   sortingDirection: SortingDirection = SortingDirection.ASC
   dialogMode: PlantDialogMode = PlantDialogMode.VIEW
   inspectorMode: InspectorMode = InspectorMode.DEFAULT
@@ -78,7 +78,7 @@ class PlantStore {
   clearStore = (): void => {
     this.plants = {}
     this.selectedPlantID = undefined
-    this.sortingMode = SortingMode.WATER
+    this.sortingMode = SortingMode.DAYS_TO_WATER
     this.sortingDirection = SortingDirection.ASC
     this.dialogMode = PlantDialogMode.VIEW
     this.inspectorMode = InspectorMode.DEFAULT

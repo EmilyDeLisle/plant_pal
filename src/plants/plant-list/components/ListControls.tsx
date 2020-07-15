@@ -20,7 +20,7 @@ export const ListControls = inject('plantStore')(
       sortingMode,
     } = plantStore
     const theme = useTheme()
-    const isNarrow = useMediaQuery(theme.breakpoints.down('md'))
+    const isNarrow = useMediaQuery(theme.breakpoints.down('lg'))
     return (
       <div className="list-controls__container">
         <Hidden xsDown>
@@ -34,10 +34,11 @@ export const ListControls = inject('plantStore')(
           </Button>
         </Hidden>
         <div className="list-controls__sorting-buttons">
-          <Typography color='textPrimary'>Sort by: </Typography>
+          <Typography color="textPrimary">Sort by: </Typography>
           {isNarrow ? (
             <div className="list-controls__split-sorting-button">
               <SplitSortingButton
+                mode={sortingMode}
                 direction={sortingDirection}
                 handleChangeMode={setSortingMode}
                 handleChangeDirection={setSortingDirection}
