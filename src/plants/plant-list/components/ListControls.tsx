@@ -20,7 +20,7 @@ export const ListControls = inject('plantStore')(
       sortingMode,
     } = plantStore
     const theme = useTheme()
-    const isNarrow = useMediaQuery(theme.breakpoints.down('md'))
+    const isNarrow = useMediaQuery(theme.breakpoints.down('lg'))
     return (
       <div className="list-controls__container">
         <Hidden xsDown>

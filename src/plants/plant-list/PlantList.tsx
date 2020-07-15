@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react'
 import { Plant } from '../../models'
-import { ListRow } from './components'
+import { ListRow } from '../../components'
 
 export interface PlantListProps {
   plants: Plant[]

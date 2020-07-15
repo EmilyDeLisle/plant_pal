@@ -27,11 +27,10 @@ export const compare = (
     return 1
   }
 
-  // converts strings to lowercase values so upper/lowercase are sorted as the same value
-  const valueA = typeof a === 'string' ? a.toLowerCase() : a
-  const valueB = typeof b === 'string' ? b.toLowerCase() : b
-
-  if (!isNullOrUndefined(valueA) && !isNullOrUndefined(valueB)) {
+  if (!isNullOrUndefined(a) && !isNullOrUndefined(b)) {
+    // converts strings to lowercase values so upper/lowercase are sorted as the same value
+    const valueA = typeof a === 'string' ? a.toLowerCase() : a
+    const valueB = typeof b === 'string' ? b.toLowerCase() : b
     if (valueB! < valueA!) {
       return -1
     }
@@ -52,16 +51,16 @@ export const compareDate = (
   b: firestore.Timestamp | null
 ): number => {
   // if one value is undefined but the other is not, place the undefined value first
-  const dateA = moment(a?.toDate())
-  const dateB = moment(b?.toDate())
-  if (!dateB && !!dateA) {
+  if (!b && !!a) {
     return -1
   }
-  if (!dateA && !!dateB) {
+  if (!a && !!b) {
     return 1
   }
 
-  if (!!dateA && !!dateB) {
+  if (!!a && !!b) {
+    const dateA = moment(a.toDate())
+    const dateB = moment(b.toDate())
     if (dateB.isBefore(dateA, 'date')) {
       return -1
     }
