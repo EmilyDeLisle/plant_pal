@@ -1,7 +1,7 @@
 import moment from 'moment'
 import { action, computed, decorate, observable } from 'mobx'
 import { firestore } from 'firebase'
-import { calculateDays } from '../utils'
+import { calculateDays, isNullOrUndefined } from '../utils'
 import { IntervalMap } from './Map'
 import { PlantEventType } from './PlantEventType'
 import { HOURS_IN_DAY } from './Time'
@@ -90,7 +90,7 @@ export class Plant {
 
   get daysToWater(): number | undefined {
     const interval = this.getAvgInterval(PlantEventType.WATER)
-    return !!interval && this.daysSinceLastWatered != undefined ? interval - this.daysSinceLastWatered : undefined
+    return !isNullOrUndefined(interval) && this.daysSinceLastWatered !== undefined ? interval! - this.daysSinceLastWatered : undefined
   }
 
   get checkedToday(): boolean {

@@ -91,7 +91,8 @@ export const ListRow = observer(
       lastFertilizedDate,
       toBeChecked,
       isFertilized,
-      daysSinceLastWatered,
+      checkedToday,
+      daysToWater,
       getAvgInterval,
     } = plant
     const classes = useStyles()
@@ -107,6 +108,16 @@ export const ListRow = observer(
     const handleCloseMenu = (event: React.MouseEvent<HTMLLIElement>): void => {
       event.stopPropagation()
       setAnchorEl(null)
+    }
+
+    const getWateringNumberMessage = (): string => {
+      if (daysToWater === undefined) {
+        return 'More watering events needed to calculate days to water'
+      } else if (daysToWater < 1) {
+        return `${-daysToWater} days past due for watering ${checkedToday ? ' (checked today)' : ''}`
+      } else {
+        return `${daysToWater} day${daysToWater !== 1 ? 's' : ''} until water due`
+      }
     }
 
     return (
@@ -153,9 +164,21 @@ export const ListRow = observer(
 
             <div className="list-row__buttons">
               <div className="list-row__watering-days-number">
-                <Typography className={classes.wateringNumber} variant="h3">
-                  {daysSinceLastWatered}
-                </Typography>
+                <Tooltip
+                  title={
+                    // daysToWater === undefined
+                    //   ? 'More watering events needed to calculate days to water'
+                    //   : `${daysToWater} day${daysToWater !== 1 ? 's' : ''} until water due${
+                    //       daysToWater < 1 && checkedToday ? ' (checked today)' : ''
+                    //     }`
+                    getWateringNumberMessage()
+                  }
+                  placement="left"
+                >
+                  <Typography className={classes.wateringNumber} variant="h3">
+                    {daysToWater !== undefined ? daysToWater : '?'}
+                  </Typography>
+                </Tooltip>
               </div>
               <Hidden mdDown>
                 {buttons.map((button) => {
@@ -214,7 +237,7 @@ export const ListRow = observer(
                           >
                             <>
                               {button.icon}
-                              <span className='list-row__menu-item-text'>{button.tooltip}</span>
+                              <span className="list-row__menu-item-text">{button.tooltip}</span>
                             </>
                           </MenuItem>
                         )
