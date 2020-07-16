@@ -11,9 +11,7 @@ import CheckIcon from '@material-ui/icons/Done'
 import FertilizeIcon from '@material-ui/icons/Eco'
 import OptionsIcon from '@material-ui/icons/MoreVert'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
-import { useSnackbar } from 'notistack'
 import { InspectorMode, Plant, PlantEvent, PlantEventType } from '../models'
-import { getDatabase } from '../firebase'
 import { plantStore } from '../injectables'
 import { formatDate, formatDays } from '../utils'
 import WaterIcon from '../assets/WateringCanIcon'
@@ -51,50 +49,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-const buttons = [
-  {
-    tooltip: 'Water not needed today',
-    
-    plantEvent: {
-      eventType: PlantEventType.CHECK,
-      initialMessage: 'Checking plant...',
-      successMessage: 'Plant successfully checked',
-    },
-    icon: <CheckIcon />,
-  },
-  {
-    tooltip: 'Fertilize plant today',
-    
-    plantEvent: {
-      eventType: PlantEventType.FERTILIZE,
-      initialMessage: 'Fertilizing plant...',
-      successMessage: 'Plant successfully fertilized',
-    },
-    icon: <FertilizeIcon />,
-  },
-  {
-    tooltip: 'Water plant (with fertilizer) today',
-    
-    plantEvent: {
-      eventType: PlantEventType.WATER_WITH_FERTILIZER,
-      initialMessage: 'Watering plant with fertilizer...',
-      successMessage: 'Plant successfully watered with fertilizer',
-    },
-    icon: <WaterFertilizeIcon />,
-  },
-  {
-    tooltip: 'Water plant today',
-    
-    plantEvent: {
-      eventType: PlantEventType.WATER,
-      initialMessage: 'Watering plant...',
-      successMessage: 'Plant successfully watered',
-      duplicateMessage: 'Plant already watered today',
-      errorMessage: 'There was an error watering this plant',
-    },
-    icon: <WaterIcon />,
-  },
-]
+
 
 interface ListRowProps {
   plant: Plant
@@ -119,11 +74,56 @@ export const ListRow = observer(
       getAvgInterval,
     } = plant
     const classes = useStyles()
-    const db = getDatabase()
     const avgWateringInterval = getAvgInterval(PlantEventType.WATER)
     const { setInspectorMode, setSelectedPlantID } = plantStore
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-    const { enqueueSnackbar } = useSnackbar()
+
+    const buttons = [
+      {
+        tooltip: 'Water not needed today',
+        icon: <CheckIcon />,
+        plantEvent: {
+          eventType: PlantEventType.CHECK,
+          initialMessage: `Marking ${name} as not needing water today`,
+          successMessage: `${name} successfully marked as not needing water today`,
+          duplicateMessage: `${name} already marked as not needing water today`,
+          errorMessage: `There was an error marking ${name} as not needing water today`,
+        },
+      },
+      {
+        tooltip: `Fertilize ${name} today`,
+        icon: <FertilizeIcon />,
+        plantEvent: {
+          eventType: PlantEventType.FERTILIZE,
+          initialMessage: `Fertilizing ${name}...`,
+          successMessage: `${name} successfully fertilized`,
+          duplicateMessage: `${name} already fertilized today`,
+          errorMessage: `There was an error fertilizing ${name}`,
+        },
+      },
+      {
+        tooltip: `Water ${name} (with fertilizer) today`,
+        icon: <WaterFertilizeIcon />,
+        plantEvent: {
+          eventType: PlantEventType.WATER_WITH_FERTILIZER,
+          initialMessage: `Watering ${name} with fertilizer...`,
+          successMessage: `${name} successfully watered with fertilizer`,
+          duplicateMessage: `${name} already watered with fertilizer today`,
+          errorMessage: `There was an error watering ${name} with fertilizer`,
+        },
+      },
+      {
+        tooltip: `Water ${name} today`,
+        icon: <WaterIcon />,
+        plantEvent: {
+          eventType: PlantEventType.WATER,
+          initialMessage: `Watering ${name}...`,
+          successMessage: `${name} successfully watered`,
+          duplicateMessage: `${name} already watered today`,
+          errorMessage: `There was an error watering ${name}`,
+        },
+      },
+    ]
 
     const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
       setAnchorEl(event.currentTarget)
@@ -133,45 +133,6 @@ export const ListRow = observer(
       event.stopPropagation()
       setAnchorEl(null)
     }
-
-    // const handleModifyPlant = (
-    //   event: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLLIElement>,
-    //   plant: Plant,
-    //   plantEvent: PlantEvent
-    // ): void => {
-    //   const {
-    //     eventType,
-    //     date,
-    //     initialMessage,
-    //     successMessage,
-    //     duplicateMessage,
-    //     errorMessage,
-    //   } = plantEvent
-    //   event.stopPropagation()
-    //   !!initialMessage && enqueueSnackbar(initialMessage)
-    //   db.modifyPlant(
-    //     plant,
-    //     eventType,
-    //     date,
-    //     // onSuccess
-    //     () => {
-    //       console.log(successMessage)
-    //     },
-    //     // onError
-    //     (error) => {
-    //       !!errorMessage && enqueueSnackbar(errorMessage, { variant: 'error' })
-    //       console.log(error)
-    //     },
-    //     // handleSuccessMessage
-    //     () => {
-    //       !!successMessage && enqueueSnackbar(successMessage, { variant: 'success' })
-    //     },
-    //     // handleDuplicateMessage
-    //     () => {
-    //       !!duplicateMessage && enqueueSnackbar(duplicateMessage, { variant: 'warning' })
-    //     }
-    //   )
-    // }
 
     const getWateringNumberMessage = (): string => {
       if (daysToWater === undefined) {

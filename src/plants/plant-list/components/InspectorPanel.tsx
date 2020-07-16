@@ -51,6 +51,7 @@ export const InspectorPanel = observer(({ handleModifyPlant }: InspectorPanelPro
         <InspectorPanelContentView
           plant={selectedPlant}
           handleClose={() => setInspectorMode(InspectorMode.DEFAULT)}
+          handleModifyPlant={handleModifyPlant}
         />
       ) : (
         <InspectorPanelContentAdd handleClose={() => setInspectorMode(InspectorMode.DEFAULT)} />

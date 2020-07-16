@@ -55,7 +55,7 @@ export default class DatabaseManager {
     plantValues: PlantProps,
     imageFileName?: string,
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
-    onError?: ((reason: any) => PromiseLike<never>) | null | undefined
+    onError?: ((reason: any) => void) | null | undefined
   ): string | undefined => {
     this.setReference()
     const docRef = this.collectionRef?.doc()
