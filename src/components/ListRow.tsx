@@ -98,10 +98,15 @@ const buttons = [
 
 interface ListRowProps {
   plant: Plant
+  handleModifyPlant: (
+    event: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLLIElement>,
+    plant: Plant,
+    plantEvent: PlantEvent
+  ) => void
 }
 
 export const ListRow = observer(
-  ({ plant }: ListRowProps): ReactElement => {
+  ({ plant, handleModifyPlant }: ListRowProps): ReactElement => {
     const {
       id,
       name,
@@ -129,44 +134,44 @@ export const ListRow = observer(
       setAnchorEl(null)
     }
 
-    const handleModifyPlant = (
-      event: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLLIElement>,
-      plant: Plant,
-      plantEvent: PlantEvent
-    ): void => {
-      const {
-        eventType,
-        date,
-        initialMessage,
-        successMessage,
-        duplicateMessage,
-        errorMessage,
-      } = plantEvent
-      event.stopPropagation()
-      !!initialMessage && enqueueSnackbar(initialMessage)
-      db.modifyPlant(
-        plant,
-        eventType,
-        date,
-        // onSuccess
-        () => {
-          console.log(successMessage)
-        },
-        // onError
-        (error) => {
-          !!errorMessage && enqueueSnackbar(errorMessage, { variant: 'error' })
-          console.log(error)
-        },
-        // handleSuccessMessage
-        () => {
-          !!successMessage && enqueueSnackbar(successMessage, { variant: 'success' })
-        },
-        // handleDuplicateMessage
-        () => {
-          !!duplicateMessage && enqueueSnackbar(duplicateMessage, { variant: 'warning' })
-        }
-      )
-    }
+    // const handleModifyPlant = (
+    //   event: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLLIElement>,
+    //   plant: Plant,
+    //   plantEvent: PlantEvent
+    // ): void => {
+    //   const {
+    //     eventType,
+    //     date,
+    //     initialMessage,
+    //     successMessage,
+    //     duplicateMessage,
+    //     errorMessage,
+    //   } = plantEvent
+    //   event.stopPropagation()
+    //   !!initialMessage && enqueueSnackbar(initialMessage)
+    //   db.modifyPlant(
+    //     plant,
+    //     eventType,
+    //     date,
+    //     // onSuccess
+    //     () => {
+    //       console.log(successMessage)
+    //     },
+    //     // onError
+    //     (error) => {
+    //       !!errorMessage && enqueueSnackbar(errorMessage, { variant: 'error' })
+    //       console.log(error)
+    //     },
+    //     // handleSuccessMessage
+    //     () => {
+    //       !!successMessage && enqueueSnackbar(successMessage, { variant: 'success' })
+    //     },
+    //     // handleDuplicateMessage
+    //     () => {
+    //       !!duplicateMessage && enqueueSnackbar(duplicateMessage, { variant: 'warning' })
+    //     }
+    //   )
+    // }
 
     const getWateringNumberMessage = (): string => {
       if (daysToWater === undefined) {
