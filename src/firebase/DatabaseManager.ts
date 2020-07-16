@@ -124,7 +124,9 @@ export default class DatabaseManager {
     eventType: PlantEventType,
     date?: Moment,
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
-    onError?: ((reason: any) => PromiseLike<never>) | null | undefined
+    onError?: ((reason: any) => void) | null | undefined,
+    handleSuccessMessage?: () => void,
+    handleDuplicateMessage?: () => void
   ) => {
     this.setReference()
     const { id, fertilizingDates, wateringDates, getEventDateList } = plant
@@ -178,7 +180,18 @@ export default class DatabaseManager {
       }
     }
     if (!!updateValue) {
-      this.collectionRef?.doc(id)?.update(updateValue).then(onSuccess).catch(onError)
+      this.collectionRef
+        ?.doc(id)
+        ?.update(updateValue)
+        .then(() => {
+          !!onSuccess && onSuccess()
+          !!handleSuccessMessage && handleSuccessMessage()
+        })
+        .catch((reason: any) => {
+          !!onError && onError(reason)
+        })
+    } else {
+      !!handleDuplicateMessage && handleDuplicateMessage()
     }
   }
 }

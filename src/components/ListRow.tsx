@@ -11,7 +11,8 @@ import CheckIcon from '@material-ui/icons/Done'
 import FertilizeIcon from '@material-ui/icons/Eco'
 import OptionsIcon from '@material-ui/icons/MoreVert'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
-import { InspectorMode, Plant, PlantEventType } from '../models'
+import { useSnackbar } from 'notistack'
+import { InspectorMode, Plant, PlantEvent, PlantEventType } from '../models'
 import { getDatabase } from '../firebase'
 import { plantStore } from '../injectables'
 import { formatDate, formatDays } from '../utils'
@@ -53,26 +54,44 @@ const useStyles = makeStyles((theme: Theme) =>
 const buttons = [
   {
     tooltip: 'Water not needed today',
-    eventType: PlantEventType.CHECK,
-    successMessage: 'Plant successfully checked',
+    
+    plantEvent: {
+      eventType: PlantEventType.CHECK,
+      initialMessage: 'Checking plant...',
+      successMessage: 'Plant successfully checked',
+    },
     icon: <CheckIcon />,
   },
   {
     tooltip: 'Fertilize plant today',
-    eventType: PlantEventType.FERTILIZE,
-    successMessage: 'Plant successfully fertilized',
+    
+    plantEvent: {
+      eventType: PlantEventType.FERTILIZE,
+      initialMessage: 'Fertilizing plant...',
+      successMessage: 'Plant successfully fertilized',
+    },
     icon: <FertilizeIcon />,
   },
   {
     tooltip: 'Water plant (with fertilizer) today',
-    eventType: PlantEventType.WATER_WITH_FERTILIZER,
-    successMessage: 'Plant successfully watered with fertilizer',
+    
+    plantEvent: {
+      eventType: PlantEventType.WATER_WITH_FERTILIZER,
+      initialMessage: 'Watering plant with fertilizer...',
+      successMessage: 'Plant successfully watered with fertilizer',
+    },
     icon: <WaterFertilizeIcon />,
   },
   {
     tooltip: 'Water plant today',
-    eventType: PlantEventType.WATER,
-    successMessage: 'Plant successfully watered',
+    
+    plantEvent: {
+      eventType: PlantEventType.WATER,
+      initialMessage: 'Watering plant...',
+      successMessage: 'Plant successfully watered',
+      duplicateMessage: 'Plant already watered today',
+      errorMessage: 'There was an error watering this plant',
+    },
     icon: <WaterIcon />,
   },
 ]
@@ -99,6 +118,7 @@ export const ListRow = observer(
     const avgWateringInterval = getAvgInterval(PlantEventType.WATER)
     const { setInspectorMode, setSelectedPlantID } = plantStore
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+    const { enqueueSnackbar } = useSnackbar()
 
     const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
       setAnchorEl(event.currentTarget)
@@ -109,11 +129,52 @@ export const ListRow = observer(
       setAnchorEl(null)
     }
 
+    const handleModifyPlant = (
+      event: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLLIElement>,
+      plant: Plant,
+      plantEvent: PlantEvent
+    ): void => {
+      const {
+        eventType,
+        date,
+        initialMessage,
+        successMessage,
+        duplicateMessage,
+        errorMessage,
+      } = plantEvent
+      event.stopPropagation()
+      !!initialMessage && enqueueSnackbar(initialMessage)
+      db.modifyPlant(
+        plant,
+        eventType,
+        date,
+        // onSuccess
+        () => {
+          console.log(successMessage)
+        },
+        // onError
+        (error) => {
+          !!errorMessage && enqueueSnackbar(errorMessage, { variant: 'error' })
+          console.log(error)
+        },
+        // handleSuccessMessage
+        () => {
+          !!successMessage && enqueueSnackbar(successMessage, { variant: 'success' })
+        },
+        // handleDuplicateMessage
+        () => {
+          !!duplicateMessage && enqueueSnackbar(duplicateMessage, { variant: 'warning' })
+        }
+      )
+    }
+
     const getWateringNumberMessage = (): string => {
       if (daysToWater === undefined) {
         return 'More watering events needed to calculate days to water'
       } else if (daysToWater < 1) {
-        return `${-daysToWater} days past due for watering ${checkedToday ? ' (checked today)' : ''}`
+        return `${-daysToWater} days past due for watering ${
+          checkedToday ? ' (checked today)' : ''
+        }`
       } else {
         return `${daysToWater} day${daysToWater !== 1 ? 's' : ''} until water due`
       }
@@ -163,17 +224,7 @@ export const ListRow = observer(
 
             <div className="list-row__buttons">
               <div className="list-row__watering-days-number">
-                <Tooltip
-                  title={
-                    // daysToWater === undefined
-                    //   ? 'More watering events needed to calculate days to water'
-                    //   : `${daysToWater} day${daysToWater !== 1 ? 's' : ''} until water due${
-                    //       daysToWater < 1 && checkedToday ? ' (checked today)' : ''
-                    //     }`
-                    getWateringNumberMessage()
-                  }
-                  placement="left"
-                >
+                <Tooltip title={getWateringNumberMessage()} placement="left">
                   <Typography className={classes.wateringNumber} variant="h3">
                     {daysToWater !== undefined ? daysToWater : '?'}
                   </Typography>
@@ -181,19 +232,16 @@ export const ListRow = observer(
               </div>
               <Hidden mdDown>
                 {buttons.map((button) => {
+                  const { tooltip, plantEvent, icon } = button
+                  const { eventType } = plantEvent
                   return (
-                    ((toBeChecked && button.eventType === PlantEventType.CHECK) ||
-                      button.eventType !== PlantEventType.CHECK) && (
-                      <Tooltip key={`button-${button.tooltip}-${id}`} title={button.tooltip}>
+                    ((toBeChecked && eventType === PlantEventType.CHECK) ||
+                      eventType !== PlantEventType.CHECK) && (
+                      <Tooltip key={`button-${tooltip}-${id}`} title={tooltip}>
                         <IconButton
-                          onClick={(event) => {
-                            event.stopPropagation()
-                            db.modifyPlant(plant, button.eventType, undefined, () =>
-                              console.log(button.successMessage)
-                            )
-                          }}
+                          onClick={(event) => handleModifyPlant(event, plant, plantEvent)}
                         >
-                          {button.icon}
+                          {icon}
                         </IconButton>
                       </Tooltip>
                     )
@@ -221,16 +269,15 @@ export const ListRow = observer(
                 >
                   <div className={classes.menu}>
                     {buttons.map((button) => {
+                      const { tooltip, plantEvent, icon } = button
+                      const { eventType } = plantEvent
                       return (
-                        ((toBeChecked && button.eventType === PlantEventType.CHECK) ||
-                          button.eventType !== PlantEventType.CHECK) && (
+                        ((toBeChecked && eventType === PlantEventType.CHECK) ||
+                          eventType !== PlantEventType.CHECK) && (
                           <MenuItem
                             key={`menuItem-${button.tooltip}-${id}`}
                             onClick={(event) => {
-                              event.stopPropagation()
-                              db.modifyPlant(plant, button.eventType, undefined, () =>
-                                console.log(button.successMessage)
-                              )
+                              handleModifyPlant(event, plant, plantEvent)
                               handleCloseMenu(event)
                             }}
                           >
