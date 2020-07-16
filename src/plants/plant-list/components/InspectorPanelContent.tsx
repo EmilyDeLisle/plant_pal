@@ -10,10 +10,18 @@ import Typography from '@material-ui/core/Typography'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import { Moment } from 'moment'
+import { useSnackbar } from 'notistack'
 import { firestore } from 'firebase'
 import { DatePicker } from '@material-ui/pickers'
 import { IFileWithMeta } from 'react-dropzone-uploader'
-import { AddFormValues, FormValues, Plant, PlantEventType, PlantProps } from '../../../models'
+import {
+  AddFormValues,
+  FormValues,
+  Plant,
+  PlantEvent,
+  PlantEventType,
+  PlantProps,
+} from '../../../models'
 import { getDatabase, getStorage } from '../../../firebase'
 import { EventSection } from './EventSection'
 import { ImageUpload } from './ImageUpload'
@@ -40,6 +48,11 @@ export interface InspectorPanelContentProps {
 
 export interface InspectorPanelContentViewProps extends InspectorPanelContentProps {
   plant: Plant
+  handleModifyPlant: (
+    event: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLLIElement>,
+    plant: Plant,
+    plantEvent: PlantEvent
+  ) => void
 }
 
 export const InspectorPanelContentAdd = ({ handleClose }: InspectorPanelContentProps) => {
@@ -54,6 +67,7 @@ export const InspectorPanelContentAdd = ({ handleClose }: InspectorPanelContentP
   const [errorState, setErrorState] = useState(false)
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [image, setImage] = useState<string | null>(null)
+  const { enqueueSnackbar } = useSnackbar()
   const classes = useStyles()
 
   const handleChange = (name: string, value: string | Moment): void => {
@@ -93,12 +107,15 @@ export const InspectorPanelContentAdd = ({ handleClose }: InspectorPanelContentP
 
       // add plant to db
       const plantID = db.addPlant(plant, fileName, () => {
-        console.log('Plant added successfully')
+        enqueueSnackbar(`${name} added successfully`, { variant: 'success' })
         setValues(initialValues)
         handleClose()
+      }, (error) => {
+        enqueueSnackbar(`There was an error adding ${name}`, { variant: 'error'})
+        console.log(error)
       })
 
-      // // add image file to storage
+      // add image file to storage
       !!fileName &&
         !!imageFile &&
         plantID &&
@@ -179,8 +196,8 @@ export const InspectorPanelContentAdd = ({ handleClose }: InspectorPanelContentP
           animateYearScrolling
           fullWidth
         />
-        <div className='inspector-panel-content__edit-buttons'>
-          <Button variant="contained" color='primary' onClick={() => handleSubmit(values)}>
+        <div className="inspector-panel-content__edit-buttons">
+          <Button variant="contained" color="primary" onClick={() => handleSubmit(values)}>
             Submit
           </Button>
         </div>
@@ -191,6 +208,7 @@ export const InspectorPanelContentAdd = ({ handleClose }: InspectorPanelContentP
 
 export const InspectorPanelContentView = ({
   plant,
+  handleModifyPlant,
   handleClose,
 }: InspectorPanelContentViewProps) => {
   const { altName, name, id, imageFileName, imageURL } = plant
@@ -299,7 +317,7 @@ export const InspectorPanelContentView = ({
 
   return (
     <>
-      <div className='inspector-panel__title-card' style={getImage()}>
+      <div className="inspector-panel__title-card" style={getImage()}>
         <div className="inspector-panel-content__title-card-top">
           {editMode !== 'names' && (
             <div>
@@ -385,8 +403,16 @@ export const InspectorPanelContentView = ({
         )}
       </div>
       <div className="inspector-panel-content__contents">
-        <EventSection eventType={PlantEventType.WATER} plant={plant} />
-        <EventSection eventType={PlantEventType.FERTILIZE} plant={plant} />
+        <EventSection
+          eventType={PlantEventType.WATER}
+          plant={plant}
+          handleModifyPlant={handleModifyPlant}
+        />
+        <EventSection
+          eventType={PlantEventType.FERTILIZE}
+          plant={plant}
+          handleModifyPlant={handleModifyPlant}
+        />
       </div>
     </>
   )

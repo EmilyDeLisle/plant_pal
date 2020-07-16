@@ -1,7 +1,7 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
-import { InspectorMode } from '../../../models'
+import { InspectorMode, Plant, PlantEvent } from '../../../models'
 import { Bubble } from './Bubble'
 import { InspectorPanelContentAdd, InspectorPanelContentView } from './InspectorPanelContent'
 import { plantStore } from '../../../injectables'
@@ -21,7 +21,15 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-export const InspectorPanel = observer(() => {
+interface InspectorPanelProps {
+  handleModifyPlant: (
+    event: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLLIElement>,
+    plant: Plant,
+    plantEvent: PlantEvent
+  ) => void
+}
+
+export const InspectorPanel = observer(({ handleModifyPlant }: InspectorPanelProps) => {
   const { selectedPlant, inspectorMode, plantsLoaded, plantCount, setInspectorMode } = plantStore
   const classes = useStyles()
   const message = plantsLoaded
@@ -43,6 +51,7 @@ export const InspectorPanel = observer(() => {
         <InspectorPanelContentView
           plant={selectedPlant}
           handleClose={() => setInspectorMode(InspectorMode.DEFAULT)}
+          handleModifyPlant={handleModifyPlant}
         />
       ) : (
         <InspectorPanelContentAdd handleClose={() => setInspectorMode(InspectorMode.DEFAULT)} />

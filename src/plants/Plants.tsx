@@ -8,9 +8,11 @@ import Tooltip from '@material-ui/core/Tooltip'
 import Typography from '@material-ui/core/Typography'
 import { makeStyles, Theme, createStyles, useTheme } from '@material-ui/core/styles'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
+import { useSnackbar } from 'notistack'
 import { InspectorPanel, ListControls, PlantList, TopNavNar } from './plant-list'
+import { getDatabase } from '../firebase'
 import { plantStore } from '../injectables'
-import { InspectorMode } from '../models'
+import { InspectorMode, Plant, PlantEvent } from '../models'
 import MonsteraIcon from '../assets/MonsteraIcon'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -47,13 +49,54 @@ export const Plants = inject('plantStore')(
       const plantsNeedingAttentionCount = plantsNeedingAttentionList.length
       const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
       const classes = useStyles()
+      const { enqueueSnackbar } = useSnackbar()
+
+      const handleModifyPlant = (
+        event: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLLIElement>,
+        plant: Plant,
+        plantEvent: PlantEvent
+      ): void => {
+        const db = getDatabase()
+        const {
+          eventType,
+          date,
+          initialMessage,
+          successMessage,
+          duplicateMessage,
+          errorMessage,
+        } = plantEvent
+        event.stopPropagation()
+        !!initialMessage && enqueueSnackbar(initialMessage)
+        db.modifyPlant(
+          plant,
+          eventType,
+          date,
+          // onSuccess
+          () => {
+            console.log(successMessage)
+          },
+          // onError
+          (error) => {
+            !!errorMessage && enqueueSnackbar(errorMessage, { variant: 'error' })
+            console.log(error)
+          },
+          // handleSuccessMessage
+          () => {
+            !!successMessage && enqueueSnackbar(successMessage, { variant: 'success' })
+          },
+          // handleDuplicateMessage
+          () => {
+            !!duplicateMessage && enqueueSnackbar(duplicateMessage, { variant: 'warning' })
+          }
+        )
+      }
 
       return (
         <div className="plants">
           <TopNavNar />
           <div className="plants__container">
             {isMobile && inspectorMode !== InspectorMode.DEFAULT ? (
-              <InspectorPanel />
+              <InspectorPanel handleModifyPlant={handleModifyPlant} />
             ) : (
               <>
                 <div className={classes.listsContainer}>
@@ -66,7 +109,10 @@ export const Plants = inject('plantStore')(
                             plantsNeedingAttentionCount !== 1 ? 's' : ''
                           } needing attention`}
                         </Typography>
-                        <PlantList plants={plantsNeedingAttentionList} />
+                        <PlantList
+                          plants={plantsNeedingAttentionList}
+                          handleModifyPlant={handleModifyPlant}
+                        />
                       </div>
                     )}
                     <Typography color="textPrimary" variant="h4">
@@ -74,14 +120,17 @@ export const Plants = inject('plantStore')(
                     </Typography>
                     {plantsLoaded ? (
                       plantsRemainingList.length > 0 ? (
-                        <PlantList plants={plantsRemainingList} />
+                        <PlantList
+                          plants={plantsRemainingList}
+                          handleModifyPlant={handleModifyPlant}
+                        />
                       ) : (
                         <Typography color="textPrimary" align="center">
                           <em>No plants yet</em>
                         </Typography>
                       )
                     ) : (
-                      <div className='plants__list-progress'>
+                      <div className="plants__list-progress">
                         <CircularProgress color="primary" />
                       </div>
                     )}
@@ -89,7 +138,7 @@ export const Plants = inject('plantStore')(
                   </div>
                 </div>
                 <Hidden smDown>
-                  <InspectorPanel />
+                  <InspectorPanel handleModifyPlant={handleModifyPlant} />
                 </Hidden>
                 {inspectorMode === InspectorMode.DEFAULT && (
                   <Hidden smUp>
