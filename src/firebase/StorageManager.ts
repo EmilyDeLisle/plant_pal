@@ -46,7 +46,10 @@ export default class StorageManager {
       .then((url: string) => {
         !!handleImage && handleImage(url)
       })
-      .catch(onError)
+      .catch((error: any) => {
+        !!onError && onError(error)
+        console.log('getDownloadURL failed')
+      })
   }
 
   uploadImage = (

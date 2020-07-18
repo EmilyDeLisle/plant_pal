@@ -48,10 +48,10 @@ export const ImageUpload = ({ onlyDropzone, handleSelectedImage }: ImageUploadPr
     <Dropzone
       onChangeStatus={handleChangeStatus}
       maxFiles={1}
-      maxSizeBytes={1048576}
+      // maxSizeBytes={1048576}
       multiple={false}
       LayoutComponent={Layout}
-      accept=".png, .jpg, .jpeg"
+      accept="image/*"
       classNames={classNames}
       inputWithFilesContent={(files, extra) =>
         extra.reject
@@ -73,7 +73,7 @@ export const ImageUpload = ({ onlyDropzone, handleSelectedImage }: ImageUploadPr
   return onlyDropzone ? (
     getDropzone()
   ) : showDropzone ? (
-    <div>
+    <div className='image-upload__button-container'>
       {getDropzone()}
       <Button color="inherit" onClick={() => setShowDropzone(false)}>
         Cancel

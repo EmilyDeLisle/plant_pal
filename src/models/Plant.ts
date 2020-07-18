@@ -161,6 +161,7 @@ decorate(Plant, {
   fertilizingDates: observable,
   lastCheckedDate: observable,
   imageURL: observable,
+  imageFileName: observable,
   daysSinceLastWatered: computed,
   daysSinceLastFertilized: computed,
   daysToWater: computed,
