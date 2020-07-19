@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
-import Dropzone, { IFileWithMeta, ILayoutProps, StatusValue } from 'react-dropzone-uploader'
-import 'react-dropzone-uploader/dist/styles.css'
 import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import CameraIcon from '@material-ui/icons/CameraAlt'
+import Dropzone, { IFileWithMeta, ILayoutProps, StatusValue } from 'react-dropzone-uploader'
+import 'react-dropzone-uploader/dist/styles.css'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-const Layout = ({ input, dropzoneProps, extra: { maxFiles } }: ILayoutProps) => {
+const Layout = ({ input, dropzoneProps }: ILayoutProps) => {
   return <div {...dropzoneProps}>{input}</div>
 }
 

@@ -1,5 +1,6 @@
 import firebase, { storage } from 'firebase/app'
 import 'firebase/auth'
+import imageCompression from 'browser-image-compression'
 import { getAuth } from './init'
 
 export default class StorageManager {
@@ -59,12 +60,21 @@ export default class StorageManager {
     onError?: (reason: any) => void | PromiseLike<void>
   ): void => {
     this.setReference()
-    !!this.imagesRef &&
-      this.imagesRef
-        .child(`${plantID}/${imageFile.name}`)
-        .put(imageFile)
-        .then(onSuccess)
-        .catch(onError)
+
+    const compressionOptions = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    }
+
+    imageCompression(imageFile, compressionOptions).then((compressedFile) => {
+      !!this.imagesRef &&
+        this.imagesRef
+          .child(`${plantID}/${imageFile.name}`)
+          .put(compressedFile)
+          .then(onSuccess)
+          .catch(onError)
+    })
   }
 
   deleteImage = (
