@@ -106,21 +106,29 @@ export const InspectorPanelContentAdd = ({ handleClose }: InspectorPanelContentP
       const plant: PlantProps = { name, altName, wateringDates, fertilizingDates }
 
       // add plant to db
-      const plantID = db.addPlant(plant, fileName, () => {
-        enqueueSnackbar(`${name} added successfully`, { variant: 'success' })
-        setValues(initialValues)
-        handleClose()
-      }, (error) => {
-        enqueueSnackbar(`There was an error adding ${name}`, { variant: 'error'})
-        console.log(error)
-      })
+      const plantID = db.addPlant(
+        plant,
+        () => {
+          enqueueSnackbar(`${name} added successfully`, { variant: 'success' })
+          setValues(initialValues)
+          handleClose()
+        },
+        (error) => {
+          enqueueSnackbar(`There was an error adding ${name}`, { variant: 'error' })
+          console.log(error)
+        }
+      )
 
-      // add image file to storage
+      // add image file to storage & update filename in db
       !!fileName &&
         !!imageFile &&
         plantID &&
         storage.uploadImage(imageFile, plantID, (snapshot: firebase.storage.UploadTaskSnapshot) => {
           console.log('Image uploaded successfully')
+          // set new file name in the plant's document in firestore
+          db.updatePlantImageFileName(plantID, fileName, () => {
+            console.log('Image file name updated in db')
+          })
         })
     }
   }
@@ -211,7 +219,7 @@ export const InspectorPanelContentView = ({
   handleModifyPlant,
   handleClose,
 }: InspectorPanelContentViewProps) => {
-  const { altName, name, id, imageFileName, imageURL } = plant
+  const { altName, name, id, imageFileName: currentImageFileName, imageURL } = plant
   const initialValues: FormValues = {
     name: name,
     altName: altName,
@@ -288,18 +296,20 @@ export const InspectorPanelContentView = ({
   }
 
   const handleUploadNewImage = () => {
-    setEditMode('')
     const db = getDatabase()
     const storage = getStorage()
+    setEditMode('')
     if (!!newImageFile) {
-      db.updatePlantImageFileName(id, newImageFile.name, () => {
-        console.log('Image file name updated in db')
-      })
+      // upload the image file to firebase storage
       storage.uploadImage(newImageFile, id, (snapshot: firebase.storage.UploadTaskSnapshot) => {
         console.log('New image successfully uploaded')
-        setEditMode('')
-        !!imageFileName &&
-          storage.deleteImage(id, imageFileName, () => {
+        // set new file name in the plant's document in firestore
+        db.updatePlantImageFileName(id, newImageFile.name, () => {
+          console.log('Image file name updated in db')
+        })
+        // if an old image exists, delete it
+        !!currentImageFileName &&
+          storage.deleteImage(id, currentImageFileName, () => {
             console.log('Old image successfully deleted')
           })
       })
@@ -371,7 +381,9 @@ export const InspectorPanelContentView = ({
               >
                 Cancel
               </Button>
-              <Button onClick={() => handleUploadNewImage()}>Change image</Button>
+              <Button disabled={!newImageFile} onClick={() => handleUploadNewImage()}>
+                Change image
+              </Button>
             </div>
           </div>
         )}

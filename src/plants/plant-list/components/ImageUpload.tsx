@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
-import Dropzone, { IFileWithMeta, ILayoutProps, StatusValue } from 'react-dropzone-uploader'
-import 'react-dropzone-uploader/dist/styles.css'
 import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import CameraIcon from '@material-ui/icons/CameraAlt'
+import Dropzone, { IFileWithMeta, ILayoutProps, StatusValue } from 'react-dropzone-uploader'
+import 'react-dropzone-uploader/dist/styles.css'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-const Layout = ({ input, dropzoneProps, extra: { maxFiles } }: ILayoutProps) => {
+const Layout = ({ input, dropzoneProps }: ILayoutProps) => {
   return <div {...dropzoneProps}>{input}</div>
 }
 
@@ -48,19 +48,18 @@ export const ImageUpload = ({ onlyDropzone, handleSelectedImage }: ImageUploadPr
     <Dropzone
       onChangeStatus={handleChangeStatus}
       maxFiles={1}
-      maxSizeBytes={1048576}
       multiple={false}
       LayoutComponent={Layout}
-      accept=".png, .jpg, .jpeg"
+      accept="image/*, .heic"
       classNames={classNames}
       inputWithFilesContent={(files, extra) =>
         extra.reject
-          ? '1 MB or less PNG or JPG/JPEG files only'
+          ? 'PNG or JPG/JPEG files only'
           : 'Click or drag and drop an image file'
       }
       inputContent={(files, extra) =>
         extra.reject
-          ? '1 MB or less PNG or JPG/JPEG files only'
+          ? 'PNG or JPG/JPEG files only'
           : 'Click or drag and drop an image file'
       }
       styles={{
@@ -73,7 +72,7 @@ export const ImageUpload = ({ onlyDropzone, handleSelectedImage }: ImageUploadPr
   return onlyDropzone ? (
     getDropzone()
   ) : showDropzone ? (
-    <div>
+    <div className='image-upload__button-container'>
       {getDropzone()}
       <Button color="inherit" onClick={() => setShowDropzone(false)}>
         Cancel

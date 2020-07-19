@@ -53,7 +53,6 @@ export default class DatabaseManager {
 
   addPlant = (
     plantValues: PlantProps,
-    imageFileName?: string,
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
     onError?: ((reason: any) => void) | null | undefined
   ): string | undefined => {
@@ -64,7 +63,6 @@ export default class DatabaseManager {
       const plant = new Plant({
         ...plantValues,
         id: id,
-        imageFileName: !!imageFileName ? imageFileName : '',
       })
       !!plant && docRef.withConverter(plantConverter).set(plant).then(onSuccess).catch(onError)
     }
