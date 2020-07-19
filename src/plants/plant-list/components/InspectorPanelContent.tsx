@@ -231,6 +231,7 @@ export const InspectorPanelContentView = ({
   const [previewImageURL, setPreviewImageURL] = useState('')
   const [newImageFile, setNewImageFile] = useState<File | null>(null)
   const classes = useStyles()
+  const { enqueueSnackbar } = useSnackbar()
 
   useEffect(() => {
     setPreviewImageURL('')
@@ -270,7 +271,7 @@ export const InspectorPanelContentView = ({
       setErrorState(false)
       const db = getDatabase()
       db.updatePlantNames(id, values, () => {
-        console.log('Plant successfully updated')
+        enqueueSnackbar('Plant successfully updated', { variant: 'success' })
         handleEndEditNames()
       })
     }
@@ -279,7 +280,9 @@ export const InspectorPanelContentView = ({
   const handleDelete = (id: string): void => {
     if (window.confirm('Delete plant? This cannot be undone.')) {
       const db = getDatabase()
-      db.deletePlant(id, () => console.log('Plant successfully deleted'))
+      db.deletePlant(id, () => {
+        enqueueSnackbar(`${name} successfully deleted`)
+      })
     }
     handleCloseMenu()
     setPreviewImageURL('')
@@ -302,7 +305,7 @@ export const InspectorPanelContentView = ({
     if (!!newImageFile) {
       // upload the image file to firebase storage
       storage.uploadImage(newImageFile, id, (snapshot: firebase.storage.UploadTaskSnapshot) => {
-        console.log('New image successfully uploaded')
+        enqueueSnackbar(`New image for ${name} successfully uploaded`, { variant: 'success' })
         // set new file name in the plant's document in firestore
         db.updatePlantImageFileName(id, newImageFile.name, () => {
           console.log('Image file name updated in db')
