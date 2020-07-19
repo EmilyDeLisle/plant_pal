@@ -48,19 +48,18 @@ export const ImageUpload = ({ onlyDropzone, handleSelectedImage }: ImageUploadPr
     <Dropzone
       onChangeStatus={handleChangeStatus}
       maxFiles={1}
-      // maxSizeBytes={1048576}
       multiple={false}
       LayoutComponent={Layout}
-      accept="image/*"
+      accept="image/*, .heic"
       classNames={classNames}
       inputWithFilesContent={(files, extra) =>
         extra.reject
-          ? '1 MB or less PNG or JPG/JPEG files only'
+          ? 'PNG or JPG/JPEG files only'
           : 'Click or drag and drop an image file'
       }
       inputContent={(files, extra) =>
         extra.reject
-          ? '1 MB or less PNG or JPG/JPEG files only'
+          ? 'PNG or JPG/JPEG files only'
           : 'Click or drag and drop an image file'
       }
       styles={{
