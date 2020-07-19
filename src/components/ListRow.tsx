@@ -49,8 +49,6 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-
-
 interface ListRowProps {
   plant: Plant
   handleModifyPlant: (
@@ -84,14 +82,14 @@ export const ListRow = observer(
         icon: <CheckIcon />,
         plantEvent: {
           eventType: PlantEventType.CHECK,
-          initialMessage: `Marking ${name} as not needing water today`,
+          initialMessage: `Marking plant as not needing water today`,
           successMessage: `${name} successfully marked as not needing water today`,
           duplicateMessage: `${name} already marked as not needing water today`,
           errorMessage: `There was an error marking ${name} as not needing water today`,
         },
       },
       {
-        tooltip: `Fertilize ${name} today`,
+        tooltip: `Fertilize plant today`,
         icon: <FertilizeIcon />,
         plantEvent: {
           eventType: PlantEventType.FERTILIZE,
@@ -102,7 +100,7 @@ export const ListRow = observer(
         },
       },
       {
-        tooltip: `Water ${name} (with fertilizer) today`,
+        tooltip: `Water plant (with fertilizer) today`,
         icon: <WaterFertilizeIcon />,
         plantEvent: {
           eventType: PlantEventType.WATER_WITH_FERTILIZER,
@@ -113,7 +111,7 @@ export const ListRow = observer(
         },
       },
       {
-        tooltip: `Water ${name} today`,
+        tooltip: `Water plant today`,
         icon: <WaterIcon />,
         plantEvent: {
           eventType: PlantEventType.WATER,
@@ -190,7 +188,13 @@ export const ListRow = observer(
 
             <div className="list-row__buttons">
               <div className="list-row__watering-days-number">
-                <Tooltip title={getWateringNumberMessage()} placement="left">
+                <Tooltip
+                  title={getWateringNumberMessage()}
+                  placement="left"
+                  onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) =>
+                    event.stopPropagation()
+                  }
+                >
                   <Typography className={classes.wateringNumber} variant="h3">
                     {daysToWater !== undefined ? daysToWater : '?'}
                   </Typography>
