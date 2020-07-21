@@ -4,7 +4,7 @@
 
 .inspector-panel__title-card {
   /* Background image by Freepik - https://www.freepik.com/free-photos-vectors/pattern*/
-  background: url('../../../assets/palm.jpg') no-repeat;
+  background: url('../assets/palm.jpg') no-repeat;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;

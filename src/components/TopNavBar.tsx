@@ -3,14 +3,12 @@ import { observer } from 'mobx-react'
 import AppBar from '@material-ui/core/AppBar'
 import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
-import Hidden from '@material-ui/core/Hidden'
 import Menu from '@material-ui/core/Menu'
 import Typography from '@material-ui/core/Typography'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import UserIcon from '@material-ui/icons/AccountCircle'
-import MenuIcon from '@material-ui/icons/Menu'
-import { getAuth } from '../../firebase'
-import { plantStore } from '../../injectables'
+import { getAuth } from '../firebase'
+import { plantStore } from '../injectables'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

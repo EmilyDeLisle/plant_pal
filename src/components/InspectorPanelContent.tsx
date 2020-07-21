@@ -21,8 +21,8 @@ import {
   PlantEvent,
   PlantEventType,
   PlantProps,
-} from '../../../models'
-import { getDatabase, getStorage } from '../../../firebase'
+} from '../models'
+import { getDatabase, getStorage } from '../firebase'
 import { EventSection } from './EventSection'
 import { ImageUpload } from './ImageUpload'
 

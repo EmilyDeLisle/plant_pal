@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react'
-import { Plant, PlantEvent } from '../../models'
-import { ListRow } from '../../components'
+import { Plant, PlantEvent } from '../models'
+import { ListRow } from '../components'
 
 export interface PlantListProps {
   plants: Plant[]
