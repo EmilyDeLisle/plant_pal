@@ -9,6 +9,7 @@ import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import UserIcon from '@material-ui/icons/AccountCircle'
 import { getAuth } from '../firebase'
 import { plantStore } from '../injectables'
+import { SearchBar } from './SearchBar'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -40,9 +41,17 @@ export const TopNavNar = observer(() => {
     <AppBar position="static">
       <div className="top-nav-bar__contents">
         <Typography variant="h5">PLAPP</Typography>
-        <IconButton className={classes.userIcon} size="medium" edge="end" onClick={handleClickMenu}>
-          <UserIcon />
-        </IconButton>
+        <div className='top-nav-bar__search-menu'>
+          <SearchBar />
+          <IconButton
+            className={classes.userIcon}
+            size="medium"
+            edge="end"
+            onClick={handleClickMenu}
+          >
+            <UserIcon />
+          </IconButton>
+        </div>
         <Menu
           id="simple-menu"
           anchorEl={anchorEl}
