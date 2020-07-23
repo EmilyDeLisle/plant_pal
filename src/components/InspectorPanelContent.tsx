@@ -28,11 +28,8 @@ import { ImageUpload } from './ImageUpload'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    titleCard: {
+    title: {
       color: theme.palette.primary.contrastText,
-      textShadow: '2px 2px 6px rgba(0, 0, 0, 0.5)',
-    },
-    titleText: {
       textShadow: '2px 2px 6px rgba(0, 0, 0, 0.5)',
     },
     controlIcon: {
@@ -142,7 +139,7 @@ export const InspectorPanelContentAdd = ({ handleClose }: InspectorPanelContentP
         style={{ backgroundImage: image !== null ? `url(${image})` : '' }}
       >
         <div className="inspector-panel-content__title-card-top">
-          <Typography className={classes.titleCard} variant="h4">
+          <Typography className={classes.title} variant="h4">
             Add new plant
           </Typography>
           <div className="inspector-panel-content__controls">
@@ -334,11 +331,11 @@ export const InspectorPanelContentView = ({
       <div className="inspector-panel__title-card" style={getImage()}>
         <div className="inspector-panel-content__title-card-top">
           {editMode !== 'names' && (
-            <div>
-              <Typography className={classes.titleCard} variant="h4">
+            <div className='inspector-panel-content__title-card-titles'>
+              <Typography className={classes.title} variant="h4">
                 {name}
               </Typography>
-              <Typography className={classes.titleCard}>{altName}</Typography>
+              <Typography className={classes.title}>{altName}</Typography>
             </div>
           )}
           <div className="inspector-panel-content__controls">

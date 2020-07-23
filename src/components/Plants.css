@@ -8,12 +8,12 @@
 .plants__container {
   display: flex;
   background-color: rgba(255, 255, 255, 0.9);
-  height: calc(100% - 3em);
+  height: calc(100% - 4em);
 }
 
 .plants__lists {
   overflow-y: scroll;
-  height: calc(100% - 3em - 4px);
+  height: calc(100% - 4em - 4px);
 }
 
 .plants__attention-list {

@@ -10,7 +10,6 @@
   -o-background-size: cover;
   background-size: cover;
   background-position: 50% 50%;
-  width: calc(100% - 4em + 2px);
   height: calc(50% - 6em);
   padding: 2em;
   display: flex;
@@ -20,6 +19,10 @@
 .inspector-panel-content__title-card-top {
   display: flex;
   justify-content: space-between;
+}
+
+.inspector-panel-content__title-card-titles {
+  word-break: break-all;
 }
 
 .inspector-panel-content__edit-fields {
