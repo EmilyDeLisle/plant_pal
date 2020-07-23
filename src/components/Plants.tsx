@@ -2,9 +2,12 @@ import React, { ReactElement } from 'react'
 import { inject, observer } from 'mobx-react'
 import { RouteComponentProps } from '@reach/router'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import Dialog from '@material-ui/core/Dialog'
 import Fab from '@material-ui/core/Fab'
 import Hidden from '@material-ui/core/Hidden'
+import Slide from '@material-ui/core/Slide'
 import Tooltip from '@material-ui/core/Tooltip'
+import { TransitionProps } from '@material-ui/core/transitions'
 import Typography from '@material-ui/core/Typography'
 import { makeStyles, Theme, createStyles, useTheme } from '@material-ui/core/styles'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
@@ -37,6 +40,13 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   })
 )
+
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & { children?: React.ReactElement },
+  ref: React.Ref<unknown>
+) {
+  return <Slide direction="left" ref={ref} {...props} />
+})
 
 export const Plants = inject('plantStore')(
   observer(
@@ -77,16 +87,12 @@ export const Plants = inject('plantStore')(
           date,
           // onSuccess
           () => {
-            console.log(successMessage)
+            !!successMessage && enqueueSnackbar(successMessage, { variant: 'success' })
           },
           // onError
           (error) => {
             !!errorMessage && enqueueSnackbar(errorMessage, { variant: 'error' })
             console.log(error)
-          },
-          // handleSuccessMessage
-          () => {
-            !!successMessage && enqueueSnackbar(successMessage, { variant: 'success' })
           },
           // handleDuplicateMessage
           () => {
@@ -96,71 +102,74 @@ export const Plants = inject('plantStore')(
       }
 
       return (
-        <div className="plants">
-          <TopNavNar />
-          <div className="plants__container">
-            {isMobile && inspectorMode !== InspectorMode.DEFAULT ? (
-              <InspectorPanel handleModifyPlant={handleModifyPlant} />
-            ) : (
-              <>
-                <div className={classes.listsContainer}>
-                  <ListControls />
-                  <div className="plants__lists">
-                    {!!plantsNeedingAttentionCount && (
-                      <div className="plants__attention-list">
-                        <Typography color="textPrimary" variant="h5">
-                          {`${plantsNeedingAttentionCount} plant${
-                            plantsNeedingAttentionCount !== 1 ? 's' : ''
-                          } needing attention`}
-                        </Typography>
-                        <PlantList
-                          plants={plantsNeedingAttentionList}
-                          handleModifyPlant={handleModifyPlant}
-                        />
-                      </div>
-                    )}
-                    <Typography color="textPrimary" variant="h4">
-                      Plants
-                    </Typography>
-                    {plantsLoaded ? (
-                      plantsRemainingList.length > 0 ? (
-                        <PlantList
-                          plants={plantsRemainingList}
-                          handleModifyPlant={handleModifyPlant}
-                        />
-                      ) : (
-                        <Typography color="textPrimary" align="center">
-                          <em>{plantCount === 0 ? 'No plants yet' : 'No plants'}</em>
-                        </Typography>
-                      )
+        <>
+          <div className="plants">
+            <TopNavNar />
+            <div className="plants__container">
+              <div className={classes.listsContainer}>
+                <ListControls />
+                <div className="plants__lists">
+                  {!!plantsNeedingAttentionCount && (
+                    <div className="plants__attention-list">
+                      <Typography color="textPrimary" variant="h5">
+                        {`${plantsNeedingAttentionCount} plant${
+                          plantsNeedingAttentionCount !== 1 ? 's' : ''
+                        } needing attention`}
+                      </Typography>
+                      <PlantList
+                        plants={plantsNeedingAttentionList}
+                        handleModifyPlant={handleModifyPlant}
+                      />
+                    </div>
+                  )}
+                  <Typography color="textPrimary" variant="h4">
+                    Plants
+                  </Typography>
+                  {plantsLoaded ? (
+                    plantsRemainingList.length > 0 ? (
+                      <PlantList
+                        plants={plantsRemainingList}
+                        handleModifyPlant={handleModifyPlant}
+                      />
                     ) : (
-                      <div className="plants__list-progress">
-                        <CircularProgress color="primary" />
-                      </div>
-                    )}
-                    <div className="plants__list-spacer"></div>
-                  </div>
+                      <Typography color="textPrimary" align="center">
+                        <em>{plantCount === 0 ? 'No plants yet' : 'No plants'}</em>
+                      </Typography>
+                    )
+                  ) : (
+                    <div className="plants__list-progress">
+                      <CircularProgress color="primary" />
+                    </div>
+                  )}
+                  <div className="plants__list-spacer"></div>
                 </div>
-                <Hidden smDown>
-                  <InspectorPanel handleModifyPlant={handleModifyPlant} />
+              </div>
+              <Hidden smDown>
+                <InspectorPanel handleModifyPlant={handleModifyPlant} />
+              </Hidden>
+              {inspectorMode === InspectorMode.DEFAULT && (
+                <Hidden smUp>
+                  <Tooltip title="Add new plant" placement="left">
+                    <Fab
+                      className={classes.fab}
+                      color="primary"
+                      onClick={() => setInspectorMode(InspectorMode.ADD)}
+                    >
+                      <MonsteraIcon />
+                    </Fab>
+                  </Tooltip>
                 </Hidden>
-                {inspectorMode === InspectorMode.DEFAULT && (
-                  <Hidden smUp>
-                    <Tooltip title="Add new plant" placement="left">
-                      <Fab
-                        className={classes.fab}
-                        color="primary"
-                        onClick={() => setInspectorMode(InspectorMode.ADD)}
-                      >
-                        <MonsteraIcon />
-                      </Fab>
-                    </Tooltip>
-                  </Hidden>
-                )}
-              </>
-            )}
+              )}
+            </div>
           </div>
-        </div>
+          <Dialog
+            fullScreen
+            open={isMobile && inspectorMode !== InspectorMode.DEFAULT}
+            TransitionComponent={Transition}
+          >
+            <InspectorPanel handleModifyPlant={handleModifyPlant} />
+          </Dialog>
+        </>
       )
     }
   )

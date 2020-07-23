@@ -22,7 +22,7 @@
 }
 
 .inspector-panel-content__title-card-titles {
-  word-break: break-all;
+  word-break: break-word;
 }
 
 .inspector-panel-content__edit-fields {
