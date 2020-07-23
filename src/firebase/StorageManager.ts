@@ -34,6 +34,10 @@ export default class StorageManager {
     }
   }
 
+  unsetReference = () => {
+    this.imagesRef = null
+  }
+
   getImage = (
     plantID: string,
     imageFileName: string,
