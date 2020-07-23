@@ -6,8 +6,8 @@ import RadioGroup from '@material-ui/core/RadioGroup'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import FormControl from '@material-ui/core/FormControl'
 import { DatePicker } from '@material-ui/pickers'
-import { Plant, PlantEvent, PlantEventType } from '../../../models'
-import { isToday } from '../../../utils'
+import { Plant, PlantEvent, PlantEventType } from '../models'
+import { isToday } from '../utils'
 
 export interface EventSectionPickerProps {
   eventType: PlantEventType.WATER | PlantEventType.FERTILIZE

@@ -6,7 +6,7 @@ import MenuItem from '@material-ui/core/MenuItem'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import DescendingIcon from '@material-ui/icons/ExpandMore'
 import AscendingIcon from '@material-ui/icons/ExpandLess'
-import { SortingMode, SortingDirection } from '../../../models'
+import { SortingMode, SortingDirection } from '../models'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

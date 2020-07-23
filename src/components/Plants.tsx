@@ -9,7 +9,10 @@ import Typography from '@material-ui/core/Typography'
 import { makeStyles, Theme, createStyles, useTheme } from '@material-ui/core/styles'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import { useSnackbar } from 'notistack'
-import { InspectorPanel, ListControls, PlantList, TopNavNar } from './plant-list'
+import { TopNavNar } from './TopNavBar'
+import { ListControls } from './ListControls'
+import { InspectorPanel } from './InspectorPanel'
+import { PlantList } from './PlantList'
 import { getDatabase } from '../firebase'
 import { plantStore } from '../injectables'
 import { InspectorMode, Plant, PlantEvent } from '../models'
@@ -44,6 +47,7 @@ export const Plants = inject('plantStore')(
         plantsRemainingList,
         inspectorMode,
         plantsLoaded,
+        plantCount,
         setInspectorMode,
       } = plantStore
       const plantsNeedingAttentionCount = plantsNeedingAttentionList.length
@@ -126,7 +130,7 @@ export const Plants = inject('plantStore')(
                         />
                       ) : (
                         <Typography color="textPrimary" align="center">
-                          <em>No plants yet</em>
+                          <em>{plantCount === 0 ? 'No plants yet' : 'No plants'}</em>
                         </Typography>
                       )
                     ) : (

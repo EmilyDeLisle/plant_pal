@@ -6,9 +6,9 @@ import Typography from '@material-ui/core/Typography'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import { useTheme } from '@material-ui/core/styles'
 import { SortingButton, SplitSortingButton } from './SortingButton'
-import { InspectorMode, SortingMode } from '../../../models'
-import MonsteraIcon from '../../../assets/MonsteraIcon'
-import { plantStore } from '../../../injectables'
+import { InspectorMode, SortingMode } from '../models'
+import MonsteraIcon from '../assets/MonsteraIcon'
+import { plantStore } from '../injectables'
 
 export const ListControls = inject('plantStore')(
   observer(() => {

@@ -7,8 +7,7 @@ import { Provider } from 'mobx-react'
 import { SnackbarProvider } from 'notistack'
 import { AuthProvider } from './firebase'
 import { plantStore } from './injectables'
-import { Plants } from './plants'
-import { NotFound, SignIn } from './components'
+import { NotFound, Plants, SignIn } from './components'
 import { plappTheme } from './utils'
 
 function App() {

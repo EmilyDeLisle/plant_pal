@@ -3,14 +3,13 @@ import { observer } from 'mobx-react'
 import AppBar from '@material-ui/core/AppBar'
 import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
-import Hidden from '@material-ui/core/Hidden'
 import Menu from '@material-ui/core/Menu'
 import Typography from '@material-ui/core/Typography'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import UserIcon from '@material-ui/icons/AccountCircle'
-import MenuIcon from '@material-ui/icons/Menu'
-import { getAuth } from '../../firebase'
-import { plantStore } from '../../injectables'
+import { getAuth } from '../firebase'
+import { plantStore } from '../injectables'
+import { SearchBar } from './SearchBar'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -27,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export const TopNavNar = observer(() => {
   const auth = getAuth()
   const classes = useStyles()
-  const { plantCount } = plantStore
+  const { plantCount, setSearchValue } = plantStore
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
   const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
@@ -42,9 +41,17 @@ export const TopNavNar = observer(() => {
     <AppBar position="static">
       <div className="top-nav-bar__contents">
         <Typography variant="h5">PLAPP</Typography>
-        <IconButton className={classes.userIcon} size="medium" edge="end" onClick={handleClickMenu}>
-          <UserIcon />
-        </IconButton>
+        <div className='top-nav-bar__search-menu'>
+          <SearchBar handleSearch={setSearchValue}/>
+          <IconButton
+            className={classes.userIcon}
+            size="medium"
+            edge="end"
+            onClick={handleClickMenu}
+          >
+            <UserIcon />
+          </IconButton>
+        </div>
         <Menu
           id="simple-menu"
           anchorEl={anchorEl}
