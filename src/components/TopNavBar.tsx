@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export const TopNavNar = observer(() => {
   const auth = getAuth()
   const classes = useStyles()
-  const { plantCount } = plantStore
+  const { plantCount, setSearchValue } = plantStore
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
   const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
@@ -42,7 +42,7 @@ export const TopNavNar = observer(() => {
       <div className="top-nav-bar__contents">
         <Typography variant="h5">PLAPP</Typography>
         <div className='top-nav-bar__search-menu'>
-          <SearchBar />
+          <SearchBar handleSearch={setSearchValue}/>
           <IconButton
             className={classes.userIcon}
             size="medium"

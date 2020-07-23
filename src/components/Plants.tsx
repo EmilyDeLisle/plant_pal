@@ -47,6 +47,7 @@ export const Plants = inject('plantStore')(
         plantsRemainingList,
         inspectorMode,
         plantsLoaded,
+        plantCount,
         setInspectorMode,
       } = plantStore
       const plantsNeedingAttentionCount = plantsNeedingAttentionList.length
@@ -129,7 +130,7 @@ export const Plants = inject('plantStore')(
                         />
                       ) : (
                         <Typography color="textPrimary" align="center">
-                          <em>No plants yet</em>
+                          <em>{plantCount === 0 ? 'No plants yet' : 'No plants'}</em>
                         </Typography>
                       )
                     ) : (

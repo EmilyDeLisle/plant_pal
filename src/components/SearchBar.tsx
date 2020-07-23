@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import InputBase from '@material-ui/core/InputBase'
 import { fade, makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import SearchIcon from '@material-ui/icons/Search'
@@ -35,7 +35,12 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-export const SearchBar = () => {
+interface SearchBarProps {
+  handleSearch: (input: string) => void
+}
+
+export const SearchBar = ({ handleSearch }: SearchBarProps) => {
+  const [searchValue, setSearchValue] = useState('')
   const classes = useStyles()
   return (
     <div className={`${classes.search} search-bar__container`}>
@@ -43,7 +48,12 @@ export const SearchBar = () => {
         <SearchIcon />
       </div>
       <InputBase
-        placeholder="Find a plant"
+        placeholder="Find a plant..."
+        value={searchValue}
+        onChange={({ target: { value }}) => {
+          setSearchValue(value)
+          handleSearch(value)
+        }}
         classes={{
           root: classes.inputRoot,
           input: classes.inputInput,

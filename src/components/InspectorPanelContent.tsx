@@ -236,6 +236,7 @@ export const InspectorPanelContentView = ({
   useEffect(() => {
     setPreviewImageURL('')
     setEditMode('')
+    setValues(initialValues)
   }, [id])
 
   const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
@@ -347,7 +348,6 @@ export const InspectorPanelContentView = ({
                   <MoreVertIcon className={classes.controlIcon} />
                 </IconButton>
                 <Menu
-                  id="simple-menu"
                   anchorEl={anchorEl}
                   keepMounted
                   open={Boolean(anchorEl)}
