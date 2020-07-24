@@ -12,29 +12,27 @@ import { plappTheme } from './utils'
 
 function App() {
   return (
-    <div className="App">
-      <MuiThemeProvider theme={plappTheme}>
-        <SnackbarProvider
-          maxSnack={1}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-        >
-          <MuiPickersUtilsProvider utils={MomentUtils}>
-            <Provider plantStore={plantStore}>
-              <Router>
-                <AuthProvider path="/">
-                  <Plants path="/plants" />
-                  <SignIn path="/" />
-                  <NotFound default />
-                </AuthProvider>
-              </Router>
-            </Provider>
-          </MuiPickersUtilsProvider>
-        </SnackbarProvider>
-      </MuiThemeProvider>
-    </div>
+    <MuiThemeProvider theme={plappTheme}>
+      <SnackbarProvider
+        maxSnack={1}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+      >
+        <MuiPickersUtilsProvider utils={MomentUtils}>
+          <Provider plantStore={plantStore}>
+            <Router>
+              <AuthProvider path="/">
+                <Plants path="/plants" />
+                <SignIn path="/" />
+                <NotFound default />
+              </AuthProvider>
+            </Router>
+          </Provider>
+        </MuiPickersUtilsProvider>
+      </SnackbarProvider>
+    </MuiThemeProvider>
   )
 }
 

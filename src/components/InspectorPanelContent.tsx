@@ -6,22 +6,17 @@ import IconButton from '@material-ui/core/IconButton'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import TextField from '@material-ui/core/TextField'
+import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
+import { makeStyles, Theme, createStyles, useTheme } from '@material-ui/core/styles'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import { Moment } from 'moment'
 import { useSnackbar } from 'notistack'
 import { firestore } from 'firebase'
 import { DatePicker } from '@material-ui/pickers'
 import { IFileWithMeta } from 'react-dropzone-uploader'
-import {
-  AddFormValues,
-  FormValues,
-  Plant,
-  PlantEvent,
-  PlantEventType,
-  PlantProps,
-} from '../models'
+import { AddFormValues, FormValues, Plant, PlantEvent, PlantEventType, PlantProps } from '../models'
 import { getDatabase, getStorage } from '../firebase'
 import { EventSection } from './EventSection'
 import { ImageUpload } from './ImageUpload'
@@ -66,6 +61,7 @@ export const InspectorPanelContentAdd = ({ handleClose }: InspectorPanelContentP
   const [image, setImage] = useState<string | null>(null)
   const { enqueueSnackbar } = useSnackbar()
   const classes = useStyles()
+  const isMobile = useMediaQuery(useTheme().breakpoints.down('sm'))
 
   const handleChange = (name: string, value: string | Moment): void => {
     setValues((prevValues) => ({
@@ -132,6 +128,7 @@ export const InspectorPanelContentAdd = ({ handleClose }: InspectorPanelContentP
 
   return (
     <>
+      {!isMobile && <Toolbar />}
       <div
         className={`inspector-panel__title-card ${
           image !== null ? 'inspector-panel-content--image-background' : ''
@@ -229,6 +226,7 @@ export const InspectorPanelContentView = ({
   const [newImageFile, setNewImageFile] = useState<File | null>(null)
   const classes = useStyles()
   const { enqueueSnackbar } = useSnackbar()
+  const isMobile = useMediaQuery(useTheme().breakpoints.down('sm'))
 
   useEffect(() => {
     setPreviewImageURL('')
@@ -328,10 +326,11 @@ export const InspectorPanelContentView = ({
 
   return (
     <>
+      {!isMobile && <Toolbar />}
       <div className="inspector-panel__title-card" style={getImage()}>
         <div className="inspector-panel-content__title-card-top">
           {editMode !== 'names' && (
-            <div className='inspector-panel-content__title-card-titles'>
+            <div className="inspector-panel-content__title-card-titles">
               <Typography className={classes.title} variant="h4">
                 {name}
               </Typography>

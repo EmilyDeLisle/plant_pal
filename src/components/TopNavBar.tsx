@@ -13,6 +13,13 @@ import { SearchBar } from './SearchBar'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    appBar: {
+      position: 'relative',
+      zIndex: theme.zIndex.drawer + 100,
+    },
+    appName: {
+      fontFamily: 'Lobster'
+    },
     userIcon: {
       color: theme.palette.primary.contrastText,
     },
@@ -38,11 +45,13 @@ export const TopNavNar = observer(() => {
   }
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" className={classes.appBar}>
       <div className="top-nav-bar__contents">
-        <Typography variant="h5">PLAPP</Typography>
-        <div className='top-nav-bar__search-menu'>
-          <SearchBar handleSearch={setSearchValue}/>
+        <div className="top-nav-bar__app-name">
+          <Typography className={classes.appName} variant="h4">PlantPal</Typography>
+        </div>
+        <div className="top-nav-bar__search-menu">
+          <SearchBar handleSearch={setSearchValue} />
           <IconButton
             className={classes.userIcon}
             size="medium"

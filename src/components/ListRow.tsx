@@ -160,7 +160,7 @@ export const ListRow = observer(
               <Typography variant="h5" color="primary" noWrap>
                 {name}
               </Typography>
-              <Typography color="textPrimary" variant="body2">
+              <Typography color="textPrimary" variant="caption">
                 {!!avgWateringInterval && (
                   <strong>
                     {` Watered every ${avgWateringInterval !== 1 ? avgWateringInterval : ''} day${

@@ -10,7 +10,7 @@
   -o-background-size: cover;
   background-size: cover;
   background-position: 50% 50%;
-  height: calc(50% - 6em);
+  min-height: calc(50% - 6em);
   padding: 2em;
   display: flex;
   flex-direction: column;

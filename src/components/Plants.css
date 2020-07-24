@@ -8,12 +8,12 @@
 .plants__container {
   display: flex;
   background-color: rgba(255, 255, 255, 0.9);
-  height: calc(100% - 4em);
+  height: calc(100% - 4.5em);
 }
 
 .plants__lists {
   overflow-y: scroll;
-  height: calc(100% - 4em - 4px);
+  height: calc(100% - 4.5em - 4px);
 }
 
 .plants__attention-list {
@@ -32,4 +32,36 @@
   display: flex;
   justify-content: center;
   margin-top: 5em;
+}
+
+.plants__inspector-panel-placeholder {
+  width: 540px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, #fff 10%);
+  padding-bottom: 3em;
+}
+
+.plants__inspector-panel-img {
+  max-width: 80%;
+  height: 50%;
+}
+
+@keyframes float {
+  0% {
+    transform: translate(0px, 0px);
+  }
+  50% {
+    transform: translate(0px, -10px);
+  }
+  100% {
+    transform: translate(0px, 0px);
+  }
+}
+
+.plants__inspector-panel-bubble {
+  margin-bottom: 7em;
+  animation: float 5s infinite;
 }

@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme: Theme) =>
       minWidth: '540px',
       [theme.breakpoints.down('sm')]: {
         maxWidth: '100%',
-        minWidth: 0
+        minWidth: 0,
       },
     },
   })
@@ -31,22 +31,10 @@ interface InspectorPanelProps {
 }
 
 export const InspectorPanel = observer(({ handleModifyPlant }: InspectorPanelProps) => {
-  const { selectedPlant, inspectorMode, plantsLoaded, plantCount, setInspectorMode } = plantStore
+  const { selectedPlant, inspectorMode, setInspectorMode } = plantStore
   const classes = useStyles()
-  const message = plantsLoaded
-    ? !!plantCount
-      ? 'Click on a plant!'
-      : 'Click on "Add Plant" to start tracking plants'
-    : 'Loading plants...'
 
-  return inspectorMode === InspectorMode.DEFAULT ? (
-    <div className={`${classes.inspectorPanel} inspector-panel__default`}>
-      <div className="inspector-panel__bubble">
-        <Bubble text={message} color="textPrimary" />
-      </div>
-      <img className="inspector-panel__img" src={MonsteraImg}></img>
-    </div>
-  ) : (
+  return (
     <div className={`${classes.inspectorPanel} inspector-panel__container`}>
       {inspectorMode === InspectorMode.VIEW && !!selectedPlant ? (
         <InspectorPanelContentView

@@ -19,6 +19,7 @@ export const plappTheme = createMuiTheme({
       'Roboto Mono',
       '"Helvetica Neue"',
       'Arial',
+      'Lobster',
       '-apple-system',
       'BlinkMacSystemFont',
       '"Segoe UI"',

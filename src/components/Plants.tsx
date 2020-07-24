@@ -3,6 +3,7 @@ import { inject, observer } from 'mobx-react'
 import { RouteComponentProps } from '@reach/router'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Dialog from '@material-ui/core/Dialog'
+import Drawer from '@material-ui/core/Drawer'
 import Fab from '@material-ui/core/Fab'
 import Hidden from '@material-ui/core/Hidden'
 import Slide from '@material-ui/core/Slide'
@@ -19,7 +20,11 @@ import { PlantList } from './PlantList'
 import { getDatabase } from '../firebase'
 import { plantStore } from '../injectables'
 import { InspectorMode, Plant, PlantEvent } from '../models'
+import { Bubble } from './Bubble'
 import MonsteraIcon from '../assets/MonsteraIcon'
+
+// Designed by macrovector / Freepik - freepik.com
+import MonsteraImg from '../assets/monstera.png'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -51,7 +56,6 @@ const Transition = React.forwardRef(function Transition(
 export const Plants = inject('plantStore')(
   observer(
     (props: RouteComponentProps): ReactElement => {
-      const theme = useTheme()
       const {
         plantsNeedingAttentionList,
         plantsRemainingList,
@@ -61,9 +65,15 @@ export const Plants = inject('plantStore')(
         setInspectorMode,
       } = plantStore
       const plantsNeedingAttentionCount = plantsNeedingAttentionList.length
-      const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+      const isMobile = useMediaQuery(useTheme().breakpoints.down('sm'))
       const classes = useStyles()
       const { enqueueSnackbar } = useSnackbar()
+
+      const message = plantsLoaded
+        ? !!plantCount
+          ? 'Click on a plant!'
+          : 'Click on "Add Plant" to start tracking plants'
+        : 'Loading plants...'
 
       const handleModifyPlant = (
         event: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLLIElement>,
@@ -114,7 +124,7 @@ export const Plants = inject('plantStore')(
                       <Typography color="textPrimary" variant="h5">
                         {`${plantsNeedingAttentionCount} plant${
                           plantsNeedingAttentionCount !== 1 ? 's' : ''
-                        } needing attention`}
+                        } need attention`}
                       </Typography>
                       <PlantList
                         plants={plantsNeedingAttentionList}
@@ -145,7 +155,19 @@ export const Plants = inject('plantStore')(
                 </div>
               </div>
               <Hidden smDown>
-                <InspectorPanel handleModifyPlant={handleModifyPlant} />
+                <div className="plants__inspector-panel-placeholder">
+                  <div className="plants__inspector-panel-bubble">
+                    <Bubble text={message} color="textPrimary" />
+                  </div>
+                  <img className="plants__inspector-panel-img" src={MonsteraImg}></img>
+                </div>
+                <Drawer
+                  variant="persistent"
+                  anchor="right"
+                  open={inspectorMode !== InspectorMode.DEFAULT}
+                >
+                  <InspectorPanel handleModifyPlant={handleModifyPlant} />
+                </Drawer>
               </Hidden>
               {inspectorMode === InspectorMode.DEFAULT && (
                 <Hidden smUp>
