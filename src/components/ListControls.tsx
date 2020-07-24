@@ -10,8 +10,12 @@ import { InspectorMode, SortingMode } from '../models'
 import MonsteraIcon from '../assets/MonsteraIcon'
 import { plantStore } from '../injectables'
 
+interface ListControlsProps {
+  handleInspectorOpen: (mode: InspectorMode) => void
+}
+
 export const ListControls = inject('plantStore')(
-  observer(() => {
+  observer(({ handleInspectorOpen }: ListControlsProps) => {
     const {
       setInspectorMode,
       setSortingDirection,
@@ -28,7 +32,7 @@ export const ListControls = inject('plantStore')(
             color="primary"
             variant="contained"
             startIcon={<MonsteraIcon />}
-            onClick={() => setInspectorMode(InspectorMode.ADD)}
+            onClick={() => handleInspectorOpen(InspectorMode.ADD)}
           >
             Add Plant
           </Button>

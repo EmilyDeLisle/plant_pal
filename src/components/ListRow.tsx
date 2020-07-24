@@ -56,10 +56,11 @@ interface ListRowProps {
     plant: Plant,
     plantEvent: PlantEvent
   ) => void
+  handleInspectorOpen: (mode: InspectorMode) => void
 }
 
 export const ListRow = observer(
-  ({ plant, handleModifyPlant }: ListRowProps): ReactElement => {
+  ({ plant, handleModifyPlant, handleInspectorOpen }: ListRowProps): ReactElement => {
     const {
       id,
       name,
@@ -149,7 +150,7 @@ export const ListRow = observer(
         className={`plant-list-row-container`}
         onClick={() => {
           setSelectedPlantID(id)
-          setInspectorMode(InspectorMode.VIEW)
+          handleInspectorOpen(InspectorMode.VIEW)
         }}
       >
         <Card>
@@ -230,7 +231,6 @@ export const ListRow = observer(
                   <OptionsIcon />
                 </IconButton>
                 <Menu
-                  id="simple-menu"
                   anchorEl={anchorEl}
                   keepMounted
                   open={Boolean(anchorEl)}
@@ -239,7 +239,7 @@ export const ListRow = observer(
                 >
                   <div className={classes.menu}>
                     {buttons.map((button) => {
-                      const { tooltip, plantEvent, icon } = button
+                      const { plantEvent } = button
                       const { eventType } = plantEvent
                       return (
                         ((toBeChecked && eventType === PlantEventType.CHECK) ||

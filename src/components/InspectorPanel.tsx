@@ -28,23 +28,26 @@ interface InspectorPanelProps {
     plant: Plant,
     plantEvent: PlantEvent
   ) => void
+  handleInspectorClose: () => void
 }
 
-export const InspectorPanel = observer(({ handleModifyPlant }: InspectorPanelProps) => {
-  const { selectedPlant, inspectorMode, setInspectorMode } = plantStore
-  const classes = useStyles()
+export const InspectorPanel = observer(
+  ({ handleModifyPlant, handleInspectorClose }: InspectorPanelProps) => {
+    const { selectedPlant, inspectorMode, setInspectorMode } = plantStore
+    const classes = useStyles()
 
-  return (
-    <div className={`${classes.inspectorPanel} inspector-panel__container`}>
-      {inspectorMode === InspectorMode.VIEW && !!selectedPlant ? (
-        <InspectorPanelContentView
-          plant={selectedPlant}
-          handleClose={() => setInspectorMode(InspectorMode.DEFAULT)}
-          handleModifyPlant={handleModifyPlant}
-        />
-      ) : (
-        <InspectorPanelContentAdd handleClose={() => setInspectorMode(InspectorMode.DEFAULT)} />
-      )}
-    </div>
-  )
-})
+    return (
+      <div className={`${classes.inspectorPanel} inspector-panel__container`}>
+        {inspectorMode === InspectorMode.VIEW && !!selectedPlant ? (
+          <InspectorPanelContentView
+            plant={selectedPlant}
+            handleClose={handleInspectorClose}
+            handleModifyPlant={handleModifyPlant}
+          />
+        ) : (
+          <InspectorPanelContentAdd handleClose={handleInspectorClose} />
+        )}
+      </div>
+    )
+  }
+)

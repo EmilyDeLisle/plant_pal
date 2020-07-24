@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react'
-import { Plant, PlantEvent } from '../models'
+import { InspectorMode, Plant, PlantEvent } from '../models'
 import { ListRow } from '../components'
 
 export interface PlantListProps {
@@ -9,14 +9,26 @@ export interface PlantListProps {
     plant: Plant,
     plantEvent: PlantEvent
   ) => void
+  handleInspectorOpen: (mode: InspectorMode) => void
 }
 
-export const PlantList = ({ plants, handleModifyPlant }: PlantListProps): ReactElement => {
+export const PlantList = ({
+  plants,
+  handleModifyPlant,
+  handleInspectorOpen,
+}: PlantListProps): ReactElement => {
   return (
     <>
       {plants.map((plant: Plant) => {
         const { id, name } = plant
-        return <ListRow key={id ? id : name} plant={plant} handleModifyPlant={handleModifyPlant} />
+        return (
+          <ListRow
+            key={id ? id : name}
+            plant={plant}
+            handleModifyPlant={handleModifyPlant}
+            handleInspectorOpen={handleInspectorOpen}
+          />
+        )
       })}
     </>
   )

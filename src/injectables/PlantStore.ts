@@ -2,7 +2,6 @@ import { observable, computed, action, decorate } from 'mobx'
 import {
   InspectorMode,
   Plant,
-  PlantDialogMode,
   PlantMap,
   SortingMode,
   SortingDirection,
@@ -16,8 +15,7 @@ class PlantStore {
   selectedPlantID: string | undefined = undefined
   sortingMode: SortingMode = SortingMode.DAYS_TO_WATER
   sortingDirection: SortingDirection = SortingDirection.ASC
-  dialogMode: PlantDialogMode = PlantDialogMode.VIEW
-  inspectorMode: InspectorMode = InspectorMode.DEFAULT
+  inspectorMode: InspectorMode = InspectorMode.ADD
   plantsLoaded: boolean = false
   searchValue: string = ''
 
@@ -68,10 +66,6 @@ class PlantStore {
     this.sortingDirection = sortingDirection
   }
 
-  setDialogMode = (dialogMode: PlantDialogMode): void => {
-    this.dialogMode = dialogMode
-  }
-
   setInspectorMode = (inspectorMode: InspectorMode): void => {
     this.inspectorMode = inspectorMode
   }
@@ -89,8 +83,7 @@ class PlantStore {
     this.selectedPlantID = undefined
     this.sortingMode = SortingMode.DAYS_TO_WATER
     this.sortingDirection = SortingDirection.ASC
-    this.dialogMode = PlantDialogMode.VIEW
-    this.inspectorMode = InspectorMode.DEFAULT
+    this.inspectorMode = InspectorMode.ADD
     this.plantsLoaded = false
     this.searchValue = ''
   }

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { observer } from 'mobx-react'
 import AppBar from '@material-ui/core/AppBar'
 import Button from '@material-ui/core/Button'
+import Hidden from '@material-ui/core/Hidden'
 import IconButton from '@material-ui/core/IconButton'
 import Menu from '@material-ui/core/Menu'
 import Typography from '@material-ui/core/Typography'
@@ -10,6 +11,7 @@ import UserIcon from '@material-ui/icons/AccountCircle'
 import { getAuth } from '../firebase'
 import { plantStore } from '../injectables'
 import { SearchBar } from './SearchBar'
+import MonsteraIcon from '../assets/MonsteraIcon'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -18,7 +20,7 @@ const useStyles = makeStyles((theme: Theme) =>
       zIndex: theme.zIndex.drawer + 100,
     },
     appName: {
-      fontFamily: 'Lobster'
+      fontFamily: 'Lobster',
     },
     userIcon: {
       color: theme.palette.primary.contrastText,
@@ -48,7 +50,16 @@ export const TopNavNar = observer(() => {
     <AppBar position="static" className={classes.appBar}>
       <div className="top-nav-bar__contents">
         <div className="top-nav-bar__app-name">
-          <Typography className={classes.appName} variant="h4">PlantPal</Typography>
+          <Hidden smUp>
+            {/* <Typography variant="h4"> */}
+              <MonsteraIcon/>
+            {/* </Typography> */}
+          </Hidden>
+          <Hidden mdDown>
+            <Typography className={classes.appName} variant="h4">
+              PlantPal
+            </Typography>
+          </Hidden>
         </div>
         <div className="top-nav-bar__search-menu">
           <SearchBar handleSearch={setSearchValue} />
