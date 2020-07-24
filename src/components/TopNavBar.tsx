@@ -50,10 +50,10 @@ export const TopNavNar = observer(() => {
     <AppBar position="static" className={classes.appBar}>
       <div className="top-nav-bar__contents">
         <div className="top-nav-bar__app-name">
-          <Hidden smUp>
+          <Hidden mdUp>
             <MonsteraIcon />
           </Hidden>
-          <Hidden mdDown>
+          <Hidden smDown>
             <Typography className={classes.appName} variant="h4">
               PlantPal
             </Typography>

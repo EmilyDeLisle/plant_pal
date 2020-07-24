@@ -1,6 +1,7 @@
 import { Moment } from 'moment'
+import { Map } from './Map'
 
-export interface FormValues {
+export interface FormValues extends Map {
   name: string
   altName: string
 }
@@ -11,7 +12,7 @@ export interface AddFormValues extends FormValues {
   fileName: string
 }
 
-export interface SignInFormValues {
+export interface SignInFormValues extends Map {
   email: string,
   password: string
 }

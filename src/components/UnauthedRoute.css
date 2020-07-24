@@ -12,6 +12,5 @@
 
 .unauthed-route__contents {
   padding: 2em;
-  /* width: calc(100% - 1em); */
   flex-grow: 1;
 }
