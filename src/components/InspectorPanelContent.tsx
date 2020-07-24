@@ -232,6 +232,7 @@ export const InspectorPanelContentView = ({
     setPreviewImageURL('')
     setEditMode('')
     setValues(initialValues)
+    // eslint-disable-next-line
   }, [id])
 
   const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {

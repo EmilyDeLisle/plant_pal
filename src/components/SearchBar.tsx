@@ -47,6 +47,7 @@ export const SearchBar = ({ handleSearch }: SearchBarProps) => {
 
   useEffect(() => {
     handleSearch(searchValue)
+    // eslint-disable-next-line
   }, [searchValue])
 
   return (

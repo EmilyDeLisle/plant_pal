@@ -76,7 +76,6 @@ export const SplitSortingButton = ({
   handleChangeDirection,
 }: SortingButtonProps) => {
   const anchorRef = useRef<HTMLDivElement>(null)
-  const [open, setOpen] = useState(false)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [selectedMode, setSelectedMode] = useState<SortingMode>(mode)
   const classes = useStyles()
@@ -89,7 +88,6 @@ export const SplitSortingButton = ({
   const handleMenuItemClick = (mode: SortingMode) => {
     handleChangeMode(mode)
     setSelectedMode(mode)
-    setOpen(false)
   }
 
   const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {

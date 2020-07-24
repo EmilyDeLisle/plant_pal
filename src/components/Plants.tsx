@@ -59,7 +59,6 @@ export const Plants = inject('plantStore')(
       const {
         plantsNeedingAttentionList,
         plantsRemainingList,
-        inspectorMode,
         plantsLoaded,
         plantCount,
         setInspectorMode,
@@ -172,7 +171,11 @@ export const Plants = inject('plantStore')(
                     <div className="plants__inspector-panel-bubble">
                       <Bubble text={bubbleMessage} color="textPrimary" />
                     </div>
-                    <img className="plants__inspector-panel-img" src={MonsteraImg}></img>
+                    <img
+                      className="plants__inspector-panel-img"
+                      src={MonsteraImg}
+                      alt={bubbleMessage}
+                    />
                   </div>
                   <Drawer variant="persistent" anchor="right" open={!isMobile && inspectorOpen}>
                     <InspectorPanel

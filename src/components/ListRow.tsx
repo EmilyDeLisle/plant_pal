@@ -74,7 +74,7 @@ export const ListRow = observer(
     } = plant
     const classes = useStyles()
     const avgWateringInterval = getAvgInterval(PlantEventType.WATER)
-    const { setInspectorMode, setSelectedPlantID } = plantStore
+    const { setSelectedPlantID } = plantStore
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
     const buttons = [
