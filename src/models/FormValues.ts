@@ -10,3 +10,12 @@ export interface AddFormValues extends FormValues {
   lastFertilizedDate: Moment | null
   fileName: string
 }
+
+export interface SignInFormValues {
+  email: string,
+  password: string
+}
+
+export interface SignUpFormValues extends SignInFormValues {
+  passwordConfirm: string
+}

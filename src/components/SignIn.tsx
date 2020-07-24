@@ -5,6 +5,7 @@ import Link from '@material-ui/core/Link'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 import { getAuth } from '../firebase'
+import { SignInFormValues, SignUpFormValues } from '../models'
 import { UnauthedRoute } from './UnauthedRoute'
 
 export const SignIn = (props: RouteComponentProps): ReactElement => {
@@ -39,13 +40,11 @@ export const SignIn = (props: RouteComponentProps): ReactElement => {
           type="email"
           value={email}
           onChange={({ target: { value } }) => setEmail(value)}
-          // fullWidth
           required
         />
         <TextField
           label="Password"
           type="password"
-          // fullWidth
           required
           value={password}
           onChange={({ target: { value } }) => setPassword(value)}

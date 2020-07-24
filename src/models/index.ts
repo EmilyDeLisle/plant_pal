@@ -1,3 +1,4 @@
+export * from './Field'
 export * from './FormValues'
 export * from './InspectorMode'
 export * from './Map'
