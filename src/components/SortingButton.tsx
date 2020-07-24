@@ -76,7 +76,6 @@ export const SplitSortingButton = ({
   handleChangeDirection,
 }: SortingButtonProps) => {
   const anchorRef = useRef<HTMLDivElement>(null)
-  const [open, setOpen] = useState(false)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [selectedMode, setSelectedMode] = useState<SortingMode>(mode)
   const classes = useStyles()
@@ -89,7 +88,6 @@ export const SplitSortingButton = ({
   const handleMenuItemClick = (mode: SortingMode) => {
     handleChangeMode(mode)
     setSelectedMode(mode)
-    setOpen(false)
   }
 
   const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
@@ -108,10 +106,6 @@ export const SplitSortingButton = ({
         <Button
           color="primary"
           size="small"
-          aria-controls={open ? 'split-button-menu' : undefined}
-          aria-expanded={open ? 'true' : undefined}
-          aria-label="select merge strategy"
-          aria-haspopup="menu"
           onClick={() =>
             handleChangeDirection(
               direction === SortingDirection.ASC ? SortingDirection.DESC : SortingDirection.ASC
@@ -122,7 +116,6 @@ export const SplitSortingButton = ({
         </Button>
       </ButtonGroup>
       <Menu
-        id="simple-menu"
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
@@ -134,7 +127,10 @@ export const SplitSortingButton = ({
             <MenuItem
               key={mode}
               selected={mode === selectedMode}
-              onClick={() => handleMenuItemClick(mode)}
+              onClick={() => {
+                handleMenuItemClick(mode)
+                setAnchorEl(null)
+              }}
             >
               {titleMap[mode]}
             </MenuItem>

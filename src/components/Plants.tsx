@@ -1,10 +1,14 @@
-import React, { ReactElement } from 'react'
+import React, { ReactElement, useState } from 'react'
 import { inject, observer } from 'mobx-react'
 import { RouteComponentProps } from '@reach/router'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import Dialog from '@material-ui/core/Dialog'
+import Drawer from '@material-ui/core/Drawer'
 import Fab from '@material-ui/core/Fab'
 import Hidden from '@material-ui/core/Hidden'
+import Slide from '@material-ui/core/Slide'
 import Tooltip from '@material-ui/core/Tooltip'
+import { TransitionProps } from '@material-ui/core/transitions'
 import Typography from '@material-ui/core/Typography'
 import { makeStyles, Theme, createStyles, useTheme } from '@material-ui/core/styles'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
@@ -16,7 +20,11 @@ import { PlantList } from './PlantList'
 import { getDatabase } from '../firebase'
 import { plantStore } from '../injectables'
 import { InspectorMode, Plant, PlantEvent } from '../models'
-import MonsteraIcon from '../assets/MonsteraIcon'
+import { Bubble } from './Bubble'
+import MonsteraPlusIcon from '../assets/MonsteraPlusIcon'
+
+// Designed by macrovector / Freepik - freepik.com
+import MonsteraImg from '../assets/monstera.png'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -38,22 +46,43 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & { children?: React.ReactElement },
+  ref: React.Ref<unknown>
+) {
+  return <Slide direction="left" ref={ref} {...props} />
+})
+
 export const Plants = inject('plantStore')(
   observer(
     (props: RouteComponentProps): ReactElement => {
-      const theme = useTheme()
       const {
         plantsNeedingAttentionList,
         plantsRemainingList,
-        inspectorMode,
         plantsLoaded,
         plantCount,
         setInspectorMode,
       } = plantStore
+      const [inspectorOpen, setInspectorOpen] = useState(false)
       const plantsNeedingAttentionCount = plantsNeedingAttentionList.length
-      const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+      const isMobile = useMediaQuery(useTheme().breakpoints.down('sm'))
       const classes = useStyles()
       const { enqueueSnackbar } = useSnackbar()
+
+      const bubbleMessage = plantsLoaded
+        ? !!plantCount
+          ? 'Click on a plant!'
+          : 'Click on "Add Plant" to start tracking plants'
+        : 'Loading plants...'
+
+      const handleInspectorOpen = (mode: InspectorMode) => {
+        setInspectorMode(mode)
+        setInspectorOpen(true)
+      }
+
+      const handleInspectorClose = () => {
+        setInspectorOpen(false)
+      }
 
       const handleModifyPlant = (
         event: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLLIElement>,
@@ -77,16 +106,12 @@ export const Plants = inject('plantStore')(
           date,
           // onSuccess
           () => {
-            console.log(successMessage)
+            !!successMessage && enqueueSnackbar(successMessage, { variant: 'success' })
           },
           // onError
           (error) => {
             !!errorMessage && enqueueSnackbar(errorMessage, { variant: 'error' })
             console.log(error)
-          },
-          // handleSuccessMessage
-          () => {
-            !!successMessage && enqueueSnackbar(successMessage, { variant: 'success' })
           },
           // handleDuplicateMessage
           () => {
@@ -96,26 +121,25 @@ export const Plants = inject('plantStore')(
       }
 
       return (
-        <div className="plants">
-          <TopNavNar />
-          <div className="plants__container">
-            {isMobile && inspectorMode !== InspectorMode.DEFAULT ? (
-              <InspectorPanel handleModifyPlant={handleModifyPlant} />
-            ) : (
-              <>
+        <>
+          <div className="plants">
+            <div className="plants__bg-layer">
+              <TopNavNar />
+              <div className="plants__container">
                 <div className={classes.listsContainer}>
-                  <ListControls />
+                  <ListControls handleInspectorOpen={handleInspectorOpen} />
                   <div className="plants__lists">
                     {!!plantsNeedingAttentionCount && (
                       <div className="plants__attention-list">
                         <Typography color="textPrimary" variant="h5">
                           {`${plantsNeedingAttentionCount} plant${
                             plantsNeedingAttentionCount !== 1 ? 's' : ''
-                          } needing attention`}
+                          } need attention`}
                         </Typography>
                         <PlantList
                           plants={plantsNeedingAttentionList}
                           handleModifyPlant={handleModifyPlant}
+                          handleInspectorOpen={handleInspectorOpen}
                         />
                       </div>
                     )}
@@ -127,6 +151,7 @@ export const Plants = inject('plantStore')(
                         <PlantList
                           plants={plantsRemainingList}
                           handleModifyPlant={handleModifyPlant}
+                          handleInspectorOpen={handleInspectorOpen}
                         />
                       ) : (
                         <Typography color="textPrimary" align="center">
@@ -142,25 +167,44 @@ export const Plants = inject('plantStore')(
                   </div>
                 </div>
                 <Hidden smDown>
-                  <InspectorPanel handleModifyPlant={handleModifyPlant} />
+                  <div className="plants__inspector-panel-placeholder">
+                    <div className="plants__inspector-panel-bubble">
+                      <Bubble text={bubbleMessage} color="textPrimary" />
+                    </div>
+                    <img
+                      className="plants__inspector-panel-img"
+                      src={MonsteraImg}
+                      alt={bubbleMessage}
+                    />
+                  </div>
+                  <Drawer variant="persistent" anchor="right" open={!isMobile && inspectorOpen}>
+                    <InspectorPanel
+                      handleModifyPlant={handleModifyPlant}
+                      handleInspectorClose={handleInspectorClose}
+                    />
+                  </Drawer>
                 </Hidden>
-                {inspectorMode === InspectorMode.DEFAULT && (
-                  <Hidden smUp>
-                    <Tooltip title="Add new plant" placement="left">
-                      <Fab
-                        className={classes.fab}
-                        color="primary"
-                        onClick={() => setInspectorMode(InspectorMode.ADD)}
-                      >
-                        <MonsteraIcon />
-                      </Fab>
-                    </Tooltip>
-                  </Hidden>
+                {isMobile && !inspectorOpen && (
+                  <Tooltip title="Add new plant" placement="left">
+                    <Fab
+                      className={classes.fab}
+                      color="primary"
+                      onClick={() => handleInspectorOpen(InspectorMode.ADD)}
+                    >
+                      <MonsteraPlusIcon />
+                    </Fab>
+                  </Tooltip>
                 )}
-              </>
-            )}
+              </div>
+            </div>
           </div>
-        </div>
+          <Dialog fullScreen open={isMobile && inspectorOpen} TransitionComponent={Transition}>
+            <InspectorPanel
+              handleModifyPlant={handleModifyPlant}
+              handleInspectorClose={handleInspectorClose}
+            />
+          </Dialog>
+        </>
       )
     }
   )

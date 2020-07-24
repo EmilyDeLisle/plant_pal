@@ -4,7 +4,10 @@
   align-items: center;
   padding: 0.5em 1em;
   box-shadow: 1px 0px 3px 3px rgba(0, 0, 0, 0.3);
-  z-index: 100;
+}
+
+.top-nav-bar__app-name {
+  margin-right: 1em;
 }
 
 .top-nav-bar__user-panel {

@@ -14,9 +14,9 @@
 }
 
 .list-row__watering-days-number {
-  height: 2.5em;
+  /* height: 2.5em; */
   position: relative;
-
+  top: -1.6em;
 }
 
 .list-row__buttons {

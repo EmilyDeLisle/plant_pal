@@ -56,10 +56,11 @@ interface ListRowProps {
     plant: Plant,
     plantEvent: PlantEvent
   ) => void
+  handleInspectorOpen: (mode: InspectorMode) => void
 }
 
 export const ListRow = observer(
-  ({ plant, handleModifyPlant }: ListRowProps): ReactElement => {
+  ({ plant, handleModifyPlant, handleInspectorOpen }: ListRowProps): ReactElement => {
     const {
       id,
       name,
@@ -73,7 +74,7 @@ export const ListRow = observer(
     } = plant
     const classes = useStyles()
     const avgWateringInterval = getAvgInterval(PlantEventType.WATER)
-    const { setInspectorMode, setSelectedPlantID } = plantStore
+    const { setSelectedPlantID } = plantStore
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
     const buttons = [
@@ -149,7 +150,7 @@ export const ListRow = observer(
         className={`plant-list-row-container`}
         onClick={() => {
           setSelectedPlantID(id)
-          setInspectorMode(InspectorMode.VIEW)
+          handleInspectorOpen(InspectorMode.VIEW)
         }}
       >
         <Card>
@@ -160,7 +161,7 @@ export const ListRow = observer(
               <Typography variant="h5" color="primary" noWrap>
                 {name}
               </Typography>
-              <Typography color="textPrimary" variant="body2">
+              <Typography color="textPrimary" variant="caption">
                 {!!avgWateringInterval && (
                   <strong>
                     {` Watered every ${avgWateringInterval !== 1 ? avgWateringInterval : ''} day${
@@ -230,7 +231,6 @@ export const ListRow = observer(
                   <OptionsIcon />
                 </IconButton>
                 <Menu
-                  id="simple-menu"
                   anchorEl={anchorEl}
                   keepMounted
                   open={Boolean(anchorEl)}
@@ -239,7 +239,7 @@ export const ListRow = observer(
                 >
                   <div className={classes.menu}>
                     {buttons.map((button) => {
-                      const { tooltip, plantEvent, icon } = button
+                      const { plantEvent } = button
                       const { eventType } = plantEvent
                       return (
                         ((toBeChecked && eventType === PlantEventType.CHECK) ||

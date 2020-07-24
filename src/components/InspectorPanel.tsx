@@ -2,12 +2,8 @@ import React from 'react'
 import { observer } from 'mobx-react'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { InspectorMode, Plant, PlantEvent } from '../models'
-import { Bubble } from './Bubble'
 import { InspectorPanelContentAdd, InspectorPanelContentView } from './InspectorPanelContent'
 import { plantStore } from '../injectables'
-
-// Designed by macrovector / Freepik - freepik.com
-import MonsteraImg from '../assets/monstera.png'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -15,7 +11,8 @@ const useStyles = makeStyles((theme: Theme) =>
       maxWidth: '540px',
       minWidth: '540px',
       [theme.breakpoints.down('sm')]: {
-        width: '100%',
+        maxWidth: '100%',
+        minWidth: 0,
       },
     },
   })
@@ -27,35 +24,26 @@ interface InspectorPanelProps {
     plant: Plant,
     plantEvent: PlantEvent
   ) => void
+  handleInspectorClose: () => void
 }
 
-export const InspectorPanel = observer(({ handleModifyPlant }: InspectorPanelProps) => {
-  const { selectedPlant, inspectorMode, plantsLoaded, plantCount, setInspectorMode } = plantStore
-  const classes = useStyles()
-  const message = plantsLoaded
-    ? !!plantCount
-      ? 'Click on a plant!'
-      : 'Click on "Add Plant" to start tracking plants'
-    : 'Loading plants...'
+export const InspectorPanel = observer(
+  ({ handleModifyPlant, handleInspectorClose }: InspectorPanelProps) => {
+    const { selectedPlant, inspectorMode } = plantStore
+    const classes = useStyles()
 
-  return inspectorMode === InspectorMode.DEFAULT ? (
-    <div className={`${classes.inspectorPanel} inspector-panel__default`}>
-      <div className="inspector-panel__bubble">
-        <Bubble text={message} color="textPrimary" />
+    return (
+      <div className={`${classes.inspectorPanel} inspector-panel__container`}>
+        {inspectorMode === InspectorMode.VIEW && !!selectedPlant ? (
+          <InspectorPanelContentView
+            plant={selectedPlant}
+            handleClose={handleInspectorClose}
+            handleModifyPlant={handleModifyPlant}
+          />
+        ) : (
+          <InspectorPanelContentAdd handleClose={handleInspectorClose} />
+        )}
       </div>
-      <img className="inspector-panel__img" src={MonsteraImg}></img>
-    </div>
-  ) : (
-    <div className={`${classes.inspectorPanel} inspector-panel__container`}>
-      {inspectorMode === InspectorMode.VIEW && !!selectedPlant ? (
-        <InspectorPanelContentView
-          plant={selectedPlant}
-          handleClose={() => setInspectorMode(InspectorMode.DEFAULT)}
-          handleModifyPlant={handleModifyPlant}
-        />
-      ) : (
-        <InspectorPanelContentAdd handleClose={() => setInspectorMode(InspectorMode.DEFAULT)} />
-      )}
-    </div>
-  )
-})
+    )
+  }
+)

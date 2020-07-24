@@ -123,7 +123,6 @@ export default class DatabaseManager {
     date?: Moment,
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
     onError?: ((reason: any) => void) | null | undefined,
-    handleSuccessMessage?: () => void,
     handleDuplicateMessage?: () => void
   ) => {
     this.setReference()
@@ -181,13 +180,8 @@ export default class DatabaseManager {
       this.collectionRef
         ?.doc(id)
         ?.update(updateValue)
-        .then(() => {
-          !!onSuccess && onSuccess()
-          !!handleSuccessMessage && handleSuccessMessage()
-        })
-        .catch((reason: any) => {
-          !!onError && onError(reason)
-        })
+        .then(onSuccess)
+        .catch(onError)
     } else {
       !!handleDuplicateMessage && handleDuplicateMessage()
     }
