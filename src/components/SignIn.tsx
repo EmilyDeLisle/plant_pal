@@ -39,13 +39,13 @@ export const SignIn = (props: RouteComponentProps): ReactElement => {
           type="email"
           value={email}
           onChange={({ target: { value } }) => setEmail(value)}
-          fullWidth
+          // fullWidth
           required
         />
         <TextField
           label="Password"
           type="password"
-          fullWidth
+          // fullWidth
           required
           value={password}
           onChange={({ target: { value } }) => setPassword(value)}

@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme: Theme) =>
       zIndex: theme.zIndex.drawer + 100,
     },
     appName: {
-      fontFamily: 'Lobster',
+      fontFamily: 'Lobster, cursive',
     },
     userIcon: {
       color: theme.palette.primary.contrastText,
@@ -51,9 +51,7 @@ export const TopNavNar = observer(() => {
       <div className="top-nav-bar__contents">
         <div className="top-nav-bar__app-name">
           <Hidden smUp>
-            {/* <Typography variant="h4"> */}
-              <MonsteraIcon/>
-            {/* </Typography> */}
+            <MonsteraIcon />
           </Hidden>
           <Hidden mdDown>
             <Typography className={classes.appName} variant="h4">

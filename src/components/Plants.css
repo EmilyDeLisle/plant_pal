@@ -5,9 +5,14 @@
   height: 100vh;
 }
 
+.plants__bg-layer {
+  height: 100vh;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
 .plants__container {
   display: flex;
-  background-color: rgba(255, 255, 255, 0.9);
   height: calc(100% - 4.5em);
 }
 
@@ -41,6 +46,11 @@
   align-items: center;
   justify-content: flex-end;
   background-image: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, #fff 10%);
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #fff 10%);
+  background-image: -o-linear-gradient(to right, rgba(255, 255, 255, 0.001) 0%, #fff 10%);
+  background-image: -moz-linear-gradient(to right, rgba(255, 255, 255, 0.001) 0%, #fff 10%);
+  background-image: -webkit-linear-gradient(to right, rgba(255, 255, 255, 0.001) 0%, #fff 10%);
+  background-image: -ms-linear-gradient(to right, rgba(255, 255, 255, 0.001) 0%, #fff 10%);
   padding-bottom: 3em;
 }
 

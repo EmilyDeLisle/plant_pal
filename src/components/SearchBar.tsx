@@ -1,5 +1,7 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import InputBase from '@material-ui/core/InputBase'
+import IconButton from '@material-ui/core/IconButton'
+import CloseIcon from '@material-ui/icons/Close'
 import { fade, makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import SearchIcon from '@material-ui/icons/Search'
 
@@ -42,6 +44,11 @@ interface SearchBarProps {
 export const SearchBar = ({ handleSearch }: SearchBarProps) => {
   const [searchValue, setSearchValue] = useState('')
   const classes = useStyles()
+
+  useEffect(() => {
+    handleSearch(searchValue)
+  }, [searchValue])
+
   return (
     <div className={`${classes.search} search-bar__container`}>
       <div className={`${classes.searchIcon} search-bar__icon`}>
@@ -50,14 +57,16 @@ export const SearchBar = ({ handleSearch }: SearchBarProps) => {
       <InputBase
         placeholder="Find a plant..."
         value={searchValue}
-        onChange={({ target: { value }}) => {
-          setSearchValue(value)
-          handleSearch(value)
-        }}
+        onChange={({ target: { value } }) => setSearchValue(value)}
         classes={{
           root: classes.inputRoot,
           input: classes.inputInput,
         }}
+        endAdornment={
+          <IconButton color="inherit" onClick={() => setSearchValue('')}>
+            <CloseIcon />
+          </IconButton>
+        }
       />
     </div>
   )

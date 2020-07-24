@@ -1,7 +1,14 @@
 import React, { ReactElement } from 'react'
-import Button from '@material-ui/core/Button'
 import Card from '@material-ui/core/Card'
 import Typography from '@material-ui/core/Typography'
+import { makeStyles, Theme, createStyles, useTheme } from '@material-ui/core/styles'
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    title: {
+      fontFamily: 'Lobster, cursive'
+    }})
+)
 
 interface UnauthedRouteProps {
   children: ReactElement | ReactElement[] | null
@@ -9,11 +16,12 @@ interface UnauthedRouteProps {
 }
 
 export const UnauthedRoute = ({ children, title }: UnauthedRouteProps) => {
+  const classes = useStyles()
   return (
     <div className="unauthed-route__container">
       <Card>
         <div className="unauthed-route__contents">
-          <Typography variant="h3">{title}</Typography>
+          <Typography className={classes.title} variant="h3">{title}</Typography>
           {children}
         </div>
       </Card>

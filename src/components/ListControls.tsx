@@ -17,7 +17,6 @@ interface ListControlsProps {
 export const ListControls = inject('plantStore')(
   observer(({ handleInspectorOpen }: ListControlsProps) => {
     const {
-      setInspectorMode,
       setSortingDirection,
       setSortingMode,
       sortingDirection,

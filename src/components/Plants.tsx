@@ -124,73 +124,75 @@ export const Plants = inject('plantStore')(
       return (
         <>
           <div className="plants">
-            <TopNavNar />
-            <div className="plants__container">
-              <div className={classes.listsContainer}>
-                <ListControls handleInspectorOpen={handleInspectorOpen} />
-                <div className="plants__lists">
-                  {!!plantsNeedingAttentionCount && (
-                    <div className="plants__attention-list">
-                      <Typography color="textPrimary" variant="h5">
-                        {`${plantsNeedingAttentionCount} plant${
-                          plantsNeedingAttentionCount !== 1 ? 's' : ''
-                        } need attention`}
-                      </Typography>
-                      <PlantList
-                        plants={plantsNeedingAttentionList}
-                        handleModifyPlant={handleModifyPlant}
-                        handleInspectorOpen={handleInspectorOpen}
-                      />
-                    </div>
-                  )}
-                  <Typography color="textPrimary" variant="h4">
-                    Plants
-                  </Typography>
-                  {plantsLoaded ? (
-                    plantsRemainingList.length > 0 ? (
-                      <PlantList
-                        plants={plantsRemainingList}
-                        handleModifyPlant={handleModifyPlant}
-                        handleInspectorOpen={handleInspectorOpen}
-                      />
+            <div className="plants__bg-layer">
+              <TopNavNar />
+              <div className="plants__container">
+                <div className={classes.listsContainer}>
+                  <ListControls handleInspectorOpen={handleInspectorOpen} />
+                  <div className="plants__lists">
+                    {!!plantsNeedingAttentionCount && (
+                      <div className="plants__attention-list">
+                        <Typography color="textPrimary" variant="h5">
+                          {`${plantsNeedingAttentionCount} plant${
+                            plantsNeedingAttentionCount !== 1 ? 's' : ''
+                          } need attention`}
+                        </Typography>
+                        <PlantList
+                          plants={plantsNeedingAttentionList}
+                          handleModifyPlant={handleModifyPlant}
+                          handleInspectorOpen={handleInspectorOpen}
+                        />
+                      </div>
+                    )}
+                    <Typography color="textPrimary" variant="h4">
+                      Plants
+                    </Typography>
+                    {plantsLoaded ? (
+                      plantsRemainingList.length > 0 ? (
+                        <PlantList
+                          plants={plantsRemainingList}
+                          handleModifyPlant={handleModifyPlant}
+                          handleInspectorOpen={handleInspectorOpen}
+                        />
+                      ) : (
+                        <Typography color="textPrimary" align="center">
+                          <em>{plantCount === 0 ? 'No plants yet' : 'No plants'}</em>
+                        </Typography>
+                      )
                     ) : (
-                      <Typography color="textPrimary" align="center">
-                        <em>{plantCount === 0 ? 'No plants yet' : 'No plants'}</em>
-                      </Typography>
-                    )
-                  ) : (
-                    <div className="plants__list-progress">
-                      <CircularProgress color="primary" />
-                    </div>
-                  )}
-                  <div className="plants__list-spacer"></div>
-                </div>
-              </div>
-              <Hidden smDown>
-                <div className="plants__inspector-panel-placeholder">
-                  <div className="plants__inspector-panel-bubble">
-                    <Bubble text={bubbleMessage} color="textPrimary" />
+                      <div className="plants__list-progress">
+                        <CircularProgress color="primary" />
+                      </div>
+                    )}
+                    <div className="plants__list-spacer"></div>
                   </div>
-                  <img className="plants__inspector-panel-img" src={MonsteraImg}></img>
                 </div>
-                <Drawer variant="persistent" anchor="right" open={!isMobile && inspectorOpen}>
-                  <InspectorPanel
-                    handleModifyPlant={handleModifyPlant}
-                    handleInspectorClose={handleInspectorClose}
-                  />
-                </Drawer>
-              </Hidden>
-              {isMobile && !inspectorOpen && (
-                <Tooltip title="Add new plant" placement="left">
-                  <Fab
-                    className={classes.fab}
-                    color="primary"
-                    onClick={() => handleInspectorOpen(InspectorMode.ADD)}
-                  >
-                    <MonsteraPlusIcon />
-                  </Fab>
-                </Tooltip>
-              )}
+                <Hidden smDown>
+                  <div className="plants__inspector-panel-placeholder">
+                    <div className="plants__inspector-panel-bubble">
+                      <Bubble text={bubbleMessage} color="textPrimary" />
+                    </div>
+                    <img className="plants__inspector-panel-img" src={MonsteraImg}></img>
+                  </div>
+                  <Drawer variant="persistent" anchor="right" open={!isMobile && inspectorOpen}>
+                    <InspectorPanel
+                      handleModifyPlant={handleModifyPlant}
+                      handleInspectorClose={handleInspectorClose}
+                    />
+                  </Drawer>
+                </Hidden>
+                {isMobile && !inspectorOpen && (
+                  <Tooltip title="Add new plant" placement="left">
+                    <Fab
+                      className={classes.fab}
+                      color="primary"
+                      onClick={() => handleInspectorOpen(InspectorMode.ADD)}
+                    >
+                      <MonsteraPlusIcon />
+                    </Fab>
+                  </Tooltip>
+                )}
+              </div>
             </div>
           </div>
           <Dialog fullScreen open={isMobile && inspectorOpen} TransitionComponent={Transition}>
