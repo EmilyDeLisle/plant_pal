@@ -21,7 +21,9 @@ export default class DatabaseManager {
 
   constructor() {
     if (DatabaseManager.instance) {
-      throw new Error('DatabaseManager is a singleton class')
+      throw new Error(
+        'DatabaseManager is a singleton class. An instance of DatabaseManager has already been instantiated.'
+      )
     }
     this.db = firebase.firestore()
   }
@@ -54,7 +56,7 @@ export default class DatabaseManager {
   addPlant = (
     plantValues: PlantProps,
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
-    onError?: ((reason: any) => void) | null | undefined
+    onError?: ((reason: any) => void | PromiseLike<void>) | null | undefined
   ): string | undefined => {
     this.setReference()
     const docRef = this.collectionRef?.doc()
@@ -83,7 +85,7 @@ export default class DatabaseManager {
     id: string,
     fileName: string,
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
-    onError?: ((reason: any) => PromiseLike<never>) | null | undefined
+    onError?: ((reason: any) => void | PromiseLike<void>) | null | undefined
   ): void => {
     this.setReference()
     this.collectionRef?.doc(id)?.update({ imageFileName: fileName }).then(onSuccess).catch(onError)
@@ -94,7 +96,7 @@ export default class DatabaseManager {
     eventType: PlantEventType,
     event: firestore.Timestamp,
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
-    onError?: ((reason: any) => PromiseLike<never>) | null | undefined
+    onError?: ((reason: any) => void | PromiseLike<void> | null | undefined) | null | undefined
   ): void => {
     this.setReference()
     this.collectionRef
@@ -111,7 +113,7 @@ export default class DatabaseManager {
   deletePlant = (
     id: string,
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
-    onError?: ((reason: any) => PromiseLike<never>) | null | undefined
+    onError?: ((reason: any) => void | PromiseLike<void> | null | undefined) | null | undefined
   ): void => {
     this.setReference()
     this.collectionRef?.doc(id)?.delete().then(onSuccess).catch(onError)
@@ -122,7 +124,7 @@ export default class DatabaseManager {
     eventType: PlantEventType,
     date?: Moment,
     onSuccess?: ((value: void) => void | PromiseLike<void>) | null | undefined,
-    onError?: ((reason: any) => void) | null | undefined,
+    onError?: ((reason: any) => void | PromiseLike<void> | null | undefined) | null | undefined,
     handleDuplicateMessage?: () => void
   ) => {
     this.setReference()
@@ -177,11 +179,7 @@ export default class DatabaseManager {
       }
     }
     if (!!updateValue) {
-      this.collectionRef
-        ?.doc(id)
-        ?.update(updateValue)
-        .then(onSuccess)
-        .catch(onError)
+      this.collectionRef?.doc(id)?.update(updateValue).then(onSuccess).catch(onError)
     } else {
       !!handleDuplicateMessage && handleDuplicateMessage()
     }

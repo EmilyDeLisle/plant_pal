@@ -77,10 +77,18 @@ export const SignIn = (props: RouteComponentProps): ReactElement => {
       ? auth.setAuthPersistence(() =>
           auth.signIn(email, password, () => {
             enqueueSnackbar('Successfully signed in', { variant: 'success' })
+          }, (error: any) => {
+            enqueueSnackbar('There was an signing you in', { variant: 'error' })
+            console.log(error)
+            return null
           })
         )
       : auth.signUp(email, password, () => {
           enqueueSnackbar('Account successfully created. Signing you in...', { variant: 'success' })
+        }, (error: any) => {
+          enqueueSnackbar('There was an error creating your account', { variant: 'error' })
+          console.log(error)
+          return null
         })
   }
 

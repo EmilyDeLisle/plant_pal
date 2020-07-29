@@ -7,6 +7,7 @@ import { RouteComponentProps, navigate } from '@reach/router'
 import { Formik, FormikHelpers, FormikProps } from 'formik'
 import { useSnackbar } from 'notistack'
 import * as yup from 'yup'
+import { getAuth } from '../firebase'
 import { ResetPasswordFormValues } from '../models'
 import { UnauthedRoute } from './UnauthedRoute'
 
@@ -19,8 +20,18 @@ const validationSchema = yup.object().shape({
 })
 
 export const ResetPassword = (props: RouteComponentProps) => {
-  const handleSubmit = (values: ResetPasswordFormValues): void => {
-    console.log(values.email)
+  const { enqueueSnackbar } = useSnackbar()
+
+  const handleSubmit = (
+    values: ResetPasswordFormValues,
+    setSubmitting: (submitting: boolean) => void
+  ): void => {
+    const auth = getAuth()
+    const { email } = values
+    auth.resetPassword(email, () => {
+      enqueueSnackbar(`Password reset link sent to ${email}.`, { variant: 'success' })
+      setSubmitting(false)
+    })
   }
 
   return (
@@ -37,7 +48,7 @@ export const ResetPassword = (props: RouteComponentProps) => {
           values: ResetPasswordFormValues,
           { setSubmitting }: FormikHelpers<ResetPasswordFormValues>
         ) => {
-          handleSubmit(values)
+          handleSubmit(values, setSubmitting)
           setSubmitting(true)
         }}
       >
