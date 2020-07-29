@@ -7,7 +7,7 @@ import { Provider } from 'mobx-react'
 import { SnackbarProvider } from 'notistack'
 import { AuthProvider } from './firebase'
 import { plantStore } from './injectables'
-import { NotFound, Plants, SignIn } from './components'
+import { NotFound, Plants, ResetPassword, SignIn } from './components'
 import { plappTheme } from './utils'
 
 function App() {
@@ -26,6 +26,7 @@ function App() {
               <AuthProvider path="/">
                 <Plants path="/plants" />
                 <SignIn path="/" />
+                <ResetPassword path="/reset-password" />
                 <NotFound default />
               </AuthProvider>
             </Router>

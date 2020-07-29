@@ -19,7 +19,9 @@ export default class AuthenticationManager {
 
   constructor() {
     if (AuthenticationManager.instance) {
-      throw new Error('AuthenticationManager is a singleton class')
+      throw new Error(
+        'AuthenticationManager is a singleton class. An instance of AuthenticationManager has already been instantiated.'
+      )
     }
     this.auth = firebase.auth()
   }
@@ -40,7 +42,7 @@ export default class AuthenticationManager {
     email: string,
     password: string,
     onSuccess?: (value: auth.UserCredential) => void | PromiseLike<void>,
-    onError?: (reason: any) => PromiseLike<never>
+    onError?: (reason: any) => PromiseLike<never> | null | undefined
   ) {
     this.auth.createUserWithEmailAndPassword(email, password).then(onSuccess).catch(onError)
   }
@@ -49,21 +51,21 @@ export default class AuthenticationManager {
     email: string,
     password: string,
     onSuccess?: (value: auth.UserCredential) => void | PromiseLike<void>,
-    onError?: (reason: any) => PromiseLike<never>
+    onError?: (reason: any) => PromiseLike<never> | null | undefined
   ) {
     this.auth.signInWithEmailAndPassword(email, password).then(onSuccess).catch(onError)
   }
 
   signOut(
-    onSuccess?: (value: void) => void | PromiseLike<void>,
-    onError?: (reason: any) => PromiseLike<never>
+    onSuccess?: (value: void) => void | PromiseLike<void> | undefined,
+    onError?: (reason: any) => PromiseLike<never> | null | undefined
   ) {
     this.auth.signOut().then(onSuccess).catch(onError)
   }
 
   setAuthPersistence(
-    onSuccess?: (value: void) => void | PromiseLike<void>,
-    onError?: (reason: any) => PromiseLike<never>
+    onSuccess?: (value: void) => void | PromiseLike<void> | undefined,
+    onError?: (reason: any) => PromiseLike<never> | null | undefined
   ) {
     this.auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).then(onSuccess).catch(onError)
   }
@@ -74,8 +76,8 @@ export default class AuthenticationManager {
 
   resetPassword(
     email: string,
-    onSuccess: (value: void) => void | PromiseLike<void>,
-    onError: (reason: any) => PromiseLike<never>
+    onSuccess?: (value: void) => void | PromiseLike<void> | undefined,
+    onError?: (reason: any) => PromiseLike<never> | null | undefined
   ) {
     this.auth.sendPasswordResetEmail(email).then(onSuccess).catch(onError)
   }

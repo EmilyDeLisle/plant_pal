@@ -22,7 +22,9 @@ export default class StorageManager {
 
   constructor() {
     if (StorageManager.instance) {
-      throw new Error('StorageManager is a singleton class')
+      throw new Error(
+        'StorageManager is a singleton class. An instance of StorageManager has already been instantiated.'
+      )
     }
     this.storageRef = firebase.storage().ref()
   }
@@ -42,7 +44,7 @@ export default class StorageManager {
     plantID: string,
     imageFileName: string,
     handleImage?: (url: string) => void,
-    onError?: (reason: any) => void | PromiseLike<void>
+    onError?: (reason: any) => void | PromiseLike<void> | null | undefined
   ): void => {
     this.setReference()
     this.imagesRef
@@ -51,17 +53,14 @@ export default class StorageManager {
       .then((url: string) => {
         !!handleImage && handleImage(url)
       })
-      .catch((error: any) => {
-        !!onError && onError(error)
-        console.log('getDownloadURL failed')
-      })
+      .catch(onError)
   }
 
   uploadImage = (
     imageFile: File,
     plantID: string,
     onSuccess?: (a: storage.UploadTaskSnapshot) => any,
-    onError?: (reason: any) => void | PromiseLike<void>
+    onError?: ((reason: any) => void | PromiseLike<void>) | null | undefined
   ): void => {
     this.setReference()
 
@@ -85,7 +84,7 @@ export default class StorageManager {
     plantID: string,
     prevFileName: string,
     onSuccess?: (a: storage.UploadTaskSnapshot) => any,
-    onError?: (reason: any) => void | PromiseLike<void>
+    onError?: ((reason: any) => void | PromiseLike<void>) | null | undefined
   ): void => {
     this.setReference()
     !!this.imagesRef &&
