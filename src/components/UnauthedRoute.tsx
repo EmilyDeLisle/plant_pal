@@ -21,7 +21,7 @@ export const UnauthedRoute = ({ children, title }: UnauthedRouteProps) => {
     <div className="unauthed-route__container">
       <Card>
         <div className="unauthed-route__contents">
-          <Typography className={classes.title} variant="h3">{title}</Typography>
+          <Typography className={classes.title} variant="h3" gutterBottom>{title}</Typography>
           {children}
         </div>
       </Card>

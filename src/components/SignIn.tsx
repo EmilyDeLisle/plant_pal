@@ -1,5 +1,5 @@
 import React, { ReactElement, useState } from 'react'
-import { RouteComponentProps } from '@reach/router'
+import { RouteComponentProps, navigate } from '@reach/router'
 import Button from '@material-ui/core/Button'
 import Link from '@material-ui/core/Link'
 import TextField from '@material-ui/core/TextField'
@@ -141,6 +141,13 @@ export const SignIn = (props: RouteComponentProps): ReactElement => {
                   {isSignIn ? 'Sign up' : 'Sign in'}
                 </Link>
                 .
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                <Link
+                  onClick={() => navigate('/reset-password')}
+                >
+                  Forgot password?
+                </Link>
               </Typography>
             </>
           )}

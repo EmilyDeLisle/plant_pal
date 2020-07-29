@@ -20,3 +20,7 @@ export interface SignInFormValues extends Map {
 export interface SignUpFormValues extends SignInFormValues {
   passwordConfirm: string
 }
+
+export interface ResetPasswordFormValues extends Map {
+  email: string
+}
