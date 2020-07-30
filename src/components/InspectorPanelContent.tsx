@@ -23,6 +23,15 @@ import { ImageUpload } from './ImageUpload'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    titleCard: {
+      width: 'calc(100% - 4em)',
+      padding: '3em 2em 2em 2em',
+      borderBottom: `1px solid lightgrey`,
+      [theme.breakpoints.down('sm')]: {
+        width: 'calc(100% - 2em)',
+        padding: '1em',
+      },
+    },
     title: {
       color: theme.palette.primary.contrastText,
       textShadow: '2px 2px 6px rgba(0, 0, 0, 0.5)',
@@ -130,7 +139,7 @@ export const InspectorPanelContentAdd = ({ handleClose }: InspectorPanelContentP
     <>
       {!isMobile && <Toolbar />}
       <div
-        className={`inspector-panel__title-card ${
+        className={`${classes.titleCard} inspector-panel__title-card ${
           image !== null ? 'inspector-panel-content--image-background' : ''
         }`}
         style={{ backgroundImage: image !== null ? `url(${image})` : '' }}
@@ -328,7 +337,7 @@ export const InspectorPanelContentView = ({
   return (
     <>
       {!isMobile && <Toolbar />}
-      <div className="inspector-panel__title-card" style={getImage()}>
+      <div className={`${classes.titleCard} inspector-panel__title-card`} style={getImage()}>
         <div className="inspector-panel-content__title-card-top">
           {editMode !== 'names' && (
             <div className="inspector-panel-content__title-card-titles">
