@@ -4,14 +4,13 @@
 
 .inspector-panel__title-card {
   /* Background image by Freepik - https://www.freepik.com/free-photos-vectors/pattern*/
-  background: url('../assets/palm.jpg') no-repeat;
+  background: url('../assets/card_pattern.jpg') no-repeat;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
   background-position: 50% 50%;
   min-height: calc(50% - 6em);
-  padding: 2em;
   display: flex;
   flex-direction: column;
 }
@@ -51,5 +50,3 @@
 .inspector-panel-content__edit-buttons {
   margin-top: 1em;
 }
-
-

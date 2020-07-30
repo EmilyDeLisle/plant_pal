@@ -31,6 +31,15 @@ export const ResetPassword = (props: RouteComponentProps) => {
     auth.resetPassword(email, () => {
       enqueueSnackbar(`Password reset link sent to ${email}.`, { variant: 'success' })
       setSubmitting(false)
+    }, (error: any) => {
+      if (error.code === 'auth/user-not-found') {
+        enqueueSnackbar('User not found', { variant: 'error' })
+      } else {
+        enqueueSnackbar('There was an error sending password reset email', { variant: 'error' })
+        console.log(error)
+      }
+      setSubmitting(false)
+      return null
     })
   }
 

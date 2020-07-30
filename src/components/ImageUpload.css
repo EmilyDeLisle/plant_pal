@@ -7,6 +7,7 @@ stripes {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   width: 100%;
   min-height: 100px;
   height: 100px;
@@ -39,7 +40,7 @@ stripes {
 }
 
 .image-upload__button-area {
-  height: 100%;
+  height: calc(100% - 4em);
   display: flex;
 }
 

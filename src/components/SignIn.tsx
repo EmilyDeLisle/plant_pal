@@ -8,7 +8,7 @@ import { Formik, FormikHelpers, FormikProps } from 'formik'
 import { useSnackbar } from 'notistack'
 import * as yup from 'yup'
 import { getAuth } from '../firebase'
-import { Field, SignInFormValues, SignUpFormValues } from '../models'
+import { Field, Map, SignInFormValues, SignUpFormValues } from '../models'
 import { UnauthedRoute } from './UnauthedRoute'
 
 const signInFields: Field[] = [
@@ -60,6 +60,12 @@ const signUpSchema = yup.object().shape({
     .required('Must confirm password'),
 })
 
+const errorMessages: Map = {
+  'auth/user-not-found': 'Account not found',
+  'auth/wrong-password': 'Wrong password',
+  'auth/email-already-in-use': 'That email is already in use',
+}
+
 export const SignIn = (props: RouteComponentProps): ReactElement => {
   const [mode, setMode] = useState<'Sign in' | 'Sign up'>('Sign in')
   const auth = getAuth()
@@ -71,25 +77,51 @@ export const SignIn = (props: RouteComponentProps): ReactElement => {
     setMode(isSignIn ? 'Sign up' : 'Sign in')
   }
 
-  const handleSubmit = (values: SignUpFormValues) => {
+  const handleErrorMessage = (error: any) => {
+    if (Object.keys(errorMessages).includes(error.code)) {
+      enqueueSnackbar(errorMessages[error.code as string], { variant: 'error' })
+    } else {
+      enqueueSnackbar('There was an error signing you in', { variant: 'error' })
+      console.log(error)
+    }
+  }
+
+  const handleSubmit = (
+    values: SignUpFormValues,
+    setSubmitting: (isSubmitting: boolean) => void
+  ) => {
     const { email, password } = values
     isSignIn
       ? auth.setAuthPersistence(() =>
-          auth.signIn(email, password, () => {
-            enqueueSnackbar('Successfully signed in', { variant: 'success' })
-          }, (error: any) => {
-            enqueueSnackbar('There was an signing you in', { variant: 'error' })
-            console.log(error)
-            return null
-          })
+          auth.signIn(
+            email,
+            password,
+            () => {
+              enqueueSnackbar('Successfully signed in', { variant: 'success' })
+              setSubmitting(false)
+            },
+            (error: any) => {
+              handleErrorMessage(error)
+              setSubmitting(false)
+              return null
+            }
+          )
         )
-      : auth.signUp(email, password, () => {
-          enqueueSnackbar('Account successfully created. Signing you in...', { variant: 'success' })
-        }, (error: any) => {
-          enqueueSnackbar('There was an error creating your account', { variant: 'error' })
-          console.log(error)
-          return null
-        })
+      : auth.signUp(
+          email,
+          password,
+          () => {
+            enqueueSnackbar('Account successfully created. Signing you in...', {
+              variant: 'success',
+            })
+            setSubmitting(false)
+          },
+          (error: any) => {
+            handleErrorMessage(error)
+            setSubmitting(false)
+            return null
+          }
+        )
   }
 
   return (
@@ -103,7 +135,7 @@ export const SignIn = (props: RouteComponentProps): ReactElement => {
             values: SignUpFormValues,
             { setSubmitting }: FormikHelpers<SignUpFormValues>
           ) => {
-            handleSubmit(values)
+            handleSubmit(values, setSubmitting)
             setSubmitting(true)
           }}
         >
@@ -151,11 +183,7 @@ export const SignIn = (props: RouteComponentProps): ReactElement => {
                 .
               </Typography>
               <Typography variant="body2" color="textSecondary">
-                <Link
-                  onClick={() => navigate('/reset-password')}
-                >
-                  Forgot password?
-                </Link>
+                <Link onClick={() => navigate('/reset-password')}>Forgot password?</Link>
               </Typography>
             </>
           )}

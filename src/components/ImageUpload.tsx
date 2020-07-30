@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
+import Typography from '@material-ui/core/Typography'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import CameraIcon from '@material-ui/icons/CameraAlt'
 import Dropzone, { IFileWithMeta, ILayoutProps, StatusValue } from 'react-dropzone-uploader'
@@ -17,7 +18,11 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 const Layout = ({ input, dropzoneProps }: ILayoutProps) => {
-  return <div {...dropzoneProps}>{input}</div>
+  return (
+    <div {...dropzoneProps} className='image-upload__dropzone'>
+      <Typography variant='body2'>{input}</Typography>
+    </div>
+  )
 }
 
 interface ImageUploadProps {
@@ -33,7 +38,7 @@ export const ImageUpload = ({ onlyDropzone, handleSelectedImage }: ImageUploadPr
   const classNames = {
     dropzone: 'image-upload__dropzone',
     inputLabel: 'image-upload__input-label',
-    inputLabelWithFiles: 'image-upload__input-label'
+    inputLabelWithFiles: 'image-upload__input-label',
   }
 
   const handleChangeStatus = (file: IFileWithMeta, status: StatusValue) => {
@@ -53,14 +58,10 @@ export const ImageUpload = ({ onlyDropzone, handleSelectedImage }: ImageUploadPr
       accept="image/*, .heic"
       classNames={classNames}
       inputWithFilesContent={(files, extra) =>
-        extra.reject
-          ? 'PNG or JPG/JPEG files only'
-          : 'Click or drag and drop an image file'
+        extra.reject ? 'PNG or JPG/JPEG files only' : 'Click or drag and drop an image file'
       }
       inputContent={(files, extra) =>
-        extra.reject
-          ? 'PNG or JPG/JPEG files only'
-          : 'Click or drag and drop an image file'
+        extra.reject ? 'PNG or JPG/JPEG files only' : 'Click or drag and drop an image file'
       }
       styles={{
         dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
@@ -72,7 +73,7 @@ export const ImageUpload = ({ onlyDropzone, handleSelectedImage }: ImageUploadPr
   return onlyDropzone ? (
     getDropzone()
   ) : showDropzone ? (
-    <div className='image-upload__button-container'>
+    <div className="image-upload__button-container">
       {getDropzone()}
       <Button color="inherit" onClick={() => setShowDropzone(false)}>
         Cancel
@@ -83,7 +84,7 @@ export const ImageUpload = ({ onlyDropzone, handleSelectedImage }: ImageUploadPr
       <div className="image-upload__button">
         <Tooltip placement="right" title={imageChosen ? 'Change image' : 'Upload image'}>
           <IconButton edge="start" color="inherit" onClick={() => setShowDropzone(true)}>
-            <CameraIcon className={classes.icon}/>
+            <CameraIcon className={classes.icon} />
           </IconButton>
         </Tooltip>
       </div>
