@@ -3,13 +3,14 @@
 }
 
 .inspector-panel__title-card {
-  /* Background image by Freepik - https://www.freepik.com/free-photos-vectors/pattern*/
+  /* Background image by pikisuperstar - https://www.freepik.com/free-photos-vectors/background*/
   background: url('../assets/card_pattern.jpg') no-repeat;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
   background-position: 50% 50%;
+  border-bottom: 1px solid #d3d3d3;
   min-height: calc(50% - 6em);
   display: flex;
   flex-direction: column;

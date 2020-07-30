@@ -26,7 +26,6 @@ const useStyles = makeStyles((theme: Theme) =>
     titleCard: {
       width: 'calc(100% - 4em)',
       padding: '3em 2em 2em 2em',
-      borderBottom: `1px solid lightgrey`,
       [theme.breakpoints.down('sm')]: {
         width: 'calc(100% - 2em)',
         padding: '1em',
